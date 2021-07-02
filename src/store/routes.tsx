@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Route, Navigate } from 'react-router-dom';
+import { Route, Navigate, Routes } from 'react-router-dom';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
@@ -9,12 +9,14 @@ import Header from '../components/layout/Header';
 import LoadingSpin from '../components/LoadingSpin';
 import LandingPage from '../pages/LandingPage';
 import Report from '../pages/Report';
+import NotFound from '../pages/NotFound';
+import SignUp from '../pages/SignUp';
 
 export const PrivateRoute = ({
   component: Component,
   redirectTo,
   path,
-  loggedIn,
+  alreadyLoggedIn,
   header = true,
   footer = false,
   children,
@@ -25,7 +27,7 @@ export const PrivateRoute = ({
   if (loading) {
     return <LoadingSpin loading />;
   } else {
-    if (loggedIn ? Boolean(authenticated) : Boolean(!authenticated)) {
+    if (alreadyLoggedIn ? Boolean(authenticated) : Boolean(!authenticated)) {
       return <Navigate to={redirectTo} />;
     } else {
       return (
@@ -46,15 +48,27 @@ export const PrivateRoute = ({
   }
 };
 
+const AuthenticatedRoutes = () => {
+  const { authenticated } = useContext(AuthContext);
+  if (authenticated) {
+    return (
+      <Route path="/" element={<Dashboard />}>
+        <Route path="perfil/:userId" element={<Profile />} />
+        <Route path="relatorio/:relatorioId" element={<Report />} />
+      </Route>
+    );
+  } else {
+    return <Route path="/" element={<LandingPage />} />;
+  }
+};
+
 export default function MainRoutes() {
   return (
-    <>
-      <Route path="/*" element={<LandingPage />} />
-      <PrivateRoute path="/login" redirectTo="/" component={Login} loggedIn />
-      <PrivateRoute path="/" redirectTo="/login" component={Dashboard}>
-        <Route path="profile/:userId" element={<Profile />} />
-        <Route path="report" element={<Report />} />
-      </PrivateRoute>
-    </>
+    <Routes>
+      <AuthenticatedRoutes />
+      <PrivateRoute path="login" redirectTo="/" component={Login} />
+      <PrivateRoute path="cadastro" redirectTo="/" component={SignUp} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }

@@ -7,7 +7,7 @@ const Dashboard: React.FC = () => {
   const { user } = useContext(AuthContext);
   return (
     <div>
-      Dashboard - Bem vindo {user.name}!<Link to="report">Relatório</Link>
+      Dashboard - Bem vindo {user.name}!<Link to="relatorio">Relatório</Link>
       <Outlet />
     </div>
   );

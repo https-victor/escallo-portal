@@ -6,7 +6,10 @@ import {
   AUTH_ERROR,
   LOGIN_FAIL,
   LOGOUT_SUCCESS,
-  REGISTER_FAIL
+  REGISTER_FAIL,
+  LOGIN_EMAIL_CHECK_LOADING,
+  LOGIN_EMAIL_CHECK,
+  LOGIN_EMAIL_RESET
 } from './actions';
 
 export default (state: any, action: any) => {
@@ -43,6 +46,22 @@ export default (state: any, action: any) => {
         user: null,
         authenticated: false,
         loading: false
+      };
+    case LOGIN_EMAIL_RESET:
+      return {
+        ...state,
+        loginEmail: ''
+      };
+    case LOGIN_EMAIL_CHECK:
+      return {
+        ...state,
+        loginEmail: action.payload.email,
+        emailCheckingLoading: false
+      };
+    case LOGIN_EMAIL_CHECK_LOADING:
+      return {
+        ...state,
+        emailCheckingLoading: true
       };
     default:
       return state;

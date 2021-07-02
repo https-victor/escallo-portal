@@ -1,6 +1,6 @@
 import { BrowserRouter as Router } from 'react-router-dom';
 import { GlobalProvider } from './store/Global/GlobalState';
-import Routes from './store/routes';
+import Routes from './store/Routes';
 import './styles/css/style.css';
 // import axios from 'axios';
 
