@@ -1,0 +1,241 @@
+.library-page-container{
+    position: relative;
+    height: 100%;
+    display: flex;
+}
+
+.library-header{
+    display: flex;
+    
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #e3e3e3;
+    height: 60px;
+}
+
+.library-header > * ~ * {
+    margin-left: 1rem!important;
+}
+
+
+.library-menu{
+    padding-left: 2.5rem;
+    display: flex;
+    
+    flex-direction: column;
+    width: 250px;
+    height: 100%;
+}
+
+.library-menu .ant-menu{
+    height: 100%;
+    border-left: 1px solid #e3e3e3;
+}
+
+.library-menu .ant-menu .ant-menu-item.custom{
+    cursor: auto
+}
+
+.library-menu .ant-menu .search-menu{
+    display: flex;
+    align-items: center;
+}
+
+.library-menu .search-box{
+    width: 100%;
+    
+}
+
+
+.library-wrapper{
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.library-content {
+    width: calc( 100% - 250px - 2.5rem);
+    border-right: 1px solid #e3e3e3;
+    margin-right: 2.5rem;
+    display: flex;
+}
+
+.library-wrapper.hidden {
+    width: 100%;
+}
+
+.container{
+    height: 100%;
+    width: calc( 100% - 400px );
+    overflow: overlay;    
+    overflow-y: overlay;    
+    overflow-x: hidden;    
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+    grid-template-rows: repeat(auto-fit,200px);
+    gap: 33px;
+}
+
+.container.hidden{
+    width:100%;
+}
+
+.container.center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.library-wrapper.hidden{
+    width: 100%;
+}
+
+.library-sider {
+    width: 400px;
+    display: grid;
+    border-left: 1px solid #e3e3e3;
+    grid-template-rows: 1fr 80px;
+    grid-template-areas: 
+        "game"
+        "actions";
+}
+
+
+
+.game-wrapper{
+    position: relative;
+    overflow-y: overlay;
+    overflow-x: hidden;
+    grid-area: game;
+    display: grid;
+    grid-template-rows: 200px auto;
+    grid-template-columns: 400px;
+}
+
+.form-game-wrapper{
+    grid-area: game;
+    position: relative;
+    display: grid;
+    grid-template-rows: 200px auto;
+    grid-template-columns: 400px;
+}
+
+.div-upload{
+    width: 100%;
+    height: 100%;    
+}
+
+.div-upload span{
+    opacity: 0;
+}
+
+
+.close-button{
+    z-index: 9;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.library-sider p {
+    word-wrap: break-word;
+}
+
+.game-header{
+    position: relative;
+    height: 200px;
+    justify-content: flex-end;
+}
+
+.game-header .ant-upload, .game-header .ant-upload-drag-container{
+    width: 100%;
+    height: 100%;
+}
+.game-overlay{
+    width: 400px;
+    padding: 0 10px;
+    padding-bottom: 10px;
+    box-shadow: 0px 0px 15px 12px rgba(0,0,0,0.65);
+    background: rgba(0,0,0,0.65);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    bottom: 0px;
+}
+
+.game-overlay.input{
+    box-shadow: initial;
+    background: initial;
+}
+
+.sider-body{
+    z-index: 9;
+}
+
+.game-overlay .ant-btn{
+    width: 150px;
+    margin: 0 auto;
+}
+
+.game-overlay .ant-row{
+    padding-top: 0.5rem;
+}
+
+.game-name{
+    font-size: 1.25rem;
+    text-align: center;
+    color: white;
+    padding-bottom: 0.25rem;
+}
+
+.description-wrapper{
+    padding: 20px;
+    border-top: 1px solid #e3e3e3;
+}
+
+.description-wrapper .ant-input{
+    height: 100%;
+}
+
+.details-wrapper{
+    border-bottom: 1px solid #e3e3e3;
+    padding: 20px 40px;
+    display: flex;
+    overflow: overlay;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.players{
+    overflow: overlay;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.player{
+    display: flex;
+    padding: 0.5rem;
+    align-items: center;
+}
+
+.player:first-child{
+    padding-top: 0;
+}
+
+.player > * ~ *{
+    padding-left: 1rem;
+}
+.actions-wrapper{
+    height: 80px;
+    grid-area: actions;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+.actions-wrapper > * ~ * {
+    margin-left: 1rem;
+}

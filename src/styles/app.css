@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
+/* General */
+:root {
+  --PRIMARY: #756da9;
+  --SECONDARY: #ef925e;
+  --GREY: #5b5b5b;
+}
+
+body {
+  font-family: 'Roboto', Oxygen, Ubuntu, Canrell, 'Open Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+p,
+h1 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.hero-image {
+  background: white;
+}
+
+/* Header */
+
+.page-header {
+  display: flex;
+  border-bottom: 1px solid #e3e3e3;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-header .first-part-header {
+  display: flex;
+  align-items: center;
+  width: calc(100% - 250px - 5rem);
+}
+
+/* Logo Container */
+
+.logo-container {
+  width: 250px;
+  height: min-content;
+  padding-left: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-container img {
+  height: 35px;
+}
+
+.logo-container p {
+  color: #ef925e;
+  margin-left: 1rem;
+  /* font-weight: bold; */
+  font-size: 1.25rem;
+}
+
+/* Actions Container */
+
+.profile-header-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.username {
+  padding-left: 1rem;
+}
+
+.header-actions .user-profile-action {
+  cursor: pointer;
+}
+
+.header-actions .user-profile-action .ant-btn span {
+  font-size: 14px;
+}
+
+.profile-header-wrapper > span ~ span {
+  margin-left: 0.5rem;
+}
+
+.header-actions {
+  width: 250px;
+  height: 100%;
+  margin: 0 2.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.page-header .ant-menu {
+  background: none;
+  border-bottom: none;
+}
+
+.header-actions > * ~ * {
+  margin-left: 2rem;
+}
+
+.actions-container {
+  align-items: center;
+  display: flex;
+}
+
+.actions-container > * ~ * {
+  margin-left: 0.5rem;
+}
+
+/* Content */
+.page-container {
+  height: 100%;
+  display: grid;
+  grid-template-rows: 50px calc(100% - 50px);
+}
+
+.landing-page-container {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+
+.landing-page-container .hero-image:first-of-type {
+  background: var(--PRIMARY);
+}
+
+.hero-image {
+  padding: 1rem 6rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.hero-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-text.signup p,
+.hero-text.signup h1 {
+  color: var(--SECONDARY);
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+.hero-text.signup h1 {
+  color: white;
+}
+
+.hero-text.info {
+  width: 500px;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.hero-text.info h2 {
+  color: var(--PRIMARY);
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+.hero-text.info p {
+  color: var(--GREY);
+  font-size: 1.1rem;
+}
+
+.hero-text-container {
+  width: calc(100% - 250px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-text-container .ant-btn {
+  margin-top: 1rem;
+  width: max-content;
+  height: max-content;
+  padding: 0.7rem 1.6rem;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Components */
+
+.ant-btn span {
+  font-size: 1rem;
+  /* font-weight: bold; */
+}
+
+/* App */
+
+.app-footer {
+  width: 100vw;
+  height: 80px;
+  background-color: var(--SECONDARY);
+}
+.app-container {
+  height: 100%;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  grid-area: app;
+}
+
+.app-footer {
+  grid-area: footer;
+  z-index: 8;
+  position: relative;
+}
+
+.menu-container {
+  width: calc(100% - 250px);
+  height: 100%;
+}
+
+.menu-container .ant-menu {
+  height: 100%;
+  line-height: 50px;
+}
+
+.menu-container .ant-menu-item {
+  height: 100%;
+}
+
+.menu-container > * ~ * {
+  margin-left: 3rem;
+}
+
+.menu-btn {
+  position: absolute;
+  bottom: 20px;
+  left: calc(((100% - 400px) / 2) - 50px);
+}
+
+.dice span {
+  color: white;
+  font-size: 1.5rem;
+  position: absolute;
+  z-index: 9;
+  bottom: 62px;
+  left: calc(((100% - 400px) / 2) - 8px);
+}
+
+.dice span.double {
+  left: calc(((100% - 400px) / 2) - 14px);
+}
+
+.app-layout.hidden span {
+  left: calc(50% - 8px);
+}
+
+.app-layout.hidden span.double {
+  left: calc(50% - 14px);
+}
+
+.app-layout.hidden .menu-btn {
+  left: calc(50% - 50px);
+}
