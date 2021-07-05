@@ -15,7 +15,7 @@ const SignUpForm = ({ onSubmit }: any): any => {
       <FormInput name="password" label="Senha" type="password" />
       <Link to="/">
         <Button variant="contained" onClick={resetLoginEmail}>
-          Voltar
+          Cancelar
         </Button>
       </Link>
       <Button onClick={handleSubmit(onSubmit)} variant="contained" color="primary">

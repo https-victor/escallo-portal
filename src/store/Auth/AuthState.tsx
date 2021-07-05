@@ -62,6 +62,7 @@ export const AuthProvider: any = ({ children }: any) => {
         case 200:
           if (!(json.email === 'joao.oliveira@futurotec.com.br')) {
             navigate('/cadastro');
+            // Notificação: "Esse e-mail não existe, por favor cadastre-se"
           } else {
             setLoginStep('password');
           }
@@ -88,7 +89,7 @@ export const AuthProvider: any = ({ children }: any) => {
       //   ...tokenConfig
       // });
       const res = {
-        status: 200
+        status: 401
       };
       // const json = await res.json();
       const json = { nome: 'João', id: 123 };

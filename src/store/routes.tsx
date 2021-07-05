@@ -66,8 +66,8 @@ export default function MainRoutes() {
   return (
     <Routes>
       <AuthenticatedRoutes />
-      <PrivateRoute path="login" redirectTo="/" component={Login} />
-      <PrivateRoute path="cadastro" redirectTo="/" component={SignUp} />
+      <PrivateRoute alreadyLoggedIn path="login" redirectTo="/" component={Login} />
+      <PrivateRoute alreadyLoggedIn path="cadastro" redirectTo="/" component={SignUp} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

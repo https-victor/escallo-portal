@@ -1,18 +1,23 @@
 import { useFormContext, Controller } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 
-const FormInput = ({ name, error, type, controllerProps, ...props }: any) => {
-  const { control } = useFormContext();
-
+const FormInput = ({ rules, control, name, type, defaultValue = '', controllerProps, ...props }: any) => {
   return (
     <Controller
-      render={({ field }) => (
-        <TextField type={type} error={!!error} helperText={error ? error.message : null} {...field} {...props} />
+      render={({ field: { onChange, value }, fieldState: { error } }) => (
+        <TextField
+          type={type}
+          value={value}
+          onChange={onChange}
+          error={!!error}
+          helperText={error ? error.message : null}
+          {...props}
+        />
       )}
       name={name}
       control={control}
-      defaultValue=""
-      fullWidth={true}
+      defaultValue={defaultValue}
+      rules={rules}
       {...controllerProps}
     />
   );
