@@ -1,13 +1,8 @@
 import React from 'react';
 // import { shade } from 'polished';
 
-
-const Footer: React.FC<any> = () => {
-    return (
-        <div>
-            Aboleth
-        </div>
-    )
-}
+const Footer = (): any => {
+  return <div></div>;
+};
 
 export default Footer;

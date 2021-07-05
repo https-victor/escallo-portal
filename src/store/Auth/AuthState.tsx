@@ -39,11 +39,13 @@ export const AuthProvider: any = ({ children }: any) => {
     }
   };
 
-  function resetLoginStep() {
+  function resetLoginStep(page = 'login') {
+    page !== 'login' && navigate('/login');
     setLoginStep('email');
   }
 
   function resetLoginEmail() {
+    navigate('/');
     dispatch({ type: LOGIN_EMAIL_RESET });
   }
   async function checkEmail(email: any) {
@@ -60,13 +62,13 @@ export const AuthProvider: any = ({ children }: any) => {
       const json = { email: email };
       switch (res.status) {
         case 200:
+          dispatch({ type: LOGIN_EMAIL_CHECK, payload: json });
           if (!(json.email === 'joao.oliveira@futurotec.com.br')) {
             navigate('/cadastro');
             // Notificação: "Esse e-mail não existe, por favor cadastre-se"
           } else {
             setLoginStep('password');
           }
-          dispatch({ type: LOGIN_EMAIL_CHECK, payload: json });
           break;
         case 401:
           throw new Error('Erro Json');

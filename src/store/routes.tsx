@@ -1,16 +1,10 @@
 import { useContext } from 'react';
 import { Route, Navigate, Routes } from 'react-router-dom';
-import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
-import Profile from '../pages/Profile';
 import { AuthContext } from './Auth/AuthState';
 import Footer from '../components/layout/Footer';
 import Header from '../components/layout/Header';
 import LoadingSpin from '../components/LoadingSpin';
-import LandingPage from '../pages/LandingPage';
-import Report from '../pages/Report';
-import NotFound from '../pages/NotFound';
-import SignUp from '../pages/SignUp';
+import { Dashboard, LandingPage, Login, NotFound, Profile, Report, SignUp } from '../pages/';
 
 export const PrivateRoute = ({
   component: Component,
@@ -28,6 +22,7 @@ export const PrivateRoute = ({
     return <LoadingSpin loading />;
   } else {
     if (alreadyLoggedIn ? Boolean(authenticated) : Boolean(!authenticated)) {
+      console.log('teste');
       return <Navigate to={redirectTo} />;
     } else {
       return (
@@ -62,7 +57,8 @@ const AuthenticatedRoutes = () => {
   }
 };
 
-export default function MainRoutes() {
+export default function MainRoutes(): any {
+  const { loginEmail } = useContext(AuthContext);
   return (
     <Routes>
       <AuthenticatedRoutes />

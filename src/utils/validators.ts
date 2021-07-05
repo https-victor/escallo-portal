@@ -23,6 +23,14 @@ export function validateEmail(email: any) {
   return undefined;
 }
 
+export function validateConfirmPassword(password: any) {
+  return (value: any) => {
+    if (value !== password) {
+      return 'A confirmação de senha deve ser igual à senha';
+    }
+  };
+}
+
 export function validateName(name: any) {
   if (isFieldEmpty(name)) {
     return 'Informe um nome.';
@@ -34,11 +42,7 @@ export function isDifferent(firstValue: any, secondValue: any) {
   return firstValue !== secondValue;
 }
 
-export function validatePassword(
-  password: any,
-  { confirmPassword }: any,
-  setErrors: any,
-) {
+export function validatePassword(password: any, { confirmPassword }: any, setErrors: any) {
   if (isFieldEmpty(password)) {
     return 'Informe uma senha.';
   }
@@ -46,50 +50,36 @@ export function validatePassword(
     if (isDifferent(password, confirmPassword)) {
       setErrors((errors: any) => ({
         ...errors,
-        confirmPassword: 'A confirmação de senha deve ser igual à senha.',
+        confirmPassword: 'A confirmação de senha deve ser igual à senha.'
       }));
       return undefined;
     }
     setErrors((errors: any) => ({
       ...errors,
-      confirmPassword: undefined,
+      confirmPassword: undefined
     }));
-  }
-  return undefined;
-}
-
-export function validateConfirmPassword(
-  confirmPassword: any,
-  { password }: any,
-) {
-  if (isFieldEmpty(confirmPassword)) {
-    return 'Confirme sua senha.';
-  }
-  if (isDifferent(password, confirmPassword)) {
-    return 'A confirmação de senha deve ser igual à senha.';
   }
   return undefined;
 }
 
 export const loginFormValidators = {
   email: validateEmail,
-  password: validatePassword,
+  password: validatePassword
 };
 
 export const gameValidators = {
-  name: validateName,
+  name: validateName
 };
 export const searchValidators = {
-  search: validateName,
+  search: validateName
 };
 export const tokenFormValidators = {
-  name: validateName,
+  name: validateName
 };
-
 
 export const signUpFormValidators = {
   name: validateName,
   email: validateEmail,
   password: validatePassword,
-  confirmPassword: validateConfirmPassword,
+  confirmPassword: validateConfirmPassword
 };
