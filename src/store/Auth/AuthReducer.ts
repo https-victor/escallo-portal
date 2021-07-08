@@ -9,21 +9,37 @@ import {
   REGISTER_FAIL,
   LOGIN_EMAIL_CHECK_LOADING,
   LOGIN_EMAIL_CHECK,
-  LOGIN_EMAIL_RESET
+  LOGIN_EMAIL_RESET,
+  APP_LOADING,
+  APP_LOADED,
+  SET_AUTHERROR,
+  CLEAR_AUTHERROR,
+  SET_AUTHERRORS,
+  CLEAR_AUTHERRORS
 } from './actions';
 
 export default (state: any, action: any) => {
   switch (action.type) {
-    case USER_LOADING:
+    case APP_LOADING:
       return {
         ...state,
         loading: true
+      };
+    case APP_LOADED:
+      return {
+        ...state,
+        loading: false
+      };
+    case USER_LOADING:
+      return {
+        ...state,
+        userLoading: true
       };
     case USER_LOADED:
       return {
         ...state,
         authenticated: true,
-        loading: false,
+        userLoading: false,
         user: action.payload
       };
     case LOGIN_SUCCESS:
@@ -33,7 +49,7 @@ export default (state: any, action: any) => {
         ...state,
         ...action.payload,
         authenticated: true,
-        loading: false
+        userLoading: false
       };
     case AUTH_ERROR:
     case LOGIN_FAIL:
@@ -45,7 +61,10 @@ export default (state: any, action: any) => {
         token: null,
         user: null,
         authenticated: false,
-        loading: false
+        userLoading: false,
+        errors: action.payload
+          ? [...state.errors.filter((error: any) => error.id != action.payload.id), action.payload]
+          : [...state.errors]
       };
     case LOGIN_EMAIL_RESET:
       return {
@@ -62,6 +81,26 @@ export default (state: any, action: any) => {
       return {
         ...state,
         emailCheckingLoading: true
+      };
+    case SET_AUTHERROR:
+      return {
+        ...state,
+        errors: [...state.errors, action.payload]
+      };
+    case CLEAR_AUTHERROR:
+      return {
+        ...state,
+        errors: [...state.errors.filter((error: any) => error.id != action.payload)]
+      };
+    case SET_AUTHERRORS:
+      return {
+        ...state,
+        errors: action.payload
+      };
+    case CLEAR_AUTHERRORS:
+      return {
+        ...state,
+        errors: []
       };
     default:
       return state;

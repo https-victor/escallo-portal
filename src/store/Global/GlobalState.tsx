@@ -1,39 +1,39 @@
 import { createContext, useReducer } from 'react';
 import GlobalReducer from './GlobalReducer';
-import { CLEAR_ERRORS, SET_ERRORS, SET_ERROR, CLEAR_ERROR } from './actions';
+import { CLEAR_GLOBALERRORS, SET_GLOBALERRORS, SET_GLOBALERROR, CLEAR_GLOBALERROR } from './actions';
 
-const initialState = { errors: [] };
+const initialState = { globalErrors: [] };
 
 export const GlobalContext = createContext<any>(initialState);
 
 export const GlobalProvider: any = ({ children }: any) => {
   const [state, dispatch] = useReducer(GlobalReducer, initialState);
 
-  function setError(error: any) {
-    dispatch({ type: SET_ERROR, payload: error });
+  function setGlobalError(globalError: any) {
+    dispatch({ type: SET_GLOBALERROR, payload: globalError });
   }
 
-  function clearError(error: number) {
-    dispatch({ type: CLEAR_ERROR, payload: error });
+  function clearGlobalError(globalError: number) {
+    dispatch({ type: CLEAR_GLOBALERROR, payload: globalError });
   }
 
-  function setErrors(errors: any) {
-    dispatch({ type: SET_ERRORS, payload: errors });
+  function setGlobalErrors(globalErrors: any) {
+    dispatch({ type: SET_GLOBALERRORS, payload: globalErrors });
   }
 
-  function clearErrors() {
-    dispatch({ type: CLEAR_ERRORS });
+  function clearGlobalErrors() {
+    dispatch({ type: CLEAR_GLOBALERRORS });
   }
 
   return (
     <GlobalContext.Provider
       value={{
         validation: {
-          errors: state.errors,
-          setError,
-          clearError,
-          setErrors,
-          clearErrors
+          globalErrors: state.globalErrors,
+          setGlobalError,
+          clearGlobalError,
+          setGlobalErrors,
+          clearGlobalErrors
         }
       }}
     >

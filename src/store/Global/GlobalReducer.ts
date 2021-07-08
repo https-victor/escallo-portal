@@ -1,26 +1,26 @@
-import { SET_ERROR, SET_ERRORS, CLEAR_ERRORS, CLEAR_ERROR } from './actions';
+import { SET_GLOBALERROR, SET_GLOBALERRORS, CLEAR_GLOBALERRORS, CLEAR_GLOBALERROR } from './actions';
 
 export default (state: any, action: any) => {
   switch (action.type) {
-    case SET_ERROR:
+    case SET_GLOBALERROR:
       return {
         ...state,
-        errors: [...state.errors, action.payload]
+        globalErrors: [...state.globalErrors, action.payload]
       };
-    case CLEAR_ERROR:
+    case CLEAR_GLOBALERROR:
       return {
         ...state,
-        errors: [...state.errors.filter((error: any) => error.id != action.payload)]
+        globalErrors: [...state.globalErrors.filter((globalError: any) => globalError.id != action.payload)]
       };
-    case SET_ERRORS:
+    case SET_GLOBALERRORS:
       return {
         ...state,
-        errors: action.payload
+        globalErrors: action.payload
       };
-    case CLEAR_ERRORS:
+    case CLEAR_GLOBALERRORS:
       return {
         ...state,
-        errors: []
+        globalErrors: []
       };
     default:
       return state;

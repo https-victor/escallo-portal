@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import { AuthContext } from '../../store/Auth/AuthState';
 
 const Report = (): any => {
-  const { tokenConfig } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
+  const { tokenConfig } = auth;
   const params = useParams();
   return (
     <div>

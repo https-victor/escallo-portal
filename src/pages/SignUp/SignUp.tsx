@@ -11,7 +11,9 @@ import InputMask from 'react-input-mask';
 import { validateConfirmPassword } from '../../utils/validators';
 
 const SignUp = (): any => {
-  const { loginEmail, signUp, authenticated, resetLoginEmail, resetLoginStep } = useContext(AuthContext);
+  const { auth, user } = useContext(AuthContext);
+  const { authenticated } = user;
+  const { loginEmail, signUp, resetLoginEmail, resetLoginStep } = auth;
   const classes = useStyles();
   const signUpForm = useForm({
     defaultValues: { email: loginEmail, telefone: '', nome: '', password: '', confirmPassword: '' }
@@ -26,7 +28,6 @@ const SignUp = (): any => {
   }, [loginEmail]);
 
   function onSubmit(data: any) {
-    console.log(data);
     signUp(data);
   }
 

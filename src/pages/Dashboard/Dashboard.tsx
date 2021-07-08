@@ -33,7 +33,9 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../../store/Auth/AuthState';
 
 const Dashboard = (): any => {
-  const { user } = useContext(AuthContext);
+  const { user, auth } = useContext(AuthContext);
+  const { data } = user;
+  const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -59,7 +61,6 @@ const Dashboard = (): any => {
     setExpandRelatorios(false);
   };
 
-  console.log(user);
   return (
     <div className={classes.root}>
       <AppBar position="fixed" className={clsx(classes.appBar, open && classes.appBarShift)}>
@@ -81,7 +82,7 @@ const Dashboard = (): any => {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton onClick={logoff} color="inherit">
             <AccountCircleIcon />
           </IconButton>
         </Toolbar>

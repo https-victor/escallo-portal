@@ -3,18 +3,31 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { IconButton, InputAdornment, makeStyles, Typography } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../store/Auth/AuthState';
 import { Link } from 'react-router-dom';
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { Controller, FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
 import FormInput from '../../components/forms/FormInput';
 import { AccountCircle, HighlightOff, Lock, Visibility, VisibilityOff } from '@material-ui/icons';
 import patterns from '../../utils/patterns';
 
 const Login = (): any => {
-  const emailForm = useForm({ defaultValues: { email: 'joao.oliveira@futurotec.com.br' } });
+  const emailForm = useForm({ defaultValues: { email: 'super@escallo.com.br' } });
   const loginForm = useForm();
-  const { login, loginStep, resetLoginEmail, resetLoginStep, checkEmail } = useContext(AuthContext);
+  const [password, setPassword] = useState('');
+  const watchPassword = useWatch({ control: loginForm.control, name: 'password' });
+  const { auth } = useContext(AuthContext);
+  const { login, loginStep, resetLoginEmail, resetLoginStep, checkEmail, validation } = auth;
+  const { errors, clearAuthError, clearAuthErrors } = validation;
+  useEffect(() => {
+    if (errors.length > 0) {
+      if (watchPassword != password) {
+        clearAuthErrors();
+      }
+    }
+  }, [errors, watchPassword]);
   const [showPassword, setShowPassword] = useState(false);
 
   function onCheckEmail(data: any) {
@@ -23,12 +36,13 @@ const Login = (): any => {
   }
 
   function onSubmit(data: any) {
-    console.log(data);
+    setPassword(data.password);
     login(data);
   }
 
   function resetFormPassword() {
     loginForm.setValue('password', '');
+    clearAuthErrors();
     resetLoginStep();
   }
 
@@ -87,6 +101,18 @@ const Login = (): any => {
         {loginStep == 'password' && (
           <FormProvider {...loginForm}>
             <form className={classes.form} onSubmit={loginForm.handleSubmit(onSubmit)}>
+              {errors.map(({ id, severity, title, error }: any) => {
+                const onCloseError = () => {
+                  clearAuthErrors(id);
+                };
+                return (
+                  <Alert onClose={onCloseError} key={id} severity={severity}>
+                    <AlertTitle>{title}</AlertTitle>
+                    {error.message}
+                  </Alert>
+                );
+              })}
+
               <FormInput
                 control={loginForm.control}
                 rules={{ required: 'Digite um e-mail' }}
