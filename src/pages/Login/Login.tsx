@@ -92,11 +92,6 @@ const Login = (): any => {
                 rules={{ required: 'Digite um e-mail' }}
                 InputProps={{
                   readOnly: loginStep != 'email',
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <AccountCircle color="primary" />
-                  //   </InputAdornment>
-                  // ),
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -127,11 +122,6 @@ const Login = (): any => {
                 }}
                 InputProps={{
                   placeholder: 'Digite sua senha',
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <Lock color="primary" />
-                  //   </InputAdornment>
-                  // ),
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -156,6 +146,7 @@ const Login = (): any => {
               <Button fullWidth className={classes.submit} type="submit" variant="contained" color="primary">
                 Entrar
               </Button>
+              <Link to="/login">Esqueceu sua senha?</Link>
             </form>
           </FormProvider>
         )}

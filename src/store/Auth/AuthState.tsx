@@ -91,7 +91,7 @@ export const AuthProvider: any = ({ children }: any) => {
       //   ...tokenConfig
       // });
       const res = {
-        status: 401
+        status: 200
       };
       // const json = await res.json();
       const json = { nome: 'João', id: 123 };

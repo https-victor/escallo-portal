@@ -1,10 +1,11 @@
 import { useContext } from 'react';
-import { Route, Navigate, Routes } from 'react-router-dom';
+import { Route, Navigate, Routes, useRoutes } from 'react-router-dom';
 import { AuthContext } from './Auth/AuthState';
 import Footer from '../components/layout/Footer';
 import Header from '../components/layout/Header';
 import LoadingSpin from '../components/LoadingSpin';
-import { Dashboard, LandingPage, Login, NotFound, Profile, Report, SignUp } from '../pages/';
+import { Dashboard, LandingPage, Login, NotFound, Profile, Report, SignUp } from '../pages';
+import Home from '../pages/Home/Home';
 
 export const PrivateRoute = ({
   component: Component,
@@ -58,13 +59,32 @@ const AuthenticatedRoutes = () => {
 };
 
 export default function MainRoutes(): any {
-  const { loginEmail } = useContext(AuthContext);
-  return (
-    <Routes>
-      <AuthenticatedRoutes />
-      <PrivateRoute alreadyLoggedIn path="login" redirectTo="/" component={Login} />
-      <PrivateRoute alreadyLoggedIn path="cadastro" redirectTo="/" component={SignUp} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  );
+  const { loginEmail, authenticated, loading } = useContext(AuthContext);
+
+  const mainRoutes = {
+    path: '/',
+    element: authenticated ? <Dashboard /> : <LandingPage />,
+    children: [
+      { path: '*', element: <Navigate to="/404" /> },
+      { path: '404', element: <NotFound /> },
+
+      ...(authenticated
+        ? [
+            { path: '/', element: <Home /> },
+            { path: 'login', element: <Navigate to="/" /> },
+            { path: 'cadastro', element: <Navigate to="/" /> },
+            { path: 'relatorio/:id', element: <Report /> },
+            { path: 'relatorio/lista', element: <Report /> },
+            { path: 'perfil', element: <Profile /> },
+            { path: 'relatorio', element: <Navigate to="/relatorio/lista" /> }
+          ]
+        : [
+            { path: 'login', element: <Login /> },
+            { path: 'cadastro', element: <SignUp /> }
+          ])
+    ]
+  };
+
+  const routing = useRoutes([mainRoutes]);
+  return <>{routing}</>;
 }

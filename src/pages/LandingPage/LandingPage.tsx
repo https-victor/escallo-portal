@@ -5,15 +5,9 @@ const LandingPage = (): any => {
   const classes = useStyles();
   const navigate = useNavigate();
   return (
-    <div>
+    <div className={classes.root}>
       <h1>Página inicial</h1>
-      <Button
-        fullWidth
-        className={classes.submit}
-        color="primary"
-        variant="contained"
-        onClick={() => navigate('/login')}
-      >
+      <Button className={classes.submit} color="primary" variant="contained" onClick={() => navigate('/login')}>
         Entrar
       </Button>
     </div>
@@ -21,6 +15,9 @@ const LandingPage = (): any => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex'
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
