@@ -24,7 +24,8 @@ import {
   AccountCircle as AccountCircleIcon,
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
-  QuestionAnswer as QuestionAnswerIcon
+  QuestionAnswer as QuestionAnswerIcon,
+  PeopleAlt as PeopleAltIcon
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import React, { useContext } from 'react';
@@ -114,6 +115,12 @@ const Dashboard = (): any => {
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Início" />
+          </ListItem>
+          <ListItem button onClick={goToHome}>
+            <ListItemIcon>
+              <QuestionAnswerIcon />
+            </ListItemIcon>
+            <ListItemText primary="Usuários" />
           </ListItem>
           <ListItem button onClick={openRelatorios}>
             <ListItemIcon>

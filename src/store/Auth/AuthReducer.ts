@@ -44,7 +44,6 @@ export default (state: any, action: any) => {
       };
     case LOGIN_SUCCESS:
     case REGISTER_SUCCESS:
-      localStorage.setItem('token', action.payload.token);
       return {
         ...state,
         ...action.payload,
@@ -55,7 +54,6 @@ export default (state: any, action: any) => {
     case LOGIN_FAIL:
     case LOGOUT_SUCCESS:
     case REGISTER_FAIL:
-      localStorage.removeItem('token');
       return {
         ...state,
         token: null,
@@ -74,7 +72,7 @@ export default (state: any, action: any) => {
     case LOGIN_EMAIL_CHECK:
       return {
         ...state,
-        loginEmail: action.payload.email,
+        loginEmail: action.payload,
         emailCheckingLoading: false
       };
     case LOGIN_EMAIL_CHECK_LOADING:

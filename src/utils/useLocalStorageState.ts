@@ -12,7 +12,11 @@ function useLocalStorageState<T>(key: string, initialState: T): Response<T> {
     }
   });
   useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
+    if (state !== null) {
+      localStorage.setItem(key, JSON.stringify(state));
+    } else {
+      localStorage.removeItem(key);
+    }
   }, [key, state]);
 
   return [state, setState];

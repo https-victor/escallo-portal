@@ -7,43 +7,6 @@ import LoadingSpin from '../components/LoadingSpin';
 import { Dashboard, LandingPage, Login, NotFound, Profile, Report, SignUp } from '../pages';
 import Home from '../pages/Home/Home';
 
-export const PrivateRoute = ({
-  component: Component,
-  redirectTo,
-  path,
-  alreadyLoggedIn,
-  header = true,
-  footer = false,
-  children,
-  ...props
-}: any): any => {
-  const { user, loading } = useContext(AuthContext);
-  const { authenticated } = user;
-
-  if (loading) {
-    return <LoadingSpin loading />;
-  } else {
-    if (alreadyLoggedIn ? Boolean(authenticated) : Boolean(!authenticated)) {
-      return <Navigate to={redirectTo} />;
-    } else {
-      return (
-        <Route
-          path={path}
-          element={
-            <>
-              {header && <Header />}
-              <Component {...props} />
-              {footer && <Footer />}
-            </>
-          }
-        >
-          {children}
-        </Route>
-      );
-    }
-  }
-};
-
 export default function MainRoutes(): any {
   const { user } = useContext(AuthContext);
   const { authenticated } = user;
@@ -71,10 +34,14 @@ export default function MainRoutes(): any {
       path: 'cadastro',
       element: authenticated ? <Navigate to="/" /> : <SignUp />
     },
-    { path: '*', element: <Navigate to="/404" /> },
-    { path: '404', element: <NotFound /> }
+    ...(authenticated
+      ? []
+      : [
+          { path: '*', element: <Navigate to="/404" /> },
+          { path: '404', element: <NotFound /> }
+        ])
   ];
 
-  const routing = useRoutes([mainRoutes, ...(authenticated ? [] : otherRoutes)]);
+  const routing = useRoutes([mainRoutes, ...otherRoutes]);
   return <>{routing}</>;
 }

@@ -9,27 +9,53 @@ import patterns from '../../utils/patterns';
 import useLocalStorageState from '../../utils/useLocalStorageState';
 import InputMask from 'react-input-mask';
 import { validateConfirmPassword } from '../../utils/validators';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+
+const signUpFormValidation = yup.object({
+  email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
+  telefone: yup.string().required('Digite um telefone'),
+  nome: yup.string().required('Digite um nome'),
+  password: yup.string().min(6, 'A senha deve conter mais de 6 caracteres').required('Digite uma senha'),
+  confirmPassword: yup
+    .mixed()
+    .oneOf([yup.ref('password'), null], 'A confirmação de senha deve ser igual à senha')
+    .required()
+});
 
 const SignUp = (): any => {
   const { auth, user } = useContext(AuthContext);
   const { authenticated } = user;
-  const { loginEmail, signUp, resetLoginEmail, resetLoginStep } = auth;
+  const { loginEmail, onSignUp, resetLoginEmail, resetLoginStep } = auth;
+
+  const signUpFormInitialValues = {
+    email: loginEmail,
+    telefone: '31998460353',
+    nome: 'João',
+    password: '753951',
+    confirmPassword: '753951'
+  };
+
   const classes = useStyles();
-  const signUpForm = useForm({
-    defaultValues: { email: loginEmail, telefone: '', nome: '', password: '', confirmPassword: '' }
+
+  const signUpForm = useFormik({
+    initialValues: signUpFormInitialValues,
+    validationSchema: signUpFormValidation,
+    onSubmit: (values) => {
+      const { nome, email, telefone, password } = values;
+
+      onSignUp({ nome, email, telefone, senha: password, status: 'ATIVO' });
+    }
   });
+
   const [showPassword, setShowPassword] = useState(false);
   const [showForm, setShowForm] = useLocalStorageState('showRegisterForm', false);
 
   useEffect(() => {
     if (loginEmail) {
-      signUpForm.setValue('email', loginEmail);
+      signUpForm.setFieldValue('email', loginEmail);
     }
   }, [loginEmail]);
-
-  function onSubmit(data: any) {
-    signUp(data);
-  }
 
   function handleMouseDown(event: any) {
     event.preventDefault();
@@ -48,162 +74,134 @@ const SignUp = (): any => {
           <Typography component="h1" variant="h5">
             Seja Bem vindo!
           </Typography>
-          <FormProvider {...signUpForm}>
-            <form className={classes.form} onSubmit={signUpForm.handleSubmit(onSubmit)}>
-              <FormInput
-                control={signUpForm.control}
-                rules={{
-                  required: 'Digite um e-mail',
-                  pattern: { value: patterns.email, message: 'Digite um e-mail válido' }
-                }}
-                InputProps={{
-                  placeholder: 'Digite seu endereço de e-mail',
-                  readOnly: true,
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <AccountCircle color="primary" />
-                  //   </InputAdornment>
-                  // ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={() => resetLoginStep('cadastro')}
-                        onMouseDown={handleMouseDown}
-                      >
-                        <HighlightOff color="primary" />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                variant="filled"
-                id="email"
-                margin="normal"
-                fullWidth
-                name="email"
-                label="E-mail"
-              />
-              <FormInput
-                control={signUpForm.control}
-                rules={{
-                  required: 'Digite seu nome'
-                }}
-                InputProps={{
-                  placeholder: 'Digite seu nome'
-                }}
-                variant="outlined"
-                id="nome"
-                margin="normal"
-                fullWidth
-                autoComplete="nome"
-                autoFocus
-                name="nome"
-                label="Nome"
-                type={showPassword ? undefined : 'nome'}
-              />
-              <FormInput
-                control={signUpForm.control}
-                rules={{
-                  required: 'Digite seu telefone'
-                  // validate: (value: any) => {
-                  //   console.log(value.replace(/\D/g, ''));
-                  //   return value;
-                  // }
-                  // pattern: { value: patterns.telefone, message: 'Digite um telefone válido' }
-                }}
-                // InputProps={{
-                //   placeholder: 'Digite seu telefone'
-                // }}
-                // maskType="telefone"
-                alwaysShowMask
-                variant="outlined"
-                id="telefone"
-                margin="normal"
-                fullWidth
-                autoComplete="telefone"
-                name="telefone"
-                label="Telefone"
-                type={showPassword ? undefined : 'telefone'}
-              />
+          <form className={classes.form} onSubmit={signUpForm.handleSubmit}>
+            <TextField
+              fullWidth
+              variant="filled"
+              margin="normal"
+              name="email"
+              label="E-mail"
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => resetLoginStep('cadastro')}
+                      onMouseDown={handleMouseDown}
+                    >
+                      <HighlightOff color="primary" />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              id="email"
+              value={signUpForm.values.email}
+              onChange={signUpForm.handleChange}
+              error={signUpForm.touched.email && Boolean(signUpForm.errors.email)}
+              helperText={signUpForm.touched.email && signUpForm.errors.email}
+            />
 
-              <FormInput
-                control={signUpForm.control}
-                rules={{
-                  required: 'Digite uma senha',
-                  minLength: {
-                    value: 6,
-                    message: 'A senha deve conter mais de 6 caracteres'
-                  }
-                }}
-                InputProps={{
-                  placeholder: 'Digite sua senha',
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <Lock color="primary" />
-                  //   </InputAdornment>
-                  // ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDown}
-                      >
-                        {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                variant="outlined"
-                id="password"
-                margin="normal"
-                fullWidth
-                name="password"
-                label="Senha"
-                type={showPassword ? undefined : 'password'}
-              />
-              <FormInput
-                control={signUpForm.control}
-                rules={{
-                  required: 'Confirme sua senha',
-                  minLength: {
-                    value: 6,
-                    message: 'A senha deve conter mais de 6 caracteres'
-                  },
-                  validate: validateConfirmPassword(signUpForm.getValues('password'))
-                }}
-                InputProps={{
-                  placeholder: 'Confirme sua senha',
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <Lock color="primary" />
-                  //   </InputAdornment>
-                  // ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDown}
-                      >
-                        {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                variant="outlined"
-                id="confirmPassword"
-                margin="normal"
-                fullWidth
-                name="confirmPassword"
-                label="Confirmar senha"
-                type={showPassword ? undefined : 'password'}
-              />
-              <Button type="submit" fullWidth className={classes.submit} variant="contained" color="primary">
-                Cadastrar
-              </Button>
-            </form>
-          </FormProvider>
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              name="nome"
+              autoComplete="nome"
+              autoFocus
+              label="Nome"
+              id="nome"
+              InputProps={{
+                placeholder: 'Digite seu nome'
+              }}
+              value={signUpForm.values.nome}
+              onChange={signUpForm.handleChange}
+              error={signUpForm.touched.nome && Boolean(signUpForm.errors.nome)}
+              helperText={signUpForm.touched.nome && signUpForm.errors.nome}
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              name="telefone"
+              autoComplete="telefone"
+              autoFocus
+              label="Telefone"
+              id="telefone"
+              InputProps={{
+                placeholder: 'Digite seu telefone'
+              }}
+              value={signUpForm.values.telefone}
+              onChange={signUpForm.handleChange}
+              error={signUpForm.touched.telefone && Boolean(signUpForm.errors.telefone)}
+              helperText={signUpForm.touched.telefone && signUpForm.errors.telefone}
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              name="password"
+              autoComplete="password"
+              autoFocus
+              label="Senha"
+              id="password"
+              InputProps={{
+                placeholder: 'Digite sua senha',
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDown}
+                    >
+                      {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              value={signUpForm.values.password}
+              onChange={signUpForm.handleChange}
+              error={signUpForm.touched.password && Boolean(signUpForm.errors.password)}
+              helperText={signUpForm.touched.password && signUpForm.errors.password}
+              type={showPassword ? undefined : 'password'}
+            />
+
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              name="confirmPassword"
+              autoComplete="confirmPassword"
+              autoFocus
+              label="Confirmar Senha"
+              id="confirmPassword"
+              type={showPassword ? undefined : 'password'}
+              InputProps={{
+                placeholder: 'Confirme sua senha',
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDown}
+                    >
+                      {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              value={signUpForm.values.confirmPassword}
+              onChange={signUpForm.handleChange}
+              error={signUpForm.touched.confirmPassword && Boolean(signUpForm.errors.confirmPassword)}
+              helperText={signUpForm.touched.confirmPassword && signUpForm.errors.confirmPassword}
+            />
+
+            <Button type="submit" fullWidth className={classes.submit} variant="contained" color="primary">
+              Cadastrar
+            </Button>
+          </form>
         </div>
       </Container>
     ) : (
@@ -212,20 +210,14 @@ const SignUp = (): any => {
           <Typography component="h1" variant="h5">
             Seja Bem vindo!
           </Typography>
-          <FormInput
-            control={signUpForm.control}
-            rules={{
-              required: 'Digite um e-mail',
-              pattern: { value: patterns.email, message: 'Digite um e-mail válido' }
-            }}
+          <TextField
+            fullWidth
+            variant="filled"
+            margin="normal"
+            name="email"
+            label="E-mail"
             InputProps={{
-              placeholder: 'Digite seu endereço de e-mail',
               readOnly: true,
-              // startAdornment: (
-              //   <InputAdornment position="start">
-              //     <AccountCircle color="primary" />
-              //   </InputAdornment>
-              // ),
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton
@@ -238,12 +230,11 @@ const SignUp = (): any => {
                 </InputAdornment>
               )
             }}
-            variant="filled"
             id="email"
-            margin="normal"
-            fullWidth
-            name="email"
-            label="E-mail"
+            value={signUpForm.values.email}
+            onChange={signUpForm.handleChange}
+            error={signUpForm.touched.email && Boolean(signUpForm.errors.email)}
+            helperText={signUpForm.touched.email && signUpForm.errors.email}
           />
           <Typography component="h6" variant="subtitle1">
             Esse é seu primeiro acesso com este e-mail, deseja registrar-se?

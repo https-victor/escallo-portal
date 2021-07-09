@@ -6,7 +6,7 @@ const initialState = { globalErrors: [] };
 
 export const GlobalContext = createContext<any>(initialState);
 
-export const GlobalProvider: any = ({ children }: any) => {
+export const GlobalProvider: any = ({ children, token, onSetToken }: any) => {
   const [state, dispatch] = useReducer(GlobalReducer, initialState);
 
   function setGlobalError(globalError: any) {
@@ -28,6 +28,8 @@ export const GlobalProvider: any = ({ children }: any) => {
   return (
     <GlobalContext.Provider
       value={{
+        token,
+        onSetToken,
         validation: {
           globalErrors: state.globalErrors,
           setGlobalError,

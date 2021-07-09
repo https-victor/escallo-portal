@@ -23,9 +23,6 @@ const FormInput = ({
     const telefone = newState.value.replace(/\D/g, '');
     const { value } = newState;
     const selection = newState.selection;
-    console.log('newState:', newState);
-    console.log('oldstate:', oldState);
-    console.log(userInput);
     if (telefone.length < 10) {
       setPhoneMask('(99) 9999-9999');
       return {
@@ -97,16 +94,20 @@ const FormInput = ({
     />
   ) : (
     <Controller
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <TextField
-          type={type}
-          value={value}
-          onChange={onChange}
-          error={!!error}
-          helperText={error ? error.message : null}
-          {...props}
-        />
-      )}
+      render={({ field: { onChange, onBlur, ref, value }, fieldState: { error } }) => {
+        return (
+          <TextField
+            ref={ref}
+            onBlur={onBlur}
+            type={type}
+            value={value}
+            onChange={onChange}
+            error={!!error}
+            helperText={error ? error.message : null}
+            {...props}
+          />
+        );
+      }}
       name={name}
       control={control}
       defaultValue={defaultValue}

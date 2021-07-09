@@ -8,40 +8,67 @@ import AlertTitle from '@material-ui/lab/AlertTitle';
 import { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../store/Auth/AuthState';
 import { Link } from 'react-router-dom';
-import { Controller, FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form';
-import FormInput from '../../components/forms/FormInput';
-import { AccountCircle, HighlightOff, Lock, Visibility, VisibilityOff } from '@material-ui/icons';
-import patterns from '../../utils/patterns';
+import { HighlightOff, Visibility, VisibilityOff } from '@material-ui/icons';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+
+const emailFormValidation = yup.object({
+  email: yup.string().email('Enter a valid email').required('Email is required')
+});
+
+const loginFormValidation = yup.object({
+  email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
+  password: yup.string().min(6, 'A senha deve conter mais de 6 caracteres').required('Digite uma senha')
+});
+
+const emailFormInitialValues = {
+  email: 'super2@escallo.com.br'
+};
+
+const loginFormInitialValues = {
+  email: '',
+  password: ''
+};
 
 const Login = (): any => {
-  const emailForm = useForm({ defaultValues: { email: 'super@escallo.com.br' } });
-  const loginForm = useForm();
-  const [password, setPassword] = useState('');
-  const watchPassword = useWatch({ control: loginForm.control, name: 'password' });
   const { auth } = useContext(AuthContext);
-  const { login, loginStep, resetLoginEmail, resetLoginStep, checkEmail, validation } = auth;
+  const [password, setPassword] = useState('');
+  const { login, loginStep, loginEmail, resetLoginEmail, resetLoginStep, checkEmail, validation } = auth;
   const { errors, clearAuthError, clearAuthErrors } = validation;
+
+  const emailForm = useFormik({
+    initialValues: emailFormInitialValues,
+    validationSchema: emailFormValidation,
+    onSubmit: (values) => {
+      checkEmail(values.email);
+    }
+  });
+
+  const loginForm = useFormik({
+    initialValues: loginFormInitialValues,
+    validationSchema: loginFormValidation,
+    onSubmit: (values) => {
+      setPassword(values.password);
+      login(values);
+      console.log(values);
+    }
+  });
+
+  useEffect(() => {
+    loginForm.setFieldValue('email', loginEmail);
+  }, [loginEmail]);
+
   useEffect(() => {
     if (errors.length > 0) {
-      if (watchPassword != password) {
+      if (loginForm.values.password != password) {
         clearAuthErrors();
       }
     }
-  }, [errors, watchPassword]);
+  }, [errors, loginForm.values.password]);
   const [showPassword, setShowPassword] = useState(false);
 
-  function onCheckEmail(data: any) {
-    loginForm.setValue('email', data.email);
-    checkEmail(data.email);
-  }
-
-  function onSubmit(data: any) {
-    setPassword(data.password);
-    login(data);
-  }
-
   function resetFormPassword() {
-    loginForm.setValue('password', '');
+    loginForm.setFieldValue('password', '');
     clearAuthErrors();
     resetLoginStep();
   }
@@ -68,113 +95,102 @@ const Login = (): any => {
           Login
         </Typography>
         {loginStep == 'email' && (
-          <FormProvider {...emailForm}>
-            <form className={classes.form} onSubmit={emailForm.handleSubmit(onCheckEmail)}>
-              <FormInput
-                control={emailForm.control}
-                rules={{
-                  required: 'Digite um e-mail',
-                  pattern: { value: patterns.email, message: 'Digite um e-mail válido' }
-                }}
-                InputProps={{
-                  placeholder: 'Digite seu endereço de e-mail'
-                  // startAdornment: (
-                  //   <InputAdornment position="start">
-                  //     <AccountCircle color="primary" />
-                  //   </InputAdornment>
-                  // )
-                }}
-                variant="outlined"
-                id="email"
-                margin="normal"
-                fullWidth
-                autoFocus
-                name="email"
-                label="E-mail"
-              />
-              <Button fullWidth className={classes.submit} type="submit" variant="contained" color="primary">
-                Próximo
-              </Button>
-            </form>
-          </FormProvider>
+          <form className={classes.form} onSubmit={emailForm.handleSubmit}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              autoFocus
+              name="email"
+              label="E-mail"
+              InputProps={{
+                placeholder: 'Digite seu endereço de e-mail'
+              }}
+              id="email"
+              value={emailForm.values.email}
+              onChange={emailForm.handleChange}
+              error={emailForm.touched.email && Boolean(emailForm.errors.email)}
+              helperText={emailForm.touched.email && emailForm.errors.email}
+            />
+            <Button fullWidth className={classes.submit} type="submit" variant="contained" color="primary">
+              Próximo
+            </Button>
+          </form>
         )}
         {loginStep == 'password' && (
-          <FormProvider {...loginForm}>
-            <form className={classes.form} onSubmit={loginForm.handleSubmit(onSubmit)}>
-              {errors.map(({ id, severity, title, error }: any) => {
-                const onCloseError = () => {
-                  clearAuthErrors(id);
-                };
-                return (
-                  <Alert onClose={onCloseError} key={id} severity={severity}>
-                    <AlertTitle>{title}</AlertTitle>
-                    {error.message}
-                  </Alert>
-                );
-              })}
+          <form className={classes.form} onSubmit={loginForm.handleSubmit}>
+            {errors.map(({ id, severity, title, error }: any) => {
+              const onCloseError = () => {
+                clearAuthErrors(id);
+              };
+              return (
+                <Alert onClose={onCloseError} key={id} severity={severity}>
+                  <AlertTitle>{title}</AlertTitle>
+                  {error.message}
+                </Alert>
+              );
+            })}
 
-              <FormInput
-                control={loginForm.control}
-                rules={{ required: 'Digite um e-mail' }}
-                InputProps={{
-                  readOnly: loginStep != 'email',
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={resetFormPassword}
-                        onMouseDown={handleMouseDown}
-                      >
-                        <HighlightOff color="primary" />
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                variant="filled"
-                id="email"
-                margin="normal"
-                fullWidth
-                name="email"
-                label="E-mail"
-              />
-              <FormInput
-                control={loginForm.control}
-                rules={{
-                  required: 'Digite uma senha',
-                  minLength: {
-                    value: 6,
-                    message: 'A senha deve conter mais de 6 caracteres'
-                  }
-                }}
-                InputProps={{
-                  placeholder: 'Digite sua senha',
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDown}
-                      >
-                        {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
-                      </IconButton>
-                    </InputAdornment>
-                  )
-                }}
-                variant="outlined"
-                id="password"
-                margin="normal"
-                fullWidth
-                autoComplete="password"
-                name="password"
-                label="Senha"
-                type={showPassword ? undefined : 'password'}
-              />
-              <Button fullWidth className={classes.submit} type="submit" variant="contained" color="primary">
-                Entrar
-              </Button>
-              <Link to="/login">Esqueceu sua senha?</Link>
-            </form>
-          </FormProvider>
+            <TextField
+              fullWidth
+              variant="filled"
+              margin="normal"
+              autoFocus
+              name="email"
+              label="E-mail"
+              InputProps={{
+                readOnly: true,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={resetFormPassword}
+                      onMouseDown={handleMouseDown}
+                    >
+                      <HighlightOff color="primary" />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              id="email"
+              value={loginForm.values.email}
+              onChange={loginForm.handleChange}
+              error={loginForm.touched.email && Boolean(loginForm.errors.email)}
+              helperText={loginForm.touched.email && loginForm.errors.email}
+            />
+
+            <TextField
+              variant="outlined"
+              id="password"
+              margin="normal"
+              fullWidth
+              name="password"
+              label="Senha"
+              type={showPassword ? undefined : 'password'}
+              InputProps={{
+                placeholder: 'Digite sua senha',
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDown}
+                    >
+                      {showPassword ? <Visibility color="primary" /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+              value={loginForm.values.password}
+              onChange={loginForm.handleChange}
+              error={loginForm.touched.password && Boolean(loginForm.errors.password)}
+              helperText={loginForm.touched.password && loginForm.errors.password}
+            />
+            <Button fullWidth className={classes.submit} type="submit" variant="contained" color="primary">
+              Entrar
+            </Button>
+            <Link to="/login">Esqueceu sua senha?</Link>
+          </form>
         )}
       </div>
     </Container>
