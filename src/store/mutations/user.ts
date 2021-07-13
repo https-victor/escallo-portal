@@ -12,7 +12,7 @@ export const USER_AUTH = graphql`
 `;
 
 export const USER_ADD = graphql`
-  mutation registrarUsuario($usuario: Usuario!) {
+  mutation registrarUsuario($usuario: CriarUsuarioDTO!) {
     registrarUsuario(usuario: $usuario) {
       id
       nome

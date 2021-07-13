@@ -1,0 +1,5 @@
+export const LOADING_LIST = 'LOADING_LIST';
+export const SUCCESS_LIST = 'SUCCESS_LIST';
+export const LIST_FAIL = 'LIST_FAIL';
+export const UPDATE_REVENDEDOR = 'UPDATE_REVENDEDOR';
+export const UPDATE_FAIL = 'UPDATE_FAIL';

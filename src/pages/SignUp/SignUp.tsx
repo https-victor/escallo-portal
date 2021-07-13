@@ -15,7 +15,7 @@ import { useFormik } from 'formik';
 const signUpFormValidation = yup.object({
   email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
   telefone: yup.string().required('Digite um telefone'),
-  nome: yup.string().required('Digite um nome'),
+  nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
   password: yup.string().min(6, 'A senha deve conter mais de 6 caracteres').required('Digite uma senha'),
   confirmPassword: yup
     .mixed()
@@ -49,7 +49,7 @@ const SignUp = (): any => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showForm, setShowForm] = useLocalStorageState('showRegisterForm', false);
+  const [showForm, setShowForm, refresh] = useLocalStorageState('showRegisterForm', false);
 
   useEffect(() => {
     if (loginEmail) {

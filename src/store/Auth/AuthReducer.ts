@@ -56,7 +56,6 @@ export default (state: any, action: any) => {
     case REGISTER_FAIL:
       return {
         ...state,
-        token: null,
         user: null,
         authenticated: false,
         userLoading: false,

@@ -101,14 +101,14 @@ export const AuthProvider: any = ({ children }: any) => {
     }
   }
 
+  function logout() {
+    navigate('/');
+    dispatch({ type: AUTH_ERROR });
+  }
+
   async function load() {
     // User loading
     dispatch({ type: USER_LOADING });
-
-    const logout = () => {
-      navigate('/');
-      dispatch({ type: AUTH_ERROR });
-    };
 
     if (token) {
       // get user by token
@@ -119,28 +119,8 @@ export const AuthProvider: any = ({ children }: any) => {
         logout();
       }
     } else {
-      // logout
       logout();
     }
-    // try {
-    //   const res = {
-    //     status: 401
-    //   };
-    //   const json = { nome: 'João', id: 123 };
-    //   switch (res.status) {
-    //     case 200:
-    //       navigate('/');
-    //       dispatch({ type: USER_LOADED, payload: json });
-    //       break;
-    //     case 401:
-    //       throw new Error('Erro Json');
-    //     default:
-    //       throw new Error('Erro Json');
-    //   }
-    // } catch (err) {
-    //   dispatch({ type: AUTH_ERROR });
-    //   console.log(err);
-    // }
   }
 
   async function logoff() {
@@ -162,17 +142,13 @@ export const AuthProvider: any = ({ children }: any) => {
     dispatch({ type: USER_LOADING });
 
     try {
-      // const res = await fetch('/api/auth', {
-      //   method: 'post',
-      //   ...tokenConfig,
-      //   body: JSON.stringify(credentials)
-      // });
       const user = await autenticarUsuario({
         variables: {
           email: credentials.email,
           senha: credentials.password
         }
       });
+      console.log(user);
       navigate('/');
       dispatch({ type: LOGIN_SUCCESS, payload: user });
     } catch (err) {
@@ -188,7 +164,6 @@ export const AuthProvider: any = ({ children }: any) => {
     dispatch({ type: USER_LOADING });
 
     try {
-      console.log(credentials);
       const user = await signUp({
         variables: { usuario: credentials }
       });
@@ -203,6 +178,12 @@ export const AuthProvider: any = ({ children }: any) => {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      logout();
+    }
+  }, [token]);
 
   return (
     <AuthContext.Provider

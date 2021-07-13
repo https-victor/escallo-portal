@@ -22,7 +22,7 @@ const loginFormValidation = yup.object({
 });
 
 const emailFormInitialValues = {
-  email: 'super2@escallo.com.br'
+  email: 'super@escallo.com.br'
 };
 
 const loginFormInitialValues = {
@@ -50,7 +50,6 @@ const Login = (): any => {
     onSubmit: (values) => {
       setPassword(values.password);
       login(values);
-      console.log(values);
     }
   });
 

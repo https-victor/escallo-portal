@@ -7,8 +7,13 @@ import Routes from './store/routes';
 // axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 import { onError } from '@apollo/client/link/error';
 import useLocalStorageState from './utils/useLocalStorageState';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { ptBR as ptBRCore } from '@material-ui/core/locale';
+import { ptBR } from '@material-ui/data-grid';
+// import { ptBR } from '@material-ui/data-grid';
+
 export const App = ({ props }: any): any => {
-  const [globalToken, setToken] = useLocalStorageState('token', null);
+  const [globalToken, setToken, refreshToken] = useLocalStorageState('token', null);
 
   function onSetToken(token: any) {
     setToken(token);
@@ -27,9 +32,6 @@ export const App = ({ props }: any): any => {
       const token = headers.get('Authorization') || null;
       if (token) {
         onSetToken(token);
-        if (response.data) {
-          response.data.token = token;
-        }
       } else {
         onSetToken(null);
       }
@@ -41,7 +43,8 @@ export const App = ({ props }: any): any => {
   });
   const authMiddleware = new ApolloLink((operation: any, forward: any): any => {
     // add the authorization to the headers
-    if (globalToken) {
+
+    if (refreshToken()) {
       operation.setContext(({ headers = {} }: any) => ({
         headers: {
           ...headers,
@@ -54,19 +57,31 @@ export const App = ({ props }: any): any => {
   });
   const link = from([errorLink, addToken, authMiddleware, new HttpLink({ uri: 'http://172.20.50.47:4000/graphql' })]);
   const client = new ApolloClient({ link: link, cache: new InMemoryCache() });
+
+  const theme = createMuiTheme(
+    {
+      palette: {
+        primary: { main: '#1976d2' }
+      }
+    },
+    ptBR,
+    ptBRCore
+  );
+
   return (
     <Router>
       <CssBaseline />
-
-      <GlobalProvider token={globalToken} onSetToken={onSetToken}>
-        <ApolloProvider client={client}>
-          <AuthProvider>
-            <div className="App">
-              <Routes />
-            </div>
-          </AuthProvider>
-        </ApolloProvider>
-      </GlobalProvider>
+      <ThemeProvider theme={theme}>
+        <GlobalProvider token={globalToken} onSetToken={onSetToken}>
+          <ApolloProvider client={client}>
+            <AuthProvider>
+              <div className="App">
+                <Routes />
+              </div>
+            </AuthProvider>
+          </ApolloProvider>
+        </GlobalProvider>
+      </ThemeProvider>
     </Router>
   );
 };

@@ -13,7 +13,8 @@ import {
   ListItemText,
   Collapse,
   Container,
-  Grid
+  Grid,
+  Paper
 } from '@material-ui/core';
 import {
   Notifications as NotificationsIcon,
@@ -25,6 +26,9 @@ import {
   ExpandLess as ExpandLessIcon,
   ExpandMore as ExpandMoreIcon,
   QuestionAnswer as QuestionAnswerIcon,
+  Group as GroupIcon,
+  Store as StoreIcon,
+  Security as SecurityIcon,
   PeopleAlt as PeopleAltIcon
 } from '@material-ui/icons';
 import clsx from 'clsx';
@@ -49,9 +53,11 @@ const Dashboard = (): any => {
     navigate(`/relatorio/${relatorio}`);
   };
 
-  const goToHome = () => {
-    navigate('/');
-  };
+  const goTo =
+    (path = '/') =>
+    () => {
+      navigate(path);
+    };
 
   const openRelatorios = () => {
     handleDrawerOpen();
@@ -110,17 +116,29 @@ const Dashboard = (): any => {
         </div>
         <Divider />
         <List className={classes.list}>
-          <ListItem button onClick={goToHome}>
+          <ListItem button onClick={goTo('/')}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary="Início" />
           </ListItem>
-          <ListItem button onClick={goToHome}>
+          <ListItem button onClick={goTo('administradores')}>
             <ListItemIcon>
-              <QuestionAnswerIcon />
+              <SecurityIcon />
             </ListItemIcon>
-            <ListItemText primary="Usuários" />
+            <ListItemText primary="Administradores" />
+          </ListItem>
+          <ListItem button onClick={goTo('revendedores')}>
+            <ListItemIcon>
+              <StoreIcon />
+            </ListItemIcon>
+            <ListItemText primary="Revendedores" />
+          </ListItem>
+          <ListItem button onClick={goTo('clientes')}>
+            <ListItemIcon>
+              <GroupIcon />
+            </ListItemIcon>
+            <ListItemText primary="Clientes" />
           </ListItem>
           <ListItem button onClick={openRelatorios}>
             <ListItemIcon>
@@ -149,9 +167,10 @@ const Dashboard = (): any => {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
+
+        <Paper className={classes.container}>
           <Outlet />
-        </Container>
+        </Paper>
       </main>
     </div>
   );
@@ -173,8 +192,9 @@ const useStyles = makeStyles((theme: any) => ({
     overflow: 'auto'
   },
   container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    height: '100%',
+    margin: theme.spacing(3),
+    padding: theme.spacing(3)
   },
   list: {
     '& .MuiTypography-root': {

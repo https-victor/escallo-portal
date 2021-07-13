@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 
-type Response<T> = [T, Dispatch<SetStateAction<T>>];
+type Response<T> = [T, Dispatch<SetStateAction<T>>, any];
 
 function useLocalStorageState<T>(key: string, initialState: T): Response<T> {
   const [state, setState] = useState(() => {
@@ -11,6 +11,23 @@ function useLocalStorageState<T>(key: string, initialState: T): Response<T> {
       return initialState;
     }
   });
+
+  function refresh(initialValues = false) {
+    const storageValue = localStorage.getItem(key);
+    if (storageValue) {
+      setState(JSON.parse(storageValue));
+      return JSON.parse(storageValue);
+    } else {
+      if (initialValues) {
+        setState(initialState);
+        return initialState;
+      } else {
+        setState(null);
+        return null;
+      }
+    }
+  }
+
   useEffect(() => {
     if (state !== null) {
       localStorage.setItem(key, JSON.stringify(state));
@@ -19,6 +36,6 @@ function useLocalStorageState<T>(key: string, initialState: T): Response<T> {
     }
   }, [key, state]);
 
-  return [state, setState];
+  return [state, setState, refresh];
 }
 export default useLocalStorageState;
