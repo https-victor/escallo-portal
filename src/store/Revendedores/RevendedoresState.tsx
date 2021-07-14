@@ -2,12 +2,21 @@ import React, { createContext, useReducer, useEffect, useContext, useState } fro
 import RevendedoresReducer from './RevendedoresReducer';
 import { GlobalContext } from '../Global/GlobalState';
 import { useNavigate } from 'react-router';
-
 import { useMutation, useLazyQuery } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
-import { LOADING_LIST, LIST_FAIL, SUCCESS_LIST, UPDATE_REVENDEDOR, UPDATE_FAIL } from './actions';
-import { REVENDEDOR_LIST, REVENDEDOR_LIST_STATUS } from '../query/revendedores';
-import { REVENDEDOR_EDIT } from '../mutations/revendedores';
+import {
+  LOADING_LIST,
+  LIST_FAIL,
+  SUCCESS_LIST,
+  UPDATE_REVENDEDOR,
+  UPDATE_FAIL,
+  CREATE_REVENDEDOR,
+  CREATE_FAIL
+} from './actions';
+import { REVENDEDOR_LIST, REVENDEDOR_LIST_STATUS } from '../../graphql/queries/revendedores';
+import { REVENDEDOR_CREATE, REVENDEDOR_EDIT } from '../../graphql/mutations/revendedores';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 
 const initialRevendedoresState = {
   lista: [],
@@ -24,6 +33,8 @@ export const RevendedoresProvider: any = ({ children }: any) => {
 
   const [updateRevendedor, { loading: updateRevendedorLoading, data: updateRevendedorData }] =
     useMutation(REVENDEDOR_EDIT);
+  const [createRevendedor, { loading: createRevendedorLoading, data: createRevendedorData }] =
+    useMutation(REVENDEDOR_CREATE);
   const queryRevendedores = useImperativeQuery(REVENDEDOR_LIST);
   const queryRevendedoresByStatus = useImperativeQuery(REVENDEDOR_LIST_STATUS);
   const navigate = useNavigate();
@@ -64,6 +75,19 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
+  async function onCreateRevendedor(values: any) {
+    dispatch({ type: LOADING_LIST });
+    try {
+      const createdRevendedor = await createRevendedor({
+        variables: { revendedor: { ...values, status: 'ATIVO' } }
+      });
+      dispatch({ type: CREATE_REVENDEDOR, payload: createdRevendedor.data.criarRevendedor });
+    } catch (err) {
+      dispatch({ type: CREATE_FAIL });
+      console.log(err);
+    }
+  }
+
   async function onUpdateRevendedor(id: any, field: any) {
     dispatch({ type: LOADING_LIST });
     try {
@@ -85,6 +109,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     <RevendedoresContext.Provider
       value={{
         onUpdateRevendedor,
+        onCreateRevendedor,
         loading: state.loading,
         rows,
         lista: state.lista

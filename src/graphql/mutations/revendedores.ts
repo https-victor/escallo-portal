@@ -10,3 +10,15 @@ export const REVENDEDOR_EDIT = graphql`
     }
   }
 `;
+
+export const REVENDEDOR_CREATE = graphql`
+  mutation CriarRevendedor($revendedor: CriarRevendedorDTO!) {
+    criarRevendedor(revendedor: $revendedor) {
+      id
+      status
+      nome
+      label
+      email
+    }
+  }
+`;

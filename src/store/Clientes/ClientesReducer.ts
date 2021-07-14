@@ -2,10 +2,10 @@ import {
   LOADING_LIST,
   SUCCESS_LIST,
   LIST_FAIL,
-  UPDATE_REVENDEDOR,
+  UPDATE_CLIENTE,
   UPDATE_FAIL,
   CREATE_FAIL,
-  CREATE_REVENDEDOR
+  CREATE_CLIENTE
 } from './actions';
 
 export default (state: any, action: any) => {
@@ -35,7 +35,7 @@ export default (state: any, action: any) => {
         loading: false,
         errors: action.payload
       };
-    case UPDATE_REVENDEDOR: {
+    case UPDATE_CLIENTE: {
       const idx = state.lista.findIndex((item: any) => item.id === action.payload.id);
       const listaBef = state.lista.slice(0, idx);
       const listaAft = state.lista.slice(idx + 1, state.lista.length);
@@ -45,7 +45,7 @@ export default (state: any, action: any) => {
         lista: [...listaBef, { ...action.payload }, ...listaAft]
       };
     }
-    case CREATE_REVENDEDOR: {
+    case CREATE_CLIENTE: {
       return {
         ...state,
         loading: false,

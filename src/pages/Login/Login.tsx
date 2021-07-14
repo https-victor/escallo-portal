@@ -13,7 +13,7 @@ import * as yup from 'yup';
 import { useFormik } from 'formik';
 
 const emailFormValidation = yup.object({
-  email: yup.string().email('Enter a valid email').required('Email is required')
+  email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail')
 });
 
 const loginFormValidation = yup.object({

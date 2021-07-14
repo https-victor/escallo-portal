@@ -18,12 +18,12 @@ import {
   SET_AUTHERRORS,
   CLEAR_AUTHERRORS
 } from './actions';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 import { useMutation, useLazyQuery } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
-import { USER_ADD, USER_AUTH } from '../mutations/user';
-import { CHECK_EMAIL, CHECK_TOKEN } from '../query/login';
+import { USER_ADD, USER_AUTH } from '../../graphql/mutations/user';
+import { CHECK_EMAIL, CHECK_TOKEN } from '../../graphql/queries/login';
 
 const initialAuthState = {
   user: null,
@@ -40,6 +40,7 @@ export const AuthContext = createContext<any>(initialAuthState);
 export const AuthProvider: any = ({ children }: any) => {
   const { validation, token, onSetToken } = useContext(GlobalContext);
   const { globalErrors, setGlobalError, clearGlobalError, setGlobalErrors, clearGlobalErrors } = validation;
+  const location = useLocation();
 
   const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
 
@@ -48,6 +49,8 @@ export const AuthProvider: any = ({ children }: any) => {
   const checkToken = useImperativeQuery(CHECK_TOKEN);
   const checkEmailQuery = useImperativeQuery(CHECK_EMAIL);
   // const [checkEmailQuery, { loading: checkEmailLoading, data: emailExists }] = useLazyQuery(CHECK_EMAIL);
+
+  const [pathname, setPathname] = useState('');
 
   const [loginStep, setLoginStep] = useState('email');
   const navigate = useNavigate();
@@ -101,8 +104,8 @@ export const AuthProvider: any = ({ children }: any) => {
     }
   }
 
-  function logout() {
-    navigate('/');
+  function logout(redirectPath = '/') {
+    navigate(redirectPath);
     dispatch({ type: AUTH_ERROR });
   }
 
@@ -148,8 +151,7 @@ export const AuthProvider: any = ({ children }: any) => {
           senha: credentials.password
         }
       });
-      console.log(user);
-      navigate('/');
+      navigate(pathname);
       dispatch({ type: LOGIN_SUCCESS, payload: user });
     } catch (err) {
       dispatch({
@@ -181,6 +183,7 @@ export const AuthProvider: any = ({ children }: any) => {
 
   useEffect(() => {
     if (!token) {
+      setPathname(location.pathname);
       logout();
     }
   }, [token]);
@@ -198,6 +201,7 @@ export const AuthProvider: any = ({ children }: any) => {
         auth: {
           validation: {
             errors: state.errors,
+
             setAuthError,
             clearAuthError,
             setAuthErrors,
