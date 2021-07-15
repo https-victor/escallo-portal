@@ -12,9 +12,6 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-  Container,
-  Grid,
-  Paper,
   Menu,
   MenuItem,
   Button,
@@ -41,16 +38,14 @@ import {
   Settings as SettingsIcon
 } from '@material-ui/icons';
 import clsx from 'clsx';
-import React, { useContext, useState } from 'react';
-import { Navigate, Outlet, useNavigate } from 'react-router';
-import { Link } from 'react-router-dom';
+import { useContext, useState } from 'react';
+import { Outlet, useNavigate } from 'react-router';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Dashboard = (): any => {
-  const { user, auth } = useContext(AuthContext);
+  const { auth } = useContext(AuthContext);
   const { title, menuIndex } = useContext(GlobalContext);
-  const { data } = user;
   const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
@@ -182,7 +177,7 @@ const Dashboard = (): any => {
             </Badge>
           </IconButton>
           <IconButton onClick={handleConfigMenuClick} color="inherit">
-            <SettingsIcon color={configMenu !== null ? 'secondary' : undefined} />
+            <SettingsIcon />
           </IconButton>
           <Menu
             id="simple-menu"
@@ -205,7 +200,7 @@ const Dashboard = (): any => {
           </Menu>
           <Divider className={classes.divider} orientation="vertical" flexItem />
           <IconButton onClick={handleProfileMenuClick} color="inherit">
-            <AccountCircleIcon color={profileMenu !== null ? 'secondary' : undefined} />
+            <AccountCircleIcon />
           </IconButton>
           <Menu
             id="simple-menu"
@@ -237,7 +232,7 @@ const Dashboard = (): any => {
       >
         <div className={clsx(classes.toolbarHeader, !open && classes.toolbarHeaderHidden)}>
           <div className={clsx(classes.toolbarTitle)}>
-            <Typography className={classes.toolbarSubtitle} variant="subtitle2">
+            <Typography className={classes.toolbarSubtitle} variant="h6">
               Cartão de Todos
             </Typography>
             <Typography className={classes.toolbarSubtitle} variant="subtitle2">
@@ -309,9 +304,11 @@ const Dashboard = (): any => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{'Confirmação'}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{'Encerrar sessão'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Tem certeza que deseja sair?</DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+            Tem certeza que deseja encerrar sua sessão?
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleExitDialogClose} color="primary">

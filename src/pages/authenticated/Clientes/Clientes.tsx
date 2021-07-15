@@ -1,42 +1,20 @@
-import { useCallback, useContext, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { AuthContext } from '../../../store/Auth/AuthState';
+import { useContext, useEffect } from 'react';
 import { ClientesContext, ClientesProvider } from '../../../store/Clientes/ClientesState';
 import { GridOverlay, DataGrid, GridColDef, GridCellParams, useGridSlotComponentProps } from '@material-ui/data-grid';
-import { Button, LinearProgress, makeStyles, Paper, Switch, TextField, Typography } from '@material-ui/core';
-import { FiberManualRecord as FiberManualRecordIcon } from '@material-ui/icons';
-import { red, green } from '@material-ui/core/colors';
+import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { auth } = useContext(AuthContext);
-  const { loading, lista, rows, onUpdateCliente, onCreateCliente } = useContext(ClientesContext);
+  const { loading, rows, onUpdateCliente, clienteForm } = useContext(ClientesContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
     setMenu('clientes');
   }, []);
-  const revendedorFormValidation = yup.object({
-    nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
-    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail')
-  });
-  const revendedorFormInitialValues = {
-    nome: '',
-    email: ''
-  };
-  const revendedorForm = useFormik({
-    initialValues: revendedorFormInitialValues,
-    validationSchema: revendedorFormValidation,
-    onSubmit: (values) => {
-      onCreateCliente(values);
-    }
-  });
 
-  const changeStatus = (id: any) => (params: any) => {
+  const changeStatus = (id: number) => (params: any) => {
     const status = params.target.checked ? 'ATIVO' : 'INATIVO';
     onUpdateCliente(id, { status: status });
   };
@@ -117,7 +95,7 @@ const Index = (): any => {
           checkboxSelection
           disableSelectionOnClick
         />
-        <form className={classes.form} onSubmit={revendedorForm.handleSubmit}>
+        <form className={classes.form} onSubmit={clienteForm.handleSubmit}>
           <div></div>
           <TextField
             variant="outlined"
@@ -125,10 +103,10 @@ const Index = (): any => {
             name="nome"
             label="Nome"
             id="nome"
-            value={revendedorForm.values.nome}
-            onChange={revendedorForm.handleChange}
-            error={revendedorForm.touched.nome && Boolean(revendedorForm.errors.nome)}
-            helperText={revendedorForm.touched.nome && revendedorForm.errors.nome}
+            value={clienteForm.values.nome}
+            onChange={clienteForm.handleChange}
+            error={clienteForm.touched.nome && Boolean(clienteForm.errors.nome)}
+            helperText={clienteForm.touched.nome && clienteForm.errors.nome}
           />
           <TextField
             variant="outlined"
@@ -136,10 +114,10 @@ const Index = (): any => {
             name="email"
             label="E-mail"
             id="email"
-            value={revendedorForm.values.email}
-            onChange={revendedorForm.handleChange}
-            error={revendedorForm.touched.email && Boolean(revendedorForm.errors.email)}
-            helperText={revendedorForm.touched.email && revendedorForm.errors.email}
+            value={clienteForm.values.email}
+            onChange={clienteForm.handleChange}
+            error={clienteForm.touched.email && Boolean(clienteForm.errors.email)}
+            helperText={clienteForm.touched.email && clienteForm.errors.email}
           />
           <Button type="submit" className={classes.submit} variant="contained" color="primary">
             Adicionar

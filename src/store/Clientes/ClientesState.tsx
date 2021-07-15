@@ -1,103 +1,193 @@
-import React, { createContext, useReducer, useEffect, useContext, useState } from 'react';
-import ClientesReducer from './ClientesReducer';
-import { GlobalContext } from '../Global/GlobalState';
-import { useNavigate } from 'react-router';
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { createContext, useReducer, useEffect, useContext, useState } from 'react';
+import ClientesReducer, { ClientesType } from './ClientesReducer';
+import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
-import {
-  LOADING_LIST,
-  LIST_FAIL,
-  SUCCESS_LIST,
-  UPDATE_CLIENTE,
-  UPDATE_FAIL,
-  CREATE_CLIENTE,
-  CREATE_FAIL
-} from './actions';
 import { CLIENTE_LIST, CLIENTE_LIST_STATUS } from '../../graphql/queries/clientes';
 import { CLIENTE_CREATE, CLIENTE_EDIT } from '../../graphql/mutations/clientes';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
+import { AuthContext } from '../Auth/AuthState';
+import { ClienteType } from '../../utils/types';
 
-const initialClientesState = {
-  lista: [],
-  loading: true
+export enum actions {
+  loading = 'LOADING',
+  loadSuccess = 'LOAD_SUCCESS',
+  loadFailed = 'LOAD_FAILED',
+  update = 'UPDATE',
+  updateFailed = 'UPDATE_FAILED',
+  create = 'CREATE',
+  createFailed = 'CREATE_FAILED'
+}
+
+const initialClientesState: ClientesType = {
+  clientes: [],
+  loading: true,
+  errors: []
 };
+
+const initialMockupState: ClienteType[] = [
+  {
+    email: 'cliente1@teste.com.br',
+    id: 1,
+    nome: 'Cliente 1',
+    status: 'ATIVO'
+  },
+  {
+    email: 'cliente2@teste.com.br',
+    id: 2,
+    nome: 'Cliente 2',
+    status: 'ATIVO'
+  },
+  {
+    email: 'cliente3@teste.com.br',
+    id: 3,
+    nome: 'Cliente 3',
+    status: 'ATIVO'
+  }
+];
 
 export const ClientesContext = createContext<any>(initialClientesState);
 
 export const ClientesProvider: any = ({ children }: any) => {
-  const { validation, token, onSetToken } = useContext(GlobalContext);
-  const { globalErrors, setGlobalError, clearGlobalError, setGlobalErrors, clearGlobalErrors } = validation;
+  const { mockup } = useContext(AuthContext);
 
   const [state, dispatch] = useReducer(ClientesReducer, initialClientesState);
 
-  const [updateCliente, { loading: updateClienteLoading, data: updateClienteData }] = useMutation(CLIENTE_EDIT);
-  const [createCliente, { loading: createClienteLoading, data: createClienteData }] = useMutation(CLIENTE_CREATE);
+  const [updateCliente] = useMutation(CLIENTE_EDIT);
+  const [createCliente] = useMutation(CLIENTE_CREATE);
   const queryClientes = useImperativeQuery(CLIENTE_LIST);
   const queryClientesByStatus = useImperativeQuery(CLIENTE_LIST_STATUS);
-  const navigate = useNavigate();
 
   const [rows, setRows] = useState(
-    state.lista.reduce((total: any, { id, nome, email, status }: any) => {
+    state.clientes.reduce((total: any, { id, nome, email, status }: any) => {
       return [...total, { id, nome, email, status }];
     }, [])
   );
 
   useEffect(() => {
     setRows(
-      state.lista.reduce((total: any, { id, nome, email, status }: any) => {
+      state.clientes.reduce((total: any, { id, nome, email, status }: any) => {
         return [...total, { id, nome, email, status }];
       }, [])
     );
-  }, [state.lista]);
+  }, [state.clientes]);
 
   async function loadClientes(status = '') {
-    dispatch({ type: LOADING_LIST });
-
-    try {
-      const lista = status ? await queryClientesByStatus(status) : await queryClientes();
-      if (lista.data && lista.data.clientes) {
-        dispatch({ type: SUCCESS_LIST, payload: lista.data.clientes });
+    dispatch({ type: actions.loading });
+    if (mockup) {
+      await setTimeout(() => {
+        dispatch({
+          type: actions.loadSuccess,
+          payload: initialMockupState
+        });
+      }, 1500);
+    } else {
+      try {
+        const clientes = status ? await queryClientesByStatus(status) : await queryClientes();
+        dispatch({ type: actions.loadSuccess, payload: clientes?.data?.clientes });
+      } catch (err) {
+        console.log(err);
+        dispatch({
+          type: actions.loadFailed,
+          payload: {
+            id: Date.now(),
+            context: 'load_clientes_error',
+            severity: 'error',
+            title: 'Falha na requisição',
+            message: err
+          }
+        });
       }
-    } catch (err) {
-      console.log(err);
-      dispatch({
-        type: LIST_FAIL,
-        payload: {
-          id: 'load_clientes_error',
-          severity: 'error',
-          title: 'Falha na requisição',
-          error: err
-        }
-      });
     }
   }
 
   async function onCreateCliente(values: any) {
-    dispatch({ type: LOADING_LIST });
-    try {
-      const createdCliente = await createCliente({
-        variables: { cliente: { ...values, status: 'ATIVO' } }
-      });
-      dispatch({ type: CREATE_CLIENTE, payload: createdCliente.data.criarCliente });
-    } catch (err) {
-      dispatch({ type: CREATE_FAIL });
-      console.log(err);
+    dispatch({ type: actions.loading });
+    if (mockup) {
+      await setTimeout(() => {
+        dispatch({
+          type: actions.create,
+          payload: {
+            email: values.email,
+            id: Date.now(),
+            nome: values.nome,
+            status: 'ATIVO'
+          }
+        });
+        clienteForm.resetForm();
+      }, 2000);
+    } else {
+      try {
+        const createdCliente = await createCliente({
+          variables: { cliente: { ...values, status: 'ATIVO' } }
+        });
+        dispatch({ type: actions.create, payload: createdCliente.data.criarCliente });
+        clienteForm.resetForm();
+      } catch (err) {
+        dispatch({
+          type: actions.createFailed,
+          payload: {
+            id: Date.now(),
+            context: 'cliente_create_error',
+            severity: 'error',
+            title: 'Falha no cadastro do cliente',
+            message: err
+          }
+        });
+        console.log(err);
+      }
     }
   }
 
-  async function onUpdateCliente(id: any, field: any) {
-    dispatch({ type: LOADING_LIST });
-    try {
-      const updatedCliente = await updateCliente({
-        variables: { cliente: { id: parseFloat(id), ...field } }
-      });
-      dispatch({ type: UPDATE_CLIENTE, payload: updatedCliente.data.atualizarCliente });
-    } catch (err) {
-      dispatch({ type: UPDATE_FAIL });
-      console.log(err);
+  async function onUpdateCliente(id: any, fields: any) {
+    dispatch({ type: actions.loading });
+    if (mockup) {
+      await setTimeout(() => {
+        dispatch({
+          type: actions.update,
+          payload: {
+            id,
+            ...fields
+          }
+        });
+      }, 800);
+    } else {
+      try {
+        const updatedCliente = await updateCliente({
+          variables: { cliente: { id: parseFloat(id), ...fields } }
+        });
+        dispatch({ type: actions.update, payload: updatedCliente.data.atualizarCliente });
+      } catch (err) {
+        dispatch({
+          type: actions.updateFailed,
+          payload: {
+            id: Date.now(),
+            context: 'cliente_update_error',
+            severity: 'error',
+            title: 'Falha na atualização do cliente',
+            message: err
+          }
+        });
+        console.log(err);
+      }
     }
   }
+
+  const clienteFormValidation = yup.object({
+    nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
+    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail')
+  });
+  const clienteFormInitialValues = {
+    nome: '',
+    email: ''
+  };
+  const clienteForm = useFormik({
+    initialValues: clienteFormInitialValues,
+    validationSchema: clienteFormValidation,
+    onSubmit: (values) => {
+      onCreateCliente(values);
+    }
+  });
 
   useEffect(() => {
     loadClientes();
@@ -107,10 +197,10 @@ export const ClientesProvider: any = ({ children }: any) => {
     <ClientesContext.Provider
       value={{
         onUpdateCliente,
-        onCreateCliente,
+        clienteForm,
         loading: state.loading,
         rows,
-        lista: state.lista
+        clientes: state.clientes
       }}
     >
       {children}

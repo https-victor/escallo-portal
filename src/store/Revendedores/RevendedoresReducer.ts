@@ -1,55 +1,71 @@
-import {
-  LOADING_LIST,
-  SUCCESS_LIST,
-  LIST_FAIL,
-  UPDATE_REVENDEDOR,
-  UPDATE_FAIL,
-  CREATE_FAIL,
-  CREATE_REVENDEDOR
-} from './actions';
+import { ActionMap, EditRevendedorType, ErrorType, RevendedorType } from '../../utils/types';
+import { actions } from './RevendedoresState';
 
-export default (state: any, action: any) => {
+export type RevendedoresType = {
+  revendedores: RevendedorType[];
+  loading: boolean;
+  errors: ErrorType[];
+};
+
+type RevendedoresPayload = {
+  [actions.loading]: undefined;
+  [actions.loadSuccess]: RevendedorType[];
+  [actions.loadFailed]: ErrorType;
+  [actions.update]: EditRevendedorType;
+  [actions.updateFailed]: ErrorType;
+  [actions.create]: RevendedorType;
+  [actions.createFailed]: ErrorType;
+};
+
+export type RevendedoresActions = ActionMap<RevendedoresPayload>[keyof ActionMap<RevendedoresPayload>];
+
+export default (state: RevendedoresType, action: RevendedoresActions): RevendedoresType => {
   switch (action.type) {
-    case LOADING_LIST:
+    case actions.loading:
       return {
         ...state,
         loading: true
       };
-    case SUCCESS_LIST:
+    case actions.loadSuccess:
       return {
         ...state,
         loading: false,
-        lista: action.payload
+        revendedores: action.payload
       };
-    case LIST_FAIL:
+    case actions.loadFailed:
       return {
         ...state,
-        lista: [],
+        revendedores: [],
         loading: false,
         errors: action.payload
+          ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
+          : [...state.errors]
       };
-    case UPDATE_FAIL:
-    case CREATE_FAIL:
+    case actions.updateFailed:
+    case actions.createFailed:
       return {
         ...state,
         loading: false,
         errors: action.payload
+          ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
+          : [...state.errors]
       };
-    case UPDATE_REVENDEDOR: {
-      const idx = state.lista.findIndex((item: any) => item.id === action.payload.id);
-      const listaBef = state.lista.slice(0, idx);
-      const listaAft = state.lista.slice(idx + 1, state.lista.length);
+    case actions.update: {
+      const idx = state.revendedores.findIndex((item: RevendedorType) => item.id === action.payload.id);
+      const oldItem = state.revendedores.find((item: RevendedorType) => item.id === action.payload.id);
+      const revendedoresBef = state.revendedores.slice(0, idx);
+      const revendedoresAft = state.revendedores.slice(idx + 1, state.revendedores.length);
       return {
         ...state,
         loading: false,
-        lista: [...listaBef, { ...action.payload }, ...listaAft]
+        revendedores: [...revendedoresBef, { ...oldItem, ...action.payload } as RevendedorType, ...revendedoresAft]
       };
     }
-    case CREATE_REVENDEDOR: {
+    case actions.create: {
       return {
         ...state,
         loading: false,
-        lista: [...state.lista, { ...action.payload }]
+        revendedores: [...state.revendedores, { ...action.payload }]
       };
     }
     default:

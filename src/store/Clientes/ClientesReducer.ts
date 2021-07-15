@@ -1,55 +1,71 @@
-import {
-  LOADING_LIST,
-  SUCCESS_LIST,
-  LIST_FAIL,
-  UPDATE_CLIENTE,
-  UPDATE_FAIL,
-  CREATE_FAIL,
-  CREATE_CLIENTE
-} from './actions';
+import { ActionMap, ClienteType, EditClienteType, ErrorType } from '../../utils/types';
+import { actions } from './ClientesState';
 
-export default (state: any, action: any) => {
+export type ClientesType = {
+  clientes: ClienteType[];
+  loading: boolean;
+  errors: ErrorType[];
+};
+
+type ClientesPayload = {
+  [actions.loading]: undefined;
+  [actions.loadSuccess]: ClienteType[];
+  [actions.loadFailed]: ErrorType;
+  [actions.update]: EditClienteType;
+  [actions.updateFailed]: ErrorType;
+  [actions.create]: ClienteType;
+  [actions.createFailed]: ErrorType;
+};
+
+export type ClientesActions = ActionMap<ClientesPayload>[keyof ActionMap<ClientesPayload>];
+
+export default (state: ClientesType, action: ClientesActions): ClientesType => {
   switch (action.type) {
-    case LOADING_LIST:
+    case actions.loading:
       return {
         ...state,
         loading: true
       };
-    case SUCCESS_LIST:
+    case actions.loadSuccess:
       return {
         ...state,
         loading: false,
-        lista: action.payload
+        clientes: action.payload
       };
-    case LIST_FAIL:
+    case actions.loadFailed:
       return {
         ...state,
-        lista: [],
+        clientes: [],
         loading: false,
         errors: action.payload
+          ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
+          : [...state.errors]
       };
-    case UPDATE_FAIL:
-    case CREATE_FAIL:
+    case actions.updateFailed:
+    case actions.createFailed:
       return {
         ...state,
         loading: false,
         errors: action.payload
+          ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
+          : [...state.errors]
       };
-    case UPDATE_CLIENTE: {
-      const idx = state.lista.findIndex((item: any) => item.id === action.payload.id);
-      const listaBef = state.lista.slice(0, idx);
-      const listaAft = state.lista.slice(idx + 1, state.lista.length);
+    case actions.update: {
+      const idx = state.clientes.findIndex((item: ClienteType) => item.id === action.payload.id);
+      const oldItem = state.clientes.find((item: ClienteType) => item.id === action.payload.id);
+      const clientesBef = state.clientes.slice(0, idx);
+      const clientesAft = state.clientes.slice(idx + 1, state.clientes.length);
       return {
         ...state,
         loading: false,
-        lista: [...listaBef, { ...action.payload }, ...listaAft]
+        clientes: [...clientesBef, { ...oldItem, ...action.payload } as ClienteType, ...clientesAft]
       };
     }
-    case CREATE_CLIENTE: {
+    case actions.create: {
       return {
         ...state,
         loading: false,
-        lista: [...state.lista, { ...action.payload }]
+        clientes: [...state.clientes, { ...action.payload }]
       };
     }
     default:

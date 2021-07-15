@@ -7,20 +7,20 @@ import Routes from './store/routes';
 // axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 import { onError } from '@apollo/client/link/error';
 import useLocalStorageState from './utils/useLocalStorageState';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider, withStyles } from '@material-ui/core/styles';
 import { ptBR as ptBRCore } from '@material-ui/core/locale';
 import { ptBR } from '@material-ui/data-grid';
 // import { ptBR } from '@material-ui/data-grid';
 
-export const App = ({ props }: any): any => {
+export const App = (): any => {
   const [globalToken, setToken, refreshToken] = useLocalStorageState('token', null);
 
   function onSetToken(token: any) {
     setToken(token);
   }
-  const errorLink = onError(({ graphqlErrors, networkError }: any) => {
+  const errorLink = onError(({ graphqlErrors }: any) => {
     if (graphqlErrors) {
-      graphqlErrors.map(({ message, location, path }: any) => {
+      graphqlErrors.map(({ message }: any) => {
         console.error(`Graphql error ${message}`);
       });
     }
@@ -68,9 +68,20 @@ export const App = ({ props }: any): any => {
     ptBRCore
   );
 
+  const GlobalCss = withStyles({
+    // @global is handled by jss-plugin-global.
+    '@global': {
+      // You should target [class*="MuiButton-root"] instead if you nest themes.
+      '.MuiDataGrid-root .MuiDataGrid-columnHeaderWrapper': {
+        overflow: 'initial'
+      }
+    }
+  })(() => null);
+
   return (
     <Router>
       <CssBaseline />
+      <GlobalCss />
       <ThemeProvider theme={theme}>
         <GlobalProvider token={globalToken} onSetToken={onSetToken}>
           <ApolloProvider client={client}>

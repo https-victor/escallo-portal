@@ -1,100 +1,117 @@
-import {
-  USER_LOADING,
-  USER_LOADED,
-  LOGIN_SUCCESS,
-  REGISTER_SUCCESS,
-  AUTH_ERROR,
-  LOGIN_FAIL,
-  LOGOUT_SUCCESS,
-  REGISTER_FAIL,
-  LOGIN_EMAIL_CHECK_LOADING,
-  LOGIN_EMAIL_CHECK,
-  LOGIN_EMAIL_RESET,
-  APP_LOADING,
-  APP_LOADED,
-  SET_AUTHERROR,
-  CLEAR_AUTHERROR,
-  SET_AUTHERRORS,
-  CLEAR_AUTHERRORS
-} from './actions';
+import { ActionMap, ErrorType, UserType } from '../../utils/types';
+import { actions } from './AuthState';
 
-export default (state: any, action: any) => {
+export type AuthType = {
+  user: UserType;
+  authenticated: boolean;
+  loading: boolean;
+  userLoading: boolean;
+  errors: ErrorType[];
+  loginEmail: string;
+  emailCheckingLoading: boolean;
+};
+
+type AuthPayload = {
+  [actions.appLoading]: undefined;
+  [actions.appSuccess]: undefined;
+  [actions.userLoading]: undefined;
+  [actions.resetLoginEmail]: undefined;
+  [actions.checkEmailLoading]: undefined;
+  [actions.userSuccess]: UserType;
+  [actions.loginSuccess]: UserType;
+  [actions.registerSuccess]: UserType;
+  [actions.logoutSuccess]: undefined;
+  [actions.checkEmail]: string;
+  [actions.logoutFailed]: ErrorType;
+  [actions.authError]: ErrorType;
+  [actions.loginFailed]: ErrorType;
+  [actions.registerFailed]: ErrorType;
+  [actions.setAuthError]: ErrorType;
+  [actions.setAuthErrors]: ErrorType[];
+  [actions.clearAuthError]: number;
+  [actions.clearAuthErrors]: undefined;
+};
+
+export type AuthActions = ActionMap<AuthPayload>[keyof ActionMap<AuthPayload>];
+
+export default (state: AuthType, action: AuthActions): AuthType => {
   switch (action.type) {
-    case APP_LOADING:
+    case actions.appLoading:
       return {
         ...state,
         loading: true
       };
-    case APP_LOADED:
+    case actions.appSuccess:
       return {
         ...state,
         loading: false
       };
-    case USER_LOADING:
+    case actions.userLoading:
       return {
         ...state,
         userLoading: true
       };
-    case USER_LOADED:
+    case actions.userSuccess:
+    case actions.loginSuccess:
+    case actions.registerSuccess:
       return {
         ...state,
-        authenticated: true,
-        userLoading: false,
-        user: action.payload
-      };
-    case LOGIN_SUCCESS:
-    case REGISTER_SUCCESS:
-      return {
-        ...state,
-        ...action.payload,
+        user: action.payload,
         authenticated: true,
         userLoading: false
       };
-    case AUTH_ERROR:
-    case LOGIN_FAIL:
-    case LOGOUT_SUCCESS:
-    case REGISTER_FAIL:
+    case actions.logoutSuccess:
+      return {
+        ...state,
+        user: null,
+        authenticated: false,
+        userLoading: false,
+        errors: []
+      };
+    case actions.authError:
+    case actions.loginFailed:
+    case actions.registerFailed:
       return {
         ...state,
         user: null,
         authenticated: false,
         userLoading: false,
         errors: action.payload
-          ? [...state.errors.filter((error: any) => error.id != action.payload.id), action.payload]
+          ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
           : [...state.errors]
       };
-    case LOGIN_EMAIL_RESET:
+    case actions.resetLoginEmail:
       return {
         ...state,
         loginEmail: ''
       };
-    case LOGIN_EMAIL_CHECK:
+    case actions.checkEmail:
       return {
         ...state,
         loginEmail: action.payload,
         emailCheckingLoading: false
       };
-    case LOGIN_EMAIL_CHECK_LOADING:
+    case actions.checkEmailLoading:
       return {
         ...state,
         emailCheckingLoading: true
       };
-    case SET_AUTHERROR:
+    case actions.setAuthError:
       return {
         ...state,
         errors: [...state.errors, action.payload]
       };
-    case CLEAR_AUTHERROR:
+    case actions.clearAuthError:
       return {
         ...state,
-        errors: [...state.errors.filter((error: any) => error.id != action.payload)]
+        errors: [...state.errors.filter((error: ErrorType) => error.id !== action.payload)]
       };
-    case SET_AUTHERRORS:
+    case actions.setAuthErrors:
       return {
         ...state,
         errors: action.payload
       };
-    case CLEAR_AUTHERRORS:
+    case actions.clearAuthErrors:
       return {
         ...state,
         errors: []

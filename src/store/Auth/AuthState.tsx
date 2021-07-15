@@ -1,31 +1,34 @@
-import React, { createContext, useReducer, useEffect, useContext, useState } from 'react';
-import AuthReducer from './AuthReducer';
+import { createContext, useReducer, useEffect, useContext, useState } from 'react';
+import AuthReducer, { AuthType } from './AuthReducer';
 import { GlobalContext } from '../Global/GlobalState';
-import {
-  USER_LOADING,
-  USER_LOADED,
-  LOGIN_SUCCESS,
-  AUTH_ERROR,
-  LOGIN_FAIL,
-  LOGIN_EMAIL_CHECK_LOADING,
-  LOGIN_EMAIL_CHECK,
-  LOGIN_EMAIL_RESET,
-  REGISTER_SUCCESS,
-  REGISTER_FAIL,
-  LOGOUT_SUCCESS,
-  CLEAR_AUTHERROR,
-  SET_AUTHERROR,
-  SET_AUTHERRORS,
-  CLEAR_AUTHERRORS
-} from './actions';
 import { useLocation, useNavigate } from 'react-router';
-
-import { useMutation, useLazyQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { USER_ADD, USER_AUTH } from '../../graphql/mutations/user';
 import { CHECK_EMAIL, CHECK_TOKEN } from '../../graphql/queries/login';
 
-const initialAuthState = {
+export enum actions {
+  appLoading = 'APP_LOADING',
+  appSuccess = 'APP_SUCCESS',
+  userLoading = 'USER_LOADING',
+  userSuccess = 'USER_SUCCESS',
+  loginSuccess = 'LOGIN_SUCCESS',
+  loginFailed = 'LOGIN_FAILED',
+  logoutSuccess = 'LOGOUT_SUCCESS',
+  logoutFailed = 'LOGOUT_FAILED',
+  registerSuccess = 'REGISTER_SUCCESS',
+  registerFailed = 'REGISTER_FAILED',
+  checkEmailLoading = 'CHECK_EMAIL_LOADING',
+  checkEmail = 'CHECK_EMAIL',
+  resetLoginEmail = 'RESET_LOGIN_EMAIL',
+  authError = 'AUTH_ERROR',
+  setAuthError = 'SET_AUTH_ERROR',
+  clearAuthError = 'CLEAR_AUTH_ERROR',
+  setAuthErrors = 'SET_AUTH_ERRORS',
+  clearAuthErrors = 'CLEAR_AUTH_ERRORS'
+}
+
+const initialAuthState: AuthType = {
   user: null,
   authenticated: false,
   loading: true,
@@ -38,14 +41,13 @@ const initialAuthState = {
 export const AuthContext = createContext<any>(initialAuthState);
 
 export const AuthProvider: any = ({ children }: any) => {
-  const { validation, token, onSetToken } = useContext(GlobalContext);
-  const { globalErrors, setGlobalError, clearGlobalError, setGlobalErrors, clearGlobalErrors } = validation;
+  const { token, onSetToken } = useContext(GlobalContext);
   const location = useLocation();
 
   const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
 
-  const [autenticarUsuario, { loading: authUserLoading, data: authUserData }] = useMutation(USER_AUTH);
-  const [signUp, { loading: signUpLoading, data: signUpData }] = useMutation(USER_ADD);
+  const [autenticarUsuario] = useMutation(USER_AUTH);
+  const [signUp] = useMutation(USER_ADD);
   const checkToken = useImperativeQuery(CHECK_TOKEN);
   const checkEmailQuery = useImperativeQuery(CHECK_EMAIL);
   // const [checkEmailQuery, { loading: checkEmailLoading, data: emailExists }] = useLazyQuery(CHECK_EMAIL);
@@ -56,19 +58,19 @@ export const AuthProvider: any = ({ children }: any) => {
   const navigate = useNavigate();
 
   function setAuthError(error: any) {
-    dispatch({ type: SET_AUTHERROR, payload: error });
+    dispatch({ type: actions.setAuthError, payload: error });
   }
 
   function clearAuthError(error: number) {
-    dispatch({ type: CLEAR_AUTHERROR, payload: error });
+    dispatch({ type: actions.clearAuthError, payload: error });
   }
 
   function setAuthErrors(errors: any) {
-    dispatch({ type: SET_AUTHERRORS, payload: errors });
+    dispatch({ type: actions.setAuthErrors, payload: errors });
   }
 
   function clearAuthErrors() {
-    dispatch({ type: CLEAR_AUTHERRORS });
+    dispatch({ type: actions.clearAuthErrors });
   }
 
   function resetLoginStep(page = 'login') {
@@ -78,46 +80,56 @@ export const AuthProvider: any = ({ children }: any) => {
 
   function resetLoginEmail() {
     navigate('/');
-    dispatch({ type: LOGIN_EMAIL_RESET });
+    dispatch({ type: actions.resetLoginEmail });
   }
   async function checkEmail(email: any) {
-    dispatch({ type: LOGIN_EMAIL_CHECK_LOADING });
-    try {
-      // const res = await fetch('/api/auth', {
-      //   method: 'get',
-      //   ...tokenConfig
-      // });
-      const response = await checkEmailQuery({
-        email
-      });
+    dispatch({ type: actions.checkEmailLoading });
+    if (email === 'mockup@futurotec.com.br') {
+      dispatch({ type: actions.checkEmail, payload: email });
+      setLoginStep('password');
+    } else {
+      try {
+        const response = await checkEmailQuery({
+          email
+        });
 
-      if (response && response.data && response.data.verificarSeUsuarioExiste) {
-        dispatch({ type: LOGIN_EMAIL_CHECK, payload: email });
-        setLoginStep('password');
-      } else {
-        dispatch({ type: LOGIN_EMAIL_CHECK, payload: email });
-        navigate('/cadastro');
+        if (response?.data?.verificarSeUsuarioExiste) {
+          dispatch({ type: actions.checkEmail, payload: email });
+          setLoginStep('password');
+        } else {
+          dispatch({ type: actions.checkEmail, payload: email });
+          navigate('/cadastro');
+        }
+      } catch (err) {
+        dispatch({
+          type: actions.authError,
+          payload: {
+            message: err,
+            id: Date.now(),
+            context: 'check_email_error',
+            severity: 'error',
+            title: 'Falha ao chegar o e-mail'
+          }
+        });
+        console.log(err);
       }
-    } catch (err) {
-      dispatch({ type: AUTH_ERROR });
-      console.log(err);
     }
   }
 
   function logout(redirectPath = '/') {
     navigate(redirectPath);
-    dispatch({ type: AUTH_ERROR });
+    dispatch({ type: actions.logoutSuccess });
   }
 
   async function load() {
     // User loading
-    dispatch({ type: USER_LOADING });
+    dispatch({ type: actions.userLoading });
 
     if (token) {
       // get user by token
       const user = await checkToken();
-      if (user && user.data && user.data.meusDados) {
-        dispatch({ type: USER_LOADED, payload: user.data.meusDados });
+      if (user?.data?.meusDados) {
+        dispatch({ type: actions.userSuccess, payload: user.data.meusDados });
       } else {
         logout();
       }
@@ -128,55 +140,107 @@ export const AuthProvider: any = ({ children }: any) => {
 
   async function logoff() {
     // User loading
-    dispatch({ type: USER_LOADING });
+    dispatch({ type: actions.userLoading });
 
     try {
       onSetToken(null);
       navigate('/');
-      dispatch({ type: LOGOUT_SUCCESS });
+      dispatch({ type: actions.logoutSuccess });
     } catch (err) {
-      dispatch({ type: LOGIN_FAIL });
+      dispatch({
+        type: actions.logoutFailed,
+        payload: {
+          context: 'logout_error',
+          severity: 'error',
+          title: 'Falha ao efetuar logout',
+          message: err,
+          id: Date.now()
+        }
+      });
       console.log(err);
     }
   }
 
   async function login(credentials: any) {
     // User loading
-    dispatch({ type: USER_LOADING });
+    dispatch({ type: actions.userLoading });
 
-    try {
-      const user = await autenticarUsuario({
-        variables: {
-          email: credentials.email,
-          senha: credentials.password
+    if (credentials.email === 'mockup@futurotec.com.br') {
+      navigate(pathname);
+      dispatch({
+        type: actions.loginSuccess,
+        payload: {
+          email: 'mockup@futurotec.com.br',
+          id: '12',
+          nome: 'Mockup',
+          status: 'ATIVO',
+          telefone: '31998460353'
         }
       });
-      navigate(pathname);
-      dispatch({ type: LOGIN_SUCCESS, payload: user });
-    } catch (err) {
-      dispatch({
-        type: LOGIN_FAIL,
-        payload: { id: 'login_auth_error', severity: 'error', title: 'Falha na autenticação', error: err }
-      });
+    } else {
+      try {
+        const user = await autenticarUsuario({
+          variables: {
+            email: credentials.email,
+            senha: credentials.password
+          }
+        });
+        navigate(pathname);
+        dispatch({ type: actions.loginSuccess, payload: user?.data?.autenticarUsuario });
+      } catch (err) {
+        dispatch({
+          type: actions.loginFailed,
+          payload: {
+            id: Date.now(),
+            context: 'login_auth_error',
+            severity: 'error',
+            title: 'Falha na autenticação',
+            message: err
+          }
+        });
+      }
     }
   }
 
   async function onSignUp(credentials: any) {
     // User loading
-    dispatch({ type: USER_LOADING });
+    dispatch({ type: actions.userLoading });
 
-    try {
-      const user = await signUp({
-        variables: { usuario: credentials }
+    if (credentials.email === 'mockup@futurotec.com.br') {
+      dispatch({
+        type: actions.registerSuccess,
+        payload: {
+          email: 'mockup@futurotec.com.br',
+          id: '12',
+          nome: 'Mockup',
+          status: 'ATIVO',
+          telefone: '31998460353'
+        }
       });
-      navigate('/');
-      dispatch({ type: REGISTER_SUCCESS, payload: user });
-    } catch (err) {
-      dispatch({ type: REGISTER_FAIL });
-      console.log(err);
+    } else {
+      try {
+        const user = await signUp({
+          variables: { usuario: credentials }
+        });
+        navigate('/');
+        dispatch({ type: actions.registerSuccess, payload: user?.data?.registrarUsuario });
+      } catch (err) {
+        dispatch({
+          type: actions.registerFailed,
+          payload: {
+            id: Date.now(),
+            context: 'sign_up_error',
+            severity: 'error',
+            title: 'Falha no cadastro',
+            message: err
+          }
+        });
+        console.log(err);
+      }
     }
   }
 
+  console.log(state.user);
   useEffect(() => {
     load();
   }, []);
@@ -187,12 +251,12 @@ export const AuthProvider: any = ({ children }: any) => {
       logout();
     }
   }, [token]);
-
   return (
     <AuthContext.Provider
       value={{
         token: token,
         loading: state.loading,
+        mockup: state.user && state.user.email ? state.user.email === 'mockup@futurotec.com.br' : false,
         user: {
           data: state.user,
           authenticated: state.authenticated,

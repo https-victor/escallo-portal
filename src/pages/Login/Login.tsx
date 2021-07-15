@@ -1,6 +1,5 @@
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { IconButton, InputAdornment, makeStyles, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
@@ -22,7 +21,7 @@ const loginFormValidation = yup.object({
 });
 
 const emailFormInitialValues = {
-  email: 'super@escallo.com.br'
+  email: 'mockup@futurotec.com.br'
 };
 
 const loginFormInitialValues = {
@@ -33,8 +32,8 @@ const loginFormInitialValues = {
 const Login = (): any => {
   const { auth } = useContext(AuthContext);
   const [password, setPassword] = useState('');
-  const { login, loginStep, loginEmail, resetLoginEmail, resetLoginStep, checkEmail, validation } = auth;
-  const { errors, clearAuthError, clearAuthErrors } = validation;
+  const { login, loginStep, loginEmail, resetLoginStep, checkEmail, validation } = auth;
+  const { errors, clearAuthErrors } = validation;
 
   const emailForm = useFormik({
     initialValues: emailFormInitialValues,
@@ -55,6 +54,9 @@ const Login = (): any => {
 
   useEffect(() => {
     loginForm.setFieldValue('email', loginEmail);
+    if (loginEmail === 'mockup@futurotec.com.br') {
+      loginForm.setFieldValue('password', '123123');
+    }
   }, [loginEmail]);
 
   useEffect(() => {

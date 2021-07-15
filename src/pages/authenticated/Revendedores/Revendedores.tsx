@@ -1,42 +1,18 @@
-import { useCallback, useContext, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { AuthContext } from '../../../store/Auth/AuthState';
+import { useContext, useEffect } from 'react';
 import { RevendedoresContext, RevendedoresProvider } from '../../../store/Revendedores/RevendedoresState';
 import { GridOverlay, DataGrid, GridColDef, GridCellParams, useGridSlotComponentProps } from '@material-ui/data-grid';
-import { Button, LinearProgress, makeStyles, Paper, Switch, TextField, Typography } from '@material-ui/core';
-import { FiberManualRecord as FiberManualRecordIcon } from '@material-ui/icons';
-import { red, green } from '@material-ui/core/colors';
+import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import { useFormik } from 'formik';
-import * as yup from 'yup';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { auth } = useContext(AuthContext);
-  const { loading, lista, rows, onUpdateRevendedor, onCreateRevendedor } = useContext(RevendedoresContext);
+  const { loading, rows, onUpdateRevendedor, revendedorForm } = useContext(RevendedoresContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
     setMenu('revendedores');
   }, []);
-  const revendedorFormValidation = yup.object({
-    nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
-    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
-    label: yup.string().required('Digite um label')
-  });
-  const revendedorFormInitialValues = {
-    nome: '',
-    email: '',
-    label: ''
-  };
-  const revendedorForm = useFormik({
-    initialValues: revendedorFormInitialValues,
-    validationSchema: revendedorFormValidation,
-    onSubmit: (values) => {
-      onCreateRevendedor(values);
-    }
-  });
 
   const changeStatus = (id: any) => (params: any) => {
     const status = params.target.checked ? 'ATIVO' : 'INATIVO';
@@ -102,7 +78,7 @@ const Index = (): any => {
     {
       field: 'status',
       headerName: 'Status',
-      width: 120,
+      flex: 1,
       align: 'center',
       headerAlign: 'center',
       renderCell: Status

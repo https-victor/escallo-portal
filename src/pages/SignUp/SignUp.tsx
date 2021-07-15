@@ -31,7 +31,7 @@ const SignUp = (): any => {
   const signUpFormInitialValues = {
     email: loginEmail,
     telefone: '31998460353',
-    nome: 'João',
+    nome: 'Mockup',
     password: '753951',
     confirmPassword: '753951'
   };
