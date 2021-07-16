@@ -1,13 +1,24 @@
 import { useContext, useEffect } from 'react';
-import { RevendedoresContext, RevendedoresProvider } from '../../../store/Revendedores/RevendedoresState';
-import { GridOverlay, DataGrid, GridColDef, GridCellParams, useGridSlotComponentProps } from '@material-ui/data-grid';
+import {
+  RevendedoresContext,
+  RevendedoresProvider,
+  RevendedorType
+} from '../../../store/Revendedores/RevendedoresState';
+import {
+  GridOverlay,
+  DataGrid,
+  GridColDef,
+  GridCellParams,
+  useGridSlotComponentProps,
+  GridEditCellPropsParams
+} from '@material-ui/data-grid';
 import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, rows, onUpdateRevendedor, revendedorForm } = useContext(RevendedoresContext);
+  const { loading, revendedores, onUpdateRevendedor, revendedorForm } = useContext(RevendedoresContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
@@ -16,7 +27,7 @@ const Index = (): any => {
 
   const changeStatus = (id: any) => (params: any) => {
     const status = params.target.checked ? 'ATIVO' : 'INATIVO';
-    onUpdateRevendedor(id, { status: status });
+    onUpdateRevendedor({ id, status: status });
   };
 
   const Status = (params: GridCellParams) => {
@@ -49,10 +60,11 @@ const Index = (): any => {
     );
   }
 
-  const handleEditCellChangeCommitted = ({ id, field, props }: any) => {
+  const handleEditCellChangeCommitted = ({ id, field, props }: GridEditCellPropsParams) => {
     const data = props;
-    if (rows.find((item: any) => item.id === id)[field] !== data.value) {
-      onUpdateRevendedor(id, { [field]: data.value });
+
+    if (revendedores.find((item: RevendedorType) => item.id === id)[field] !== data.value) {
+      onUpdateRevendedor({ id: parseFloat(id as string), [field]: data.value });
     }
   };
 
@@ -88,7 +100,7 @@ const Index = (): any => {
     <Paper className={classes.paper}>
       <div className={classes.container}>
         <DataGrid
-          rows={rows}
+          rows={revendedores}
           autoHeight
           loading={loading}
           components={{

@@ -1,5 +1,5 @@
-import { ActionMap, ClienteType, EditClienteType, ErrorType } from '../../utils/types';
-import { actions } from './ClientesState';
+import { ActionMap, ErrorType } from '../../utils/types';
+import { actions, ClienteType, EditClienteType } from './ClientesState';
 
 export type ClientesType = {
   clientes: ClienteType[];

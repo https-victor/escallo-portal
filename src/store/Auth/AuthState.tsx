@@ -38,6 +38,16 @@ const initialAuthState: AuthType = {
   emailCheckingLoading: false
 };
 
+export type UserType = {
+  email: string;
+  id: string;
+  isSuper: string;
+  chaveExterna: string;
+  nome: string;
+  status: 'ATIVO' | 'INATIVO';
+  telefone: string;
+} | null;
+
 export const AuthContext = createContext<any>(initialAuthState);
 
 export const AuthProvider: any = ({ children }: any) => {
@@ -172,6 +182,8 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
+          isSuper: 'SIM',
+          chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',
           telefone: '31998460353'
@@ -212,6 +224,8 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
+          isSuper: 'SIM',
+          chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',
           telefone: '31998460353'

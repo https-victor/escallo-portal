@@ -1,5 +1,5 @@
-import { ActionMap, ErrorType, UserType } from '../../utils/types';
-import { actions } from './AuthState';
+import { ActionMap, ErrorType } from '../../utils/types';
+import { actions, UserType } from './AuthState';
 
 export type AuthType = {
   user: UserType;

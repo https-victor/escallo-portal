@@ -1,5 +1,5 @@
-import { ActionMap, EditRevendedorType, ErrorType, RevendedorType } from '../../utils/types';
-import { actions } from './RevendedoresState';
+import { ActionMap, ErrorType } from '../../utils/types';
+import { actions, EditRevendedorType, RevendedorType } from './RevendedoresState';
 
 export type RevendedoresType = {
   revendedores: RevendedorType[];

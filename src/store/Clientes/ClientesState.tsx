@@ -7,7 +7,6 @@ import { CLIENTE_CREATE, CLIENTE_EDIT } from '../../graphql/mutations/clientes';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext } from '../Auth/AuthState';
-import { ClienteType } from '../../utils/types';
 
 export enum actions {
   loading = 'LOADING',
@@ -18,6 +17,20 @@ export enum actions {
   create = 'CREATE',
   createFailed = 'CREATE_FAILED'
 }
+
+export type ClienteType = {
+  email: string;
+  id: number;
+  nome: string;
+  status: 'ATIVO' | 'INATIVO';
+};
+
+export type EditClienteType = {
+  email?: string;
+  id: number;
+  nome?: string;
+  status?: 'ATIVO' | 'INATIVO';
+};
 
 const initialClientesState: ClientesType = {
   clientes: [],

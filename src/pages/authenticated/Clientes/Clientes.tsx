@@ -16,7 +16,7 @@ const Index = (): any => {
 
   const changeStatus = (id: number) => (params: any) => {
     const status = params.target.checked ? 'ATIVO' : 'INATIVO';
-    onUpdateCliente(id, { status: status });
+    onUpdateCliente({ id, status: status });
   };
 
   const Status = (params: GridCellParams) => {

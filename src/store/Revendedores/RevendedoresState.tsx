@@ -1,13 +1,14 @@
-import { createContext, useReducer, useEffect, useContext, useState } from 'react';
+import { createContext, useReducer, useEffect, useContext, useState, ReactNode } from 'react';
 import RevendedoresReducer, { RevendedoresType } from './RevendedoresReducer';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { REVENDEDOR_LIST, REVENDEDOR_LIST_STATUS } from '../../graphql/queries/revendedores';
 import { REVENDEDOR_CREATE, REVENDEDOR_EDIT } from '../../graphql/mutations/revendedores';
-import { useFormik } from 'formik';
+import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext } from '../Auth/AuthState';
-import { RevendedorType } from '../../utils/types';
+import { GridRowData } from '@material-ui/data-grid';
+import { Provider } from '../../utils/types';
 
 export enum actions {
   loading = 'LOADING',
@@ -18,6 +19,44 @@ export enum actions {
   create = 'CREATE',
   createFailed = 'CREATE_FAILED'
 }
+
+export type RevendedorType = {
+  email: string;
+  id: number;
+  label: string;
+  nome: string;
+  status: 'ATIVO' | 'INATIVO';
+};
+
+export type RevendedorKey = keyof RevendedorType;
+
+export type EditRevendedorType = {
+  email?: string;
+  id: number;
+  label?: string;
+  nome?: string;
+  status?: 'ATIVO' | 'INATIVO';
+};
+
+export type CreateRevendedorType = {
+  email: string;
+  label: string;
+  nome: string;
+};
+
+type FormikValues = {
+  nome: string;
+  email: string;
+  label: string;
+};
+
+type RevendedorContext = {
+  revendedorForm: FormikProps<FormikValues>;
+  onUpdateRevendedor: (fields: EditRevendedorType) => void;
+  onCreateRevendedor: (fields: CreateRevendedorType) => void;
+  loading: boolean;
+  revendedores: any[];
+};
 
 const initialRevendedoresState: RevendedoresType = {
   revendedores: [],
@@ -49,9 +88,9 @@ const initialMockupState: RevendedorType[] = [
   }
 ];
 
-export const RevendedoresContext = createContext<any>(initialRevendedoresState);
+export const RevendedoresContext = createContext({} as RevendedorContext);
 
-export const RevendedoresProvider: any = ({ children }: any) => {
+export const RevendedoresProvider: any = ({ children }: Provider) => {
   const { mockup } = useContext(AuthContext);
 
   const [state, dispatch] = useReducer(RevendedoresReducer, initialRevendedoresState);
@@ -60,20 +99,6 @@ export const RevendedoresProvider: any = ({ children }: any) => {
   const [createRevendedor] = useMutation(REVENDEDOR_CREATE);
   const queryRevendedores = useImperativeQuery(REVENDEDOR_LIST);
   const queryRevendedoresByStatus = useImperativeQuery(REVENDEDOR_LIST_STATUS);
-
-  const [rows, setRows] = useState(
-    state.revendedores.reduce((total: any, { id, nome, email, label, status }: any) => {
-      return [...total, { id, nome, email, label, status }];
-    }, [])
-  );
-
-  useEffect(() => {
-    setRows(
-      state.revendedores.reduce((total: any, { id, nome, email, label, status }: any) => {
-        return [...total, { id, nome, email, label, status }];
-      }, [])
-    );
-  }, [state.revendedores]);
 
   async function loadRevendedores(status = '') {
     dispatch({ type: actions.loading });
@@ -104,17 +129,17 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onCreateRevendedor(values: any) {
+  async function onCreateRevendedor(fields: CreateRevendedorType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.create,
           payload: {
-            email: values.email,
+            email: fields.email,
             id: Date.now(),
-            label: values.label,
-            nome: values.nome,
+            label: fields.label,
+            nome: fields.nome,
             status: 'ATIVO'
           }
         });
@@ -123,7 +148,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     } else {
       try {
         const createdRevendedor = await createRevendedor({
-          variables: { revendedor: { ...values, status: 'ATIVO' } }
+          variables: { revendedor: { ...fields, status: 'ATIVO' } }
         });
         dispatch({ type: actions.create, payload: createdRevendedor.data.criarRevendedor });
         revendedorForm.resetForm();
@@ -143,14 +168,13 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onUpdateRevendedor(id: any, fields: any) {
+  async function onUpdateRevendedor(fields: EditRevendedorType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.update,
           payload: {
-            id,
             ...fields
           }
         });
@@ -158,7 +182,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     } else {
       try {
         const updatedRevendedor = await updateRevendedor({
-          variables: { revendedor: { id: parseFloat(id), ...fields } }
+          variables: { revendedor: { ...fields } }
         });
         dispatch({ type: actions.update, payload: updatedRevendedor.data.atualizarRevendedor });
       } catch (err) {
@@ -206,7 +230,6 @@ export const RevendedoresProvider: any = ({ children }: any) => {
         onUpdateRevendedor,
         onCreateRevendedor,
         loading: state.loading,
-        rows,
         revendedores: state.revendedores
       }}
     >
