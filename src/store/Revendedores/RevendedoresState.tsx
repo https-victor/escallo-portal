@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect, useContext, useState, ReactNode } from 'react';
+import { createContext, useReducer, useEffect, useContext } from 'react';
 import RevendedoresReducer, { RevendedoresType } from './RevendedoresReducer';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
@@ -7,8 +7,6 @@ import { REVENDEDOR_CREATE, REVENDEDOR_EDIT } from '../../graphql/mutations/reve
 import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext } from '../Auth/AuthState';
-import { GridRowData } from '@material-ui/data-grid';
-import { Provider } from '../../utils/types';
 
 export enum actions {
   loading = 'LOADING',
@@ -50,7 +48,7 @@ type FormikValues = {
   label: string;
 };
 
-type RevendedorContext = {
+type RevendedorContextType = {
   revendedorForm: FormikProps<FormikValues>;
   onUpdateRevendedor: (fields: EditRevendedorType) => void;
   onCreateRevendedor: (fields: CreateRevendedorType) => void;
@@ -88,9 +86,9 @@ const initialMockupState: RevendedorType[] = [
   }
 ];
 
-export const RevendedoresContext = createContext({} as RevendedorContext);
+export const RevendedoresContext = createContext({} as RevendedorContextType);
 
-export const RevendedoresProvider: any = ({ children }: Provider) => {
+export const RevendedoresProvider: any = ({ children }: any) => {
   const { mockup } = useContext(AuthContext);
 
   const [state, dispatch] = useReducer(RevendedoresReducer, initialRevendedoresState);

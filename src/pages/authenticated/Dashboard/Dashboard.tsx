@@ -38,21 +38,36 @@ import {
   Settings as SettingsIcon
 } from '@material-ui/icons';
 import clsx from 'clsx';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router';
+import { useSwitch } from '../../../hooks/generics/useSwitch';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Dashboard = (): any => {
-  const { auth } = useContext(AuthContext);
+  const { auth, onRedirect } = useContext(AuthContext);
   const { title, menuIndex } = useContext(GlobalContext);
   const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+
   const [expandRelatorios, setExpandRelatorios] = useState(false);
+
+  const menuDrawer = useSwitch();
+  const relatoriosCollapse = useSwitch();
+
+  const handleRelatoriosCollapse = () => {
+    if (relatoriosCollapse.state) {
+      navigate('/relatorios');
+    }
+    menuDrawer.onSwitch(true);
+    relatoriosCollapse.onSwitch();
+  };
   const handleDrawerOpen = () => {
-    setOpen(true);
+    menuDrawer.onSwitch(true);
+  };
+  const handleDrawerClose = () => {
+    menuDrawer.onSwitch(false);
   };
 
   const [exitDialog, setExitDialog] = useState(false);
@@ -97,7 +112,7 @@ const Dashboard = (): any => {
 
   const openRelatorio = (relatorio: string, relatorioIndex: any) => () => {
     if (relatorioIndex === menuIndex) {
-      setOpen((prevState: any) => !prevState);
+      menuDrawer.onSwitch();
     } else {
       navigate(`/relatorio/${relatorio}`);
     }
@@ -112,28 +127,28 @@ const Dashboard = (): any => {
       switch (index) {
         case 1:
           if (menuIndex === index) {
-            setOpen((prevState: any) => !prevState);
+            menuDrawer.onSwitch();
           } else {
             goTo('/');
           }
           break;
         case 2:
           if (menuIndex === index) {
-            setOpen((prevState: any) => !prevState);
+            menuDrawer.onSwitch();
           } else {
             goTo('administradores');
           }
           break;
         case 3:
           if (menuIndex === index) {
-            setOpen((prevState: any) => !prevState);
+            menuDrawer.onSwitch();
           } else {
             goTo('revendedores');
           }
           break;
         case 4:
           if (menuIndex === index) {
-            setOpen((prevState: any) => !prevState);
+            menuDrawer.onSwitch();
           } else {
             goTo('clientes');
           }
@@ -148,23 +163,20 @@ const Dashboard = (): any => {
     if (expandRelatorios) {
       navigate('/relatorios');
     }
-    handleDrawerOpen();
+    menuDrawer.onSwitch(true);
     setExpandRelatorios((prevState: any) => !prevState);
-  };
-  const handleDrawerClose = () => {
-    setOpen(false);
   };
 
   return (
     <div className={classes.root}>
-      <AppBar position="fixed" className={clsx(classes.appBar, open && classes.appBarShift)}>
+      <AppBar position="fixed" className={clsx(classes.appBar, menuDrawer.state && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+            className={clsx(classes.menuButton, menuDrawer.state && classes.menuButtonHidden)}
           >
             <MenuIcon />
           </IconButton>
@@ -226,11 +238,11 @@ const Dashboard = (): any => {
       <Drawer
         variant="permanent"
         classes={{
-          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
+          paper: clsx(classes.drawerPaper, !menuDrawer.state && classes.drawerPaperClose)
         }}
-        open={open}
+        open={menuDrawer.state}
       >
-        <div className={clsx(classes.toolbarHeader, !open && classes.toolbarHeaderHidden)}>
+        <div className={clsx(classes.toolbarHeader, !menuDrawer.state && classes.toolbarHeaderHidden)}>
           <div className={clsx(classes.toolbarTitle)}>
             <Typography className={classes.toolbarSubtitle} variant="h6">
               Cartão de Todos
@@ -282,13 +294,13 @@ const Dashboard = (): any => {
                 <ListItemIcon>
                   <QuestionAnswerIcon fontSize="small" color={menuIndex === 5.1 ? 'secondary' : undefined} />
                 </ListItemIcon>
-                <ListItemText primary="081" secondary={open && 'Atendimentos via chat'} />
+                <ListItemText primary="081" secondary={menuDrawer.state && 'Atendimentos via chat'} />
               </ListItem>
               <ListItem button className={classes.nested} onClick={openRelatorio('087', 5.2)}>
                 <ListItemIcon>
                   <SpeakerNotesIcon fontSize="small" color={menuIndex === 5.2 ? 'secondary' : undefined} />
                 </ListItemIcon>
-                <ListItemText primary="087" secondary={open && 'Contatos via chat'} />
+                <ListItemText primary="087" secondary={menuDrawer.state && 'Contatos via chat'} />
               </ListItem>
             </List>
           </Collapse>
@@ -314,7 +326,7 @@ const Dashboard = (): any => {
           <Button onClick={handleExitDialogClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={logoff} color="primary" autoFocus>
+          <Button onClick={() => onRedirect(false)} color="primary" autoFocus>
             Sair
           </Button>
         </DialogActions>

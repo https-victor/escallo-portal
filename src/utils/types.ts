@@ -28,7 +28,3 @@ export type ErrorType = {
   severity: string;
   title: string;
 };
-
-export type Provider = {
-  children: JSX.Element;
-};

@@ -41,7 +41,7 @@ const initialAuthState: AuthType = {
 export type UserType = {
   email: string;
   id: string;
-  isSuper: string;
+  permissoes: string[];
   chaveExterna: string;
   nome: string;
   status: 'ATIVO' | 'INATIVO';
@@ -63,6 +63,12 @@ export const AuthProvider: any = ({ children }: any) => {
   // const [checkEmailQuery, { loading: checkEmailLoading, data: emailExists }] = useLazyQuery(CHECK_EMAIL);
 
   const [pathname, setPathname] = useState('');
+
+  const [redirected, setRedirect] = useState(false);
+
+  function onRedirect(state = true) {
+    setRedirect(state);
+  }
 
   const [loginStep, setLoginStep] = useState('email');
   const navigate = useNavigate();
@@ -141,10 +147,10 @@ export const AuthProvider: any = ({ children }: any) => {
       if (user?.data?.meusDados) {
         dispatch({ type: actions.userSuccess, payload: user.data.meusDados });
       } else {
-        logout();
+        dispatch({ type: actions.logoutSuccess });
       }
     } else {
-      logout();
+      dispatch({ type: actions.logoutSuccess });
     }
   }
 
@@ -182,7 +188,7 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
-          isSuper: 'SIM',
+          permissoes: ['super', 'agente', 'gestor', 'consultor', 'revendedor'],
           chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',
@@ -224,7 +230,7 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
-          isSuper: 'SIM',
+          permissoes: ['super', 'agente', 'consultor', 'revendedor', 'gestor'],
           chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',
@@ -254,7 +260,6 @@ export const AuthProvider: any = ({ children }: any) => {
     }
   }
 
-  console.log(state.user);
   useEffect(() => {
     load();
   }, []);
@@ -262,12 +267,15 @@ export const AuthProvider: any = ({ children }: any) => {
   useEffect(() => {
     if (!token) {
       setPathname(location.pathname);
-      logout();
+      dispatch({ type: actions.logoutSuccess });
     }
   }, [token]);
+
   return (
     <AuthContext.Provider
       value={{
+        redirected,
+        onRedirect,
         token: token,
         loading: state.loading,
         mockup: state.user && state.user.email ? state.user.email === 'mockup@futurotec.com.br' : false,

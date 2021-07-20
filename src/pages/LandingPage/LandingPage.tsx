@@ -1,5 +1,5 @@
 import { Button, makeStyles } from '@material-ui/core';
-import { Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 
 const LandingPage = (): any => {
   const classes = useStyles();
@@ -7,6 +7,7 @@ const LandingPage = (): any => {
   return (
     <div className={classes.root}>
       <h1>Página inicial</h1>
+      <Outlet />
       <Button className={classes.submit} color="primary" variant="contained" onClick={() => navigate('/login')}>
         Entrar
       </Button>

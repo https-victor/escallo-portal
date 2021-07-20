@@ -24,7 +24,7 @@ export const GlobalProvider: any = ({ children, token, onSetToken }: any) => {
         break;
       case 'administradores':
         dispatch({ type: SET_INDEX, payload: 2 });
-        dispatch({ type: SET_TITLE, payload: 'Administradores' });
+        dispatch({ type: SET_TITLE, payload: 'Usuários' });
         break;
       case 'revendedores':
         dispatch({ type: SET_INDEX, payload: 3 });

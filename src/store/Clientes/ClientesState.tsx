@@ -4,7 +4,7 @@ import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { CLIENTE_LIST, CLIENTE_LIST_STATUS } from '../../graphql/queries/clientes';
 import { CLIENTE_CREATE, CLIENTE_EDIT } from '../../graphql/mutations/clientes';
-import { useFormik } from 'formik';
+import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext } from '../Auth/AuthState';
 
@@ -30,6 +30,23 @@ export type EditClienteType = {
   id: number;
   nome?: string;
   status?: 'ATIVO' | 'INATIVO';
+};
+
+export type CreateClienteType = {
+  email: string;
+  nome: string;
+};
+
+type FormikValues = {
+  nome: string;
+  email: string;
+};
+
+type ClienteContextType = {
+  clienteForm: FormikProps<FormikValues>;
+  onUpdateCliente: (fields: EditClienteType) => void;
+  loading: boolean;
+  clientes: any[];
 };
 
 const initialClientesState: ClientesType = {
@@ -59,7 +76,7 @@ const initialMockupState: ClienteType[] = [
   }
 ];
 
-export const ClientesContext = createContext<any>(initialClientesState);
+export const ClientesContext = createContext({} as ClienteContextType);
 
 export const ClientesProvider: any = ({ children }: any) => {
   const { mockup } = useContext(AuthContext);
@@ -70,20 +87,6 @@ export const ClientesProvider: any = ({ children }: any) => {
   const [createCliente] = useMutation(CLIENTE_CREATE);
   const queryClientes = useImperativeQuery(CLIENTE_LIST);
   const queryClientesByStatus = useImperativeQuery(CLIENTE_LIST_STATUS);
-
-  const [rows, setRows] = useState(
-    state.clientes.reduce((total: any, { id, nome, email, status }: any) => {
-      return [...total, { id, nome, email, status }];
-    }, [])
-  );
-
-  useEffect(() => {
-    setRows(
-      state.clientes.reduce((total: any, { id, nome, email, status }: any) => {
-        return [...total, { id, nome, email, status }];
-      }, [])
-    );
-  }, [state.clientes]);
 
   async function loadClientes(status = '') {
     dispatch({ type: actions.loading });
@@ -114,7 +117,7 @@ export const ClientesProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onCreateCliente(values: any) {
+  async function onCreateCliente(values: CreateClienteType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
@@ -152,14 +155,13 @@ export const ClientesProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onUpdateCliente(id: any, fields: any) {
+  async function onUpdateCliente(fields: EditClienteType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.update,
           payload: {
-            id,
             ...fields
           }
         });
@@ -167,7 +169,7 @@ export const ClientesProvider: any = ({ children }: any) => {
     } else {
       try {
         const updatedCliente = await updateCliente({
-          variables: { cliente: { id: parseFloat(id), ...fields } }
+          variables: { cliente: fields }
         });
         dispatch({ type: actions.update, payload: updatedCliente.data.atualizarCliente });
       } catch (err) {
@@ -197,7 +199,7 @@ export const ClientesProvider: any = ({ children }: any) => {
   const clienteForm = useFormik({
     initialValues: clienteFormInitialValues,
     validationSchema: clienteFormValidation,
-    onSubmit: (values) => {
+    onSubmit: (values: CreateClienteType) => {
       onCreateCliente(values);
     }
   });
@@ -212,7 +214,6 @@ export const ClientesProvider: any = ({ children }: any) => {
         onUpdateCliente,
         clienteForm,
         loading: state.loading,
-        rows,
         clientes: state.clientes
       }}
     >

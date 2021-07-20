@@ -1,14 +1,9 @@
 import { Button, Container, IconButton, InputAdornment, makeStyles, TextField, Typography } from '@material-ui/core';
-import { AccountCircle, HighlightOff, Lock, Visibility, VisibilityOff } from '@material-ui/icons';
+import { HighlightOff, Visibility, VisibilityOff } from '@material-ui/icons';
 import { useContext, useEffect, useState } from 'react';
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import FormInput from '../../components/forms/FormInput';
+import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../../store/Auth/AuthState';
-import patterns from '../../utils/patterns';
 import useLocalStorageState from '../../utils/useLocalStorageState';
-import InputMask from 'react-input-mask';
-import { validateConfirmPassword } from '../../utils/validators';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 
@@ -24,9 +19,8 @@ const signUpFormValidation = yup.object({
 });
 
 const SignUp = (): any => {
-  const { auth, user } = useContext(AuthContext);
-  const { authenticated } = user;
-  const { loginEmail, onSignUp, resetLoginEmail, resetLoginStep } = auth;
+  const { auth } = useContext(AuthContext);
+  const { loginEmail, onSignUp, resetLoginStep } = auth;
 
   const signUpFormInitialValues = {
     email: loginEmail,

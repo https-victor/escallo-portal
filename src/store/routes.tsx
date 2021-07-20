@@ -1,9 +1,6 @@
 import { useContext } from 'react';
-import { Route, Navigate, Routes, useRoutes } from 'react-router-dom';
+import { Navigate, useNavigate, useRoutes } from 'react-router-dom';
 import { AuthContext } from './Auth/AuthState';
-import Footer from '../components/layout/Footer';
-import Header from '../components/layout/Header';
-import LoadingSpin from '../components/LoadingSpin';
 import {
   Administradores,
   Clientes,
@@ -11,7 +8,9 @@ import {
   Dashboard,
   LandingPage,
   Login,
+  ModuloSelector,
   NotFound,
+  Portal,
   Profile,
   Relatorio,
   Relatorios,
@@ -21,12 +20,12 @@ import {
 import Home from '../pages/authenticated/Home/Home';
 
 export default function MainRoutes(): any {
-  const { user } = useContext(AuthContext);
+  const { user, redirected } = useContext(AuthContext);
   const { authenticated, loading } = user;
-
+  console.log(authenticated, loading, redirected);
   const mainRoutes = {
     path: '/',
-    element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,
+    element: loading ? <>Carregando</> : authenticated ? redirected ? <Dashboard /> : <Portal /> : <LandingPage />,
     children: authenticated && [
       { path: '/', element: <Home /> },
       { path: '404', element: <NotFound /> },
@@ -41,15 +40,29 @@ export default function MainRoutes(): any {
       { path: '*', element: <Navigate to="/404" /> }
     ]
   };
+
   const otherRoutes = [
     {
-      path: 'login',
+      path: '/login',
       element: authenticated ? <Navigate to="/" /> : <Login />
     },
     {
-      path: 'cadastro',
+      path: '/cadastro',
       element: authenticated ? <Navigate to="/" /> : <SignUp />
     },
+    ...(authenticated && !redirected
+      ? [
+          { path: 'painel', element: <ModuloSelector redirect /> },
+          { path: 'escallo', element: <ModuloSelector redirect /> },
+          { path: 'consultor', element: <ModuloSelector /> },
+          { path: 'revendedor', element: <ModuloSelector /> }
+        ]
+      : [
+          { path: 'painel', element: <Navigate to="/login" /> },
+          { path: 'escallo', element: <Navigate to="/login" /> },
+          { path: 'consultor', element: <Navigate to="/login" /> },
+          { path: 'revendedor', element: <Navigate to="/login" /> }
+        ]),
     ...(authenticated || loading
       ? []
       : [
@@ -58,6 +71,6 @@ export default function MainRoutes(): any {
         ])
   ];
 
-  const routing = useRoutes([mainRoutes, ...otherRoutes]);
+  const routing = useRoutes([mainRoutes, { path: 'teste', element: <>Teste</> }, ...otherRoutes]);
   return <>{routing}</>;
 }

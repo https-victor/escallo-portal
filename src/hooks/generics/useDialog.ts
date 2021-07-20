@@ -1,5 +1,10 @@
 import { useState } from 'react';
 
+type dialogReturn = {
+  mode: string | undefined;
+  onChange: (mode: string | undefined) => void;
+};
+
 /**
  * Hook responsável por controlar o estado de uma dialog/modal.
  * @param {string} initialMode - Modo inicial da Dialog, setado como padrão para string vazia.
@@ -10,7 +15,7 @@ import { useState } from 'react';
  *    dialog.mode
  *    dialog.onChange(true)
  */
-export const useDialog = (initialMode = '') => {
+export const useDialog = (initialMode: string | undefined = undefined): dialogReturn => {
   const [mode, setMode] = useState(initialMode);
 
   /**
@@ -20,11 +25,12 @@ export const useDialog = (initialMode = '') => {
    * @example
    * onChange('help')
    */
-  function onChange(mode: string) {
+  function onChange(mode: string | undefined) {
     setMode(mode);
   }
+
   return {
     mode,
-    onChange,
+    onChange
   };
 };

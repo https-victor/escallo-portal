@@ -7,7 +7,7 @@ import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, rows, onUpdateCliente, clienteForm } = useContext(ClientesContext);
+  const { loading, clientes, onUpdateCliente, clienteForm } = useContext(ClientesContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
@@ -51,8 +51,8 @@ const Index = (): any => {
 
   const handleEditCellChangeCommitted = ({ id, field, props }: any) => {
     const data = props;
-    if (rows.find((item: any) => item.id === id)[field] !== data.value) {
-      onUpdateCliente(id, { [field]: data.value });
+    if (clientes.find((item: any) => item.id === id)[field] !== data.value) {
+      onUpdateCliente({ id, [field]: data.value });
     }
   };
 
@@ -82,7 +82,7 @@ const Index = (): any => {
     <Paper className={classes.paper}>
       <div className={classes.container}>
         <DataGrid
-          rows={rows}
+          rows={clientes}
           autoHeight
           loading={loading}
           components={{
