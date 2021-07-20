@@ -12,9 +12,6 @@ const Portal = (): any => {
   console.log(data.permissoes);
   const classes = useStyles();
 
-  // Função para redirecionar o Super para o dashboard
-  // ModuloSelector  linha 26 e 27
-
   return (
     <Paper className={classes.paper}>
       Portal {user.data.nome}
@@ -30,7 +27,15 @@ const Portal = (): any => {
       <Button color="primary" onClick={() => navigate('/revendedor')}>
         Revendedor
       </Button>
-      {/* Botao SUPER */}
+      <Button
+        color="primary"
+        onClick={() => {
+          navigate('/');
+          onRedirect(true);
+        }}
+      >
+        Super
+      </Button>
     </Paper>
   );
 };
