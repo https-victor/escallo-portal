@@ -23,6 +23,7 @@ const ModuloSelector = ({ redirect }: any): any => {
       }
     } else {
       // state
+      navigate('/');
       onRedirect(true);
     }
   }

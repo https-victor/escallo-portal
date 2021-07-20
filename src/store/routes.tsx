@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { Navigate, useNavigate, useRoutes } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { AuthContext } from './Auth/AuthState';
 import {
   Administradores,
@@ -23,6 +23,8 @@ export default function MainRoutes(): any {
   const { user, redirected } = useContext(AuthContext);
   const { authenticated, loading } = user;
   console.log(authenticated, loading, redirected);
+  const location = useLocation();
+  console.log(location.pathname);
   const mainRoutes = {
     path: '/',
     element: loading ? <>Carregando</> : authenticated ? redirected ? <Dashboard /> : <Portal /> : <LandingPage />,
