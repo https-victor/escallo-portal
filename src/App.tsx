@@ -13,7 +13,9 @@ import { ptBR } from '@material-ui/data-grid';
 // import { ptBR } from '@material-ui/data-grid';
 
 export const App = (): any => {
-  const [globalToken, setToken, refreshToken] = useLocalStorageState('token', null);
+  const [globalToken, setToken] = useLocalStorageState('token', null);
+
+  const [apiConfig, setApiConfig] = useLocalStorageState('apiConfig', null);
 
   function onSetToken(token: any) {
     setToken(token);
@@ -43,8 +45,8 @@ export const App = (): any => {
   });
   const authMiddleware = new ApolloLink((operation: any, forward: any): any => {
     // add the authorization to the headers
-
-    if (refreshToken()) {
+    console.log(apiConfig);
+    if (globalToken) {
       operation.setContext(({ headers = {} }: any) => ({
         headers: {
           ...headers,
@@ -83,7 +85,7 @@ export const App = (): any => {
       <CssBaseline />
       <GlobalCss />
       <ThemeProvider theme={theme}>
-        <GlobalProvider token={globalToken} onSetToken={onSetToken}>
+        <GlobalProvider apiConfig={apiConfig} setApiConfig={setApiConfig} token={globalToken} onSetToken={onSetToken}>
           <ApolloProvider client={client}>
             <AuthProvider>
               <div className="App">

@@ -13,7 +13,7 @@ const initialState = { globalErrors: [], title: 'Início', menuIndex: 1 };
 
 export const GlobalContext = createContext<any>(initialState);
 
-export const GlobalProvider: any = ({ children, token, onSetToken }: any) => {
+export const GlobalProvider: any = ({ children, token, onSetToken, apiConfig, setApiConfig }: any) => {
   const [state, dispatch] = useReducer(GlobalReducer, initialState);
 
   function setMenu(pagina = 'inicio') {
@@ -37,6 +37,26 @@ export const GlobalProvider: any = ({ children, token, onSetToken }: any) => {
       case 'relatorios':
         dispatch({ type: SET_INDEX, payload: 5 });
         dispatch({ type: SET_TITLE, payload: 'Relatórios' });
+        break;
+      case 'portal':
+        dispatch({ type: SET_INDEX, payload: 0 });
+        dispatch({ type: SET_TITLE, payload: 'Portal' });
+        break;
+      case 'painel':
+        dispatch({ type: SET_INDEX, payload: 0 });
+        dispatch({ type: SET_TITLE, payload: 'Painel' });
+        break;
+      case 'escallo':
+        dispatch({ type: SET_INDEX, payload: 0 });
+        dispatch({ type: SET_TITLE, payload: 'Escallo' });
+        break;
+      case 'consultor':
+        dispatch({ type: SET_INDEX, payload: 0 });
+        dispatch({ type: SET_TITLE, payload: 'Consultor' });
+        break;
+      case 'revendedor':
+        dispatch({ type: SET_INDEX, payload: 0 });
+        dispatch({ type: SET_TITLE, payload: 'Revendedor' });
         break;
       case 'perfil':
         dispatch({ type: SET_INDEX, payload: 0 });
@@ -83,6 +103,8 @@ export const GlobalProvider: any = ({ children, token, onSetToken }: any) => {
     <GlobalContext.Provider
       value={{
         token,
+        apiConfig,
+        setApiConfig,
         title: state.title,
         setTitle,
         setMenu,

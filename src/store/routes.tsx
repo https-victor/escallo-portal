@@ -22,23 +22,35 @@ import Home from '../pages/authenticated/Home/Home';
 export default function MainRoutes(): any {
   const { user, redirected } = useContext(AuthContext);
   const { authenticated, loading } = user;
-  console.log(authenticated, loading, redirected);
   const location = useLocation();
-  console.log(location.pathname);
   const mainRoutes = {
     path: '/',
-    element: loading ? <>Carregando</> : authenticated ? redirected ? <Dashboard /> : <Portal /> : <LandingPage />,
+    element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,
     children: authenticated && [
-      { path: '/', element: <Home /> },
+      ...(redirected
+        ? [
+            { path: '/', element: <Home /> },
+            { path: 'revendedores', element: <Revendedores /> },
+            { path: 'clientes', element: <Clientes /> },
+            { path: 'administradores', element: <Administradores /> },
+            { path: 'perfil', element: <Profile /> }
+          ]
+        : [
+            {
+              path: '/',
+              element: <Portal />
+            },
+            { path: 'painel', element: <ModuloSelector redirect /> },
+            { path: 'escallo', element: <ModuloSelector redirect /> },
+            { path: 'consultor', element: <ModuloSelector /> },
+            { path: 'revendedor', element: <ModuloSelector /> },
+            { path: 'perfil', element: <Navigate to="/" /> },
+            { path: 'revendedores', element: <Navigate to="/" /> },
+            { path: 'clientes', element: <Navigate to="/" /> },
+            { path: 'administradores', element: <Navigate to="/" /> }
+          ]),
       { path: '404', element: <NotFound /> },
-      { path: 'revendedores', element: <Revendedores /> },
-      { path: 'clientes', element: <Clientes /> },
       { path: 'configuracoes', element: <Configuracoes /> },
-      { path: 'administradores', element: <Administradores /> },
-      { path: 'relatorio/:id', element: <Relatorio /> },
-      { path: 'relatorios', element: <Relatorios /> },
-      { path: 'perfil', element: <Profile /> },
-      { path: 'relatorio', element: <Navigate to="/relatorios" /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   };
@@ -52,22 +64,15 @@ export default function MainRoutes(): any {
       path: '/cadastro',
       element: authenticated ? <Navigate to="/" /> : <SignUp />
     },
-    ...(authenticated && !redirected
-      ? [
-          { path: 'painel', element: <ModuloSelector redirect /> },
-          { path: 'escallo', element: <ModuloSelector redirect /> },
-          { path: 'consultor', element: <ModuloSelector /> },
-          { path: 'revendedor', element: <ModuloSelector /> }
-        ]
-      : [
-          { path: 'painel', element: <Navigate to="/login" /> },
-          { path: 'escallo', element: <Navigate to="/login" /> },
-          { path: 'consultor', element: <Navigate to="/login" /> },
-          { path: 'revendedor', element: <Navigate to="/login" /> }
-        ]),
     ...(authenticated || loading
       ? []
       : [
+          { path: 'painel', element: <Navigate to="/" /> },
+          { path: 'escallo', element: <Navigate to="/" /> },
+          { path: 'cosultor', element: <Navigate to="/" /> },
+          { path: 'revendedor', element: <Navigate to="/" /> },
+          { path: 'configuracoes', element: <Navigate to="/" /> },
+          { path: 'perfil', element: <Navigate to="/" /> },
           { path: '*', element: <Navigate to="/404" /> },
           { path: '404', element: <NotFound /> }
         ])

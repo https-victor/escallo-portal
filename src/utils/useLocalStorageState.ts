@@ -1,41 +1,27 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 
-type Response<T> = [T, Dispatch<SetStateAction<T>>, any];
-
-function useLocalStorageState<T>(key: string, initialState: T): Response<T> {
+function useLocalStorageState<T>(key: string, initialState: T): any {
   const [state, setState] = useState(() => {
     const storageValue = localStorage.getItem(key);
     if (storageValue) {
       return JSON.parse(storageValue);
     } else {
+      if (initialState !== null) {
+        localStorage.setItem(key, JSON.stringify(initialState));
+      }
       return initialState;
     }
   });
 
-  function refresh(initialValues = false) {
-    const storageValue = localStorage.getItem(key);
-    if (storageValue) {
-      setState(JSON.parse(storageValue));
-      return JSON.parse(storageValue);
-    } else {
-      if (initialValues) {
-        setState(initialState);
-        return initialState;
-      } else {
-        setState(null);
-        return null;
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (state !== null) {
-      localStorage.setItem(key, JSON.stringify(state));
+  function onSet(value: any) {
+    if (value !== null) {
+      localStorage.setItem(key, JSON.stringify(value));
     } else {
       localStorage.removeItem(key);
     }
-  }, [key, state]);
+    setState(value);
+  }
 
-  return [state, setState, refresh];
+  return [state, onSet];
 }
 export default useLocalStorageState;

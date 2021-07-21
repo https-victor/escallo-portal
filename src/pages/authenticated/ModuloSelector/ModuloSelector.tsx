@@ -10,28 +10,51 @@ const ModuloSelector = ({ redirect }: any): any => {
   const navigate = useNavigate();
   const classes = useStyles();
   const location = useLocation();
-  console.log(location.pathname);
-
-  console.log(redirect);
-  function onSelect() {
-    if (redirect) {
-      // url
-      if (location.pathname === '/painel') {
-        window.location.href = 'http://clinicadofuturo.vpn.ftec.us/escallo/atendimento/';
-      } else {
-        window.location.href = 'http://clinicadofuturo.vpn.ftec.us/escallo/admin/';
-      }
-    } else {
-      // state
-      navigate('/');
-      onRedirect(true);
+  const { data } = user;
+  const clientes = user?.data?.permissoes.map((permissao: any) => permissao.cliente !== null && permissao.cliente);
+  const revendedores = user?.data?.permissoes.map(
+    (permissao: any) => permissao.revendedor !== null && permissao.revendedor
+  );
+  console.log(clientes, revendedores, location.pathname);
+  useEffect(() => {
+    switch (location.pathname) {
+      case '/painel':
+        setMenu('painel');
+        break;
+      case '/escallo':
+        setMenu('escallo');
+        break;
+      case '/consultor':
+        setMenu('consultor');
+        break;
+      case '/revendedor':
+        setMenu('revendedor');
+        break;
+      default:
+        setMenu('portal');
+        break;
     }
-  }
+  }, []);
+
+  // const isModuloCliente = Boolean(path === '/painel' || path === '/escallo');
+  //       if (isModuloCliente) {
+  //         const host = dados.clientes.find(id).host;
+  //         if (path === '/painel') {
+  //           window.location.href = `${host}escallo/atendimento`;
+  //         } else {
+  //           window.location.href = `${host}escallo/admin`;
+  //         }
+  //       } else {
+  //         setApiConfig({ cliente: dados.clientes.find(id).id, revendedor: dados.revendedores.find(id).id });
+  //         navigate('/');
+  //         onRedirect(true);
+  //       }
+
   return (
-    <Paper className={classes.paper}>
-      Select {location.pathname}
-      <Button onClick={onSelect}>Selecionar</Button>
-    </Paper>
+    <div className={classes.paper}>
+      {/* clientes/revendedores.map... */}
+      {/* <Paper onClick={FunçãoParaRedirecionar(id)}> </Paper> */}
+    </div>
   );
 };
 
@@ -39,8 +62,7 @@ const useStyles = makeStyles((theme: any) => ({
   paper: {
     margin: theme.spacing(3),
     padding: theme.spacing(3),
-    display: 'flex',
-    flexDirection: 'column'
+    display: 'flex'
   }
 }));
 

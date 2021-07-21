@@ -45,11 +45,12 @@ import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Dashboard = (): any => {
-  const { auth, onRedirect } = useContext(AuthContext);
-  const { title, menuIndex } = useContext(GlobalContext);
+  const { auth, onRedirect, redirected, user } = useContext(AuthContext);
+  const { title, menuIndex, apiConfig } = useContext(GlobalContext);
   const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
+  console.log('requisição', apiConfig);
 
   const [expandRelatorios, setExpandRelatorios] = useState(false);
 
@@ -171,15 +172,26 @@ const Dashboard = (): any => {
     <div className={classes.root}>
       <AppBar position="fixed" className={clsx(classes.appBar, menuDrawer.state && classes.appBarShift)}>
         <Toolbar className={classes.toolbar}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, menuDrawer.state && classes.menuButtonHidden)}
-          >
-            <MenuIcon />
-          </IconButton>
+          {redirected ? (
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              className={clsx(classes.menuButton, menuDrawer.state && classes.menuButtonHidden)}
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <IconButton
+              color="inherit"
+              onClick={() => {
+                navigate('/');
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+          )}
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {title}
           </Typography>
@@ -211,6 +223,9 @@ const Dashboard = (): any => {
             <MenuItem onClick={handleConfigMenuClose('configuracoes')}>Configurações</MenuItem>
           </Menu>
           <Divider className={classes.divider} orientation="vertical" flexItem />
+          <Typography className={classes.toolbarSubtitle} variant="subtitle2">
+            {user.data.nome}
+          </Typography>
           <IconButton onClick={handleProfileMenuClick} color="inherit">
             <AccountCircleIcon />
           </IconButton>
@@ -230,82 +245,95 @@ const Dashboard = (): any => {
             open={Boolean(profileMenu)}
             onClose={handleProfileMenuClose()}
           >
-            <MenuItem onClick={handleProfileMenuClose('perfil')}>Perfil</MenuItem>
+            {redirected && <MenuItem onClick={handleProfileMenuClose('perfil')}>Perfil</MenuItem>}
+            {redirected && (
+              <MenuItem
+                onClick={() => {
+                  setProfileMenu(null);
+                  menuDrawer.onSwitch(false);
+                  onRedirect(false);
+                }}
+              >
+                Escolher módulos
+              </MenuItem>
+            )}
             <MenuItem onClick={handleExitDialogClickOpen}>Sair</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: clsx(classes.drawerPaper, !menuDrawer.state && classes.drawerPaperClose)
-        }}
-        open={menuDrawer.state}
-      >
-        <div className={clsx(classes.toolbarHeader, !menuDrawer.state && classes.toolbarHeaderHidden)}>
-          <div className={clsx(classes.toolbarTitle)}>
-            <Typography className={classes.toolbarSubtitle} variant="h6">
-              Cartão de Todos
-            </Typography>
-            <Typography className={classes.toolbarSubtitle} variant="subtitle2">
-              Vale do aço
-            </Typography>
+      {redirected && (
+        <Drawer
+          variant="permanent"
+          classes={{
+            paper: clsx(classes.drawerPaper, !menuDrawer.state && classes.drawerPaperClose)
+          }}
+          open={menuDrawer.state}
+        >
+          <div className={clsx(classes.toolbarHeader, !menuDrawer.state && classes.toolbarHeaderHidden)}>
+            <div className={clsx(classes.toolbarTitle)}>
+              <Typography className={classes.toolbarSubtitle} variant="h6">
+                Cartão de Todos
+              </Typography>
+              <Typography className={classes.toolbarSubtitle} variant="subtitle2">
+                Vale do aço
+              </Typography>
+            </div>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
           </div>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List className={classes.list}>
-          <ListItem button onClick={openMenuOption(1)}>
-            <ListItemIcon>
-              <DashboardIcon color={menuIndex === 1 ? 'secondary' : undefined} />
-            </ListItemIcon>
-            <ListItemText primary="Início" />
-          </ListItem>
-          <ListItem button onClick={openMenuOption(2)}>
-            <ListItemIcon>
-              <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
-            </ListItemIcon>
-            <ListItemText primary="Administradores" />
-          </ListItem>
-          <ListItem button onClick={openMenuOption(3)}>
-            <ListItemIcon>
-              <StoreIcon color={menuIndex === 3 ? 'secondary' : undefined} />
-            </ListItemIcon>
-            <ListItemText primary="Revendedores" />
-          </ListItem>
-          <ListItem button onClick={openMenuOption(4)}>
-            <ListItemIcon>
-              <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
-            </ListItemIcon>
-            <ListItemText primary="Clientes" />
-          </ListItem>
-          <ListItem button onClick={openRelatorios}>
-            <ListItemIcon>
-              <BarChartIcon color={Math.floor(menuIndex) === 5 ? 'secondary' : undefined} />
-            </ListItemIcon>
-            <ListItemText primary="Relatórios" />
-            {expandRelatorios ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </ListItem>
-          <Collapse in={expandRelatorios} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem button className={classes.nested} onClick={openRelatorio('081', 5.1)}>
-                <ListItemIcon>
-                  <QuestionAnswerIcon fontSize="small" color={menuIndex === 5.1 ? 'secondary' : undefined} />
-                </ListItemIcon>
-                <ListItemText primary="081" secondary={menuDrawer.state && 'Atendimentos via chat'} />
-              </ListItem>
-              <ListItem button className={classes.nested} onClick={openRelatorio('087', 5.2)}>
-                <ListItemIcon>
-                  <SpeakerNotesIcon fontSize="small" color={menuIndex === 5.2 ? 'secondary' : undefined} />
-                </ListItemIcon>
-                <ListItemText primary="087" secondary={menuDrawer.state && 'Contatos via chat'} />
-              </ListItem>
-            </List>
-          </Collapse>
-        </List>
-      </Drawer>
+          <Divider />
+          <List className={classes.list}>
+            <ListItem button onClick={openMenuOption(1)}>
+              <ListItemIcon>
+                <DashboardIcon color={menuIndex === 1 ? 'secondary' : undefined} />
+              </ListItemIcon>
+              <ListItemText primary="Início" />
+            </ListItem>
+            <ListItem button onClick={openMenuOption(2)}>
+              <ListItemIcon>
+                <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
+              </ListItemIcon>
+              <ListItemText primary="Administradores" />
+            </ListItem>
+            <ListItem button onClick={openMenuOption(3)}>
+              <ListItemIcon>
+                <StoreIcon color={menuIndex === 3 ? 'secondary' : undefined} />
+              </ListItemIcon>
+              <ListItemText primary="Revendedores" />
+            </ListItem>
+            <ListItem button onClick={openMenuOption(4)}>
+              <ListItemIcon>
+                <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+              </ListItemIcon>
+              <ListItemText primary="Clientes" />
+            </ListItem>
+            <ListItem button onClick={openRelatorios}>
+              <ListItemIcon>
+                <BarChartIcon color={Math.floor(menuIndex) === 5 ? 'secondary' : undefined} />
+              </ListItemIcon>
+              <ListItemText primary="Relatórios" />
+              {expandRelatorios ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+            </ListItem>
+            <Collapse in={expandRelatorios} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                <ListItem button className={classes.nested} onClick={openRelatorio('081', 5.1)}>
+                  <ListItemIcon>
+                    <QuestionAnswerIcon fontSize="small" color={menuIndex === 5.1 ? 'secondary' : undefined} />
+                  </ListItemIcon>
+                  <ListItemText primary="081" secondary={menuDrawer.state && 'Atendimentos via chat'} />
+                </ListItem>
+                <ListItem button className={classes.nested} onClick={openRelatorio('087', 5.2)}>
+                  <ListItemIcon>
+                    <SpeakerNotesIcon fontSize="small" color={menuIndex === 5.2 ? 'secondary' : undefined} />
+                  </ListItemIcon>
+                  <ListItemText primary="087" secondary={menuDrawer.state && 'Contatos via chat'} />
+                </ListItem>
+              </List>
+            </Collapse>
+          </List>
+        </Drawer>
+      )}
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Outlet />
@@ -326,7 +354,7 @@ const Dashboard = (): any => {
           <Button onClick={handleExitDialogClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => onRedirect(false)} color="primary" autoFocus>
+          <Button onClick={logoff} color="primary" autoFocus>
             Sair
           </Button>
         </DialogActions>
