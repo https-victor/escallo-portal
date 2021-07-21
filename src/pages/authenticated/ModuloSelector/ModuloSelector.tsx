@@ -1,21 +1,24 @@
-import { Button, makeStyles, Paper } from '@material-ui/core';
+import { Button, makeStyles, Paper, Typography } from '@material-ui/core';
 import { useContext, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const ModuloSelector = ({ redirect }: any): any => {
-  const { setMenu } = useContext(GlobalContext);
+  const { setMenu, setApiConfig } = useContext(GlobalContext);
   const { user, onRedirect } = useContext(AuthContext);
   const navigate = useNavigate();
   const classes = useStyles();
   const location = useLocation();
   const { data } = user;
   const clientes = user?.data?.permissoes.map((permissao: any) => permissao.cliente !== null && permissao.cliente);
+
+  console.log(user?.data?.permissoes);
+
   const revendedores = user?.data?.permissoes.map(
     (permissao: any) => permissao.revendedor !== null && permissao.revendedor
   );
-  console.log(clientes, revendedores, location.pathname);
+  const { pathname } = location;
   useEffect(() => {
     switch (location.pathname) {
       case '/painel':
@@ -36,24 +39,39 @@ const ModuloSelector = ({ redirect }: any): any => {
     }
   }, []);
 
-  // const isModuloCliente = Boolean(path === '/painel' || path === '/escallo');
-  //       if (isModuloCliente) {
-  //         const host = dados.clientes.find(id).host;
-  //         if (path === '/painel') {
-  //           window.location.href = `${host}escallo/atendimento`;
-  //         } else {
-  //           window.location.href = `${host}escallo/admin`;
-  //         }
-  //       } else {
-  //         setApiConfig({ cliente: dados.clientes.find(id).id, revendedor: dados.revendedores.find(id).id });
-  //         navigate('/');
-  //         onRedirect(true);
-  //       }
+  const isModuloCliente = Boolean(pathname === '/painel' || pathname === '/escallo');
+
+  function onClick(id: number): any {
+    return () => {
+      if (isModuloCliente) {
+        const host = clientes.find(({ id: clienteId }: any) => id === clienteId).host;
+        if (pathname === '/painel') {
+          window.location.href = `${host}escallo/atendimento`;
+        } else {
+          window.location.href = `${host}escallo/admin`;
+        }
+      } else {
+        // const selectedPermissao = user?.data?.permissoes.find(({ revendedor }: any) => revendedor.id === id);
+        setApiConfig({
+          cliente: null,
+          revendedor: id,
+          permissao: pathname === '/consultor' ? 'consultor' : 'revendedor'
+        });
+        navigate('/');
+        onRedirect(true);
+      }
+    };
+  }
 
   return (
     <div className={classes.paper}>
-      {/* clientes/revendedores.map... */}
-      {/* <Paper onClick={FunçãoParaRedirecionar(id)}> </Paper> */}
+      {(isModuloCliente ? clientes : revendedores).map((cliente: any) => {
+        return (
+          <Paper className={classes.paper} key={cliente.id} onClick={onClick(cliente.id)}>
+            <Typography variant="subtitle2">{cliente.nome}</Typography>
+          </Paper>
+        );
+      })}
     </div>
   );
 };
