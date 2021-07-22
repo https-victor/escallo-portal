@@ -46,32 +46,65 @@ const Portal = (): any => {
       }
     };
   }
+  const permissoes = data.permissoes
+    .map((perm: any) => perm.permissao)
+    .map((e: any, i: number, final: any) => final.indexOf(e) === i && e)
+    .filter((e: any) => e);
 
   return (
-    <Paper className={classes.paper}>
-      <Button color="primary" onClick={checkBeforeRedirect('/painel')}>
-        Painel
-      </Button>
-      <Button color="primary" onClick={checkBeforeRedirect('/escallo')}>
-        Escallo
-      </Button>
-      <Button color="primary" onClick={checkBeforeRedirect('/consultor')}>
-        Consultor
-      </Button>
-      <Button color="primary" onClick={checkBeforeRedirect('/revendedor')}>
-        Revendedor
-      </Button>
-      <Button
-        color="primary"
-        onClick={() => {
-          navigate('/');
-          onRedirect(true);
-        }}
-      >
-        Super
-      </Button>
+    <div>
+      <Paper className={classes.paper}>
+        {permissoes.map(
+          (permissao: any) =>
+            (permissao === 'agente' && (
+              <Button color="primary" onClick={checkBeforeRedirect('/painel')}>
+                Painel
+              </Button>
+            )) ||
+            (permissao === 'gestor' && [
+              <Button color="primary" key={0} onClick={checkBeforeRedirect('/revendedor')}>
+                Relatórios
+              </Button>,
+              <Button color="primary" key={1} onClick={checkBeforeRedirect('/escallo')}>
+                Escallo
+              </Button>
+            ])
+        )}
+      </Paper>
+      <Paper className={classes.paper}>
+        {permissoes.map(
+          (permissao: any) =>
+            (permissao === 'consultor' && (
+              <Button color="primary" onClick={checkBeforeRedirect('/consultor')}>
+                Consultor
+              </Button>
+            )) ||
+            (permissao === 'revendedor' && (
+              <Button color="primary" onClick={checkBeforeRedirect('/revendedor')}>
+                Revendedor
+              </Button>
+            ))
+        )}
+      </Paper>
+      <Paper className={classes.paper}>
+        {permissoes.map(
+          (permissao: any) =>
+            permissao === 'super' && (
+              <Button
+                color="primary"
+                onClick={() => {
+                  setApiConfig({ cliente: null, revendedor: null, permissao: 'super' });
+                  navigate('/');
+                  onRedirect(true);
+                }}
+              >
+                Super
+              </Button>
+            )
+        )}
+      </Paper>
       <Outlet />
-    </Paper>
+    </div>
   );
 };
 
