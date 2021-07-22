@@ -15,17 +15,17 @@ const ModuloSelector = ({ redirect }: any): any => {
 
   useEffect(() => {
     switch (pathname) {
-      case '/painel':
-        setMenu('painel');
+      case '/agente':
+        setMenu('agente');
         break;
-      case '/escallo':
-        setMenu('escallo');
+      case '/gestor':
+        setMenu('gestor');
         break;
       case '/consultor':
         setMenu('consultor');
         break;
-      case '/revendedor':
-        setMenu('revendedor');
+      case '/diretor':
+        setMenu('diretor');
         break;
       default:
         setMenu('portal');
@@ -33,15 +33,15 @@ const ModuloSelector = ({ redirect }: any): any => {
     }
   }, []);
 
-  const isModuloCliente = Boolean(pathname === '/painel' || pathname === '/escallo');
+  const isModuloCliente = Boolean(pathname === '/agente' || pathname === '/gestor');
 
-  const auxCliente = pathname === '/painel' ? 'agente' : 'gestor';
+  const auxCliente = pathname === '/agente' ? 'agente' : 'gestor';
 
   const clientes = user?.data?.permissoes
     .filter((permissao: any) => permissao.cliente !== null && permissao.permissao === auxCliente && permissao.cliente)
     .map((permissao: any) => permissao.cliente);
 
-  const auxRevendedor = pathname === '/consultor' ? 'consultor' : 'revendedor';
+  const auxRevendedor = pathname === '/consultor' ? 'consultor' : 'diretor';
 
   const revendedores = user?.data?.permissoes
     .filter(

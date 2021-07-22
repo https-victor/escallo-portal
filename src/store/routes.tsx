@@ -35,7 +35,7 @@ export default function MainRoutes(): any {
             { path: '/', element: <Home /> },
             permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
             permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
-            permissao === 'revendedor' && { path: 'consultores', element: <Consultores /> },
+            permissao === 'diretor' && { path: 'consultores', element: <Consultores /> },
             { path: 'perfil', element: <Profile /> }
           ]
         : [
@@ -43,10 +43,10 @@ export default function MainRoutes(): any {
               path: '/',
               element: <Portal />
             },
-            { path: 'painel', element: <ModuloSelector redirect /> },
-            { path: 'escallo', element: <ModuloSelector redirect /> },
+            { path: 'agente', element: <ModuloSelector redirect /> },
+            { path: 'gestor', element: <ModuloSelector redirect /> },
             { path: 'consultor', element: <ModuloSelector /> },
-            { path: 'revendedor', element: <ModuloSelector /> },
+            { path: 'diretor', element: <ModuloSelector /> },
             { path: 'perfil', element: <Navigate to="/" /> },
             { path: 'revendedores', element: <Navigate to="/" /> },
             { path: 'clientes', element: <Navigate to="/" /> },
@@ -70,10 +70,10 @@ export default function MainRoutes(): any {
     ...(authenticated || loading
       ? []
       : [
-          { path: 'painel', element: <Navigate to="/" /> },
-          { path: 'escallo', element: <Navigate to="/" /> },
-          { path: 'cosultor', element: <Navigate to="/" /> },
-          { path: 'revendedor', element: <Navigate to="/" /> },
+          { path: 'agente', element: <Navigate to="/" /> },
+          { path: 'gestor', element: <Navigate to="/" /> },
+          { path: 'consultor', element: <Navigate to="/" /> },
+          { path: 'diretor', element: <Navigate to="/" /> },
           { path: 'configuracoes', element: <Navigate to="/" /> },
           { path: 'perfil', element: <Navigate to="/" /> },
           { path: '*', element: <Navigate to="/404" /> },

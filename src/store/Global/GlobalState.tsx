@@ -42,21 +42,21 @@ export const GlobalProvider: any = ({ children, token, onSetToken, apiConfig, se
         dispatch({ type: SET_INDEX, payload: 0 });
         dispatch({ type: SET_TITLE, payload: 'Portal' });
         break;
-      case 'painel':
+      case 'agente':
         dispatch({ type: SET_INDEX, payload: 0 });
-        dispatch({ type: SET_TITLE, payload: 'Painel' });
+        dispatch({ type: SET_TITLE, payload: 'Agente' });
         break;
-      case 'escallo':
+      case 'gestor':
         dispatch({ type: SET_INDEX, payload: 0 });
-        dispatch({ type: SET_TITLE, payload: 'Escallo' });
+        dispatch({ type: SET_TITLE, payload: 'Gestor' });
         break;
       case 'consultor':
         dispatch({ type: SET_INDEX, payload: 0 });
         dispatch({ type: SET_TITLE, payload: 'Consultor' });
         break;
-      case 'revendedor':
+      case 'diretor':
         dispatch({ type: SET_INDEX, payload: 0 });
-        dispatch({ type: SET_TITLE, payload: 'Revendedor' });
+        dispatch({ type: SET_TITLE, payload: 'Diretor' });
         break;
       case 'perfil':
         dispatch({ type: SET_INDEX, payload: 0 });
