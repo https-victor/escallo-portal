@@ -19,27 +19,25 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
   );
 
   function checkIsMultiPermissao() {
-    const auxCliente = path === '/painel' ? 'agente' : 'gestor';
-
     const clientes = user?.data?.permissoes.reduce((total: any, current: any) => {
-      if (current.cliente && current.permissao !== auxCliente) {
+      if (current.cliente && current.permissao === getPermissao()) {
         return [...total, current.cliente];
       }
       return total;
     }, []);
 
-    const auxRevendedor = path === '/consultor' ? 'consultor' : 'revendedor';
-
     const revendedores = user?.data?.permissoes.reduce((total: any, current: any) => {
-      if (current.revendedor && current.permissao !== auxRevendedor) {
+      if (current.revendedor && current.permissao === getPermissao()) {
         return [...total, current.revendedor];
       }
       return total;
     }, []);
 
     if (path === '/painel' || path === '/escallo') {
+      console.log(clientes);
       return clientes.length > 1;
     } else {
+      console.log(revendedores);
       return revendedores.length > 1;
     }
   }
@@ -61,22 +59,32 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
         return 'agente';
     }
   }
-  const cliente = !id
-    ? data?.permissoes.find((permissao: any) => permissao?.revendedor?.id === dados.revendedores[0].id)?.cliente?.id
-    : data?.permissoes.find((permissao: any) => permissao?.revendedor?.id === id)?.cliente?.id;
-  const revendedor = portal ? dados.revendedores[0].id : id;
-  const permissao = getPermissao();
+
+  function getApiConfig() {
+    if (id) {
+      if (isModuloCliente) {
+        const revendedorId = data?.permissoes.find((permissao: any) => permissao?.cliente?.id === id)?.revendedor?.id;
+        return { cliente: id, revendedor: revendedorId };
+      } else {
+        return { cliente: null, revendedor: id };
+      }
+    } else {
+      const permissao = data?.permissoes.find((permissao: any) => permissao?.permissao === getPermissao());
+
+      return {
+        cliente: isModuloCliente ? (permissao.cliente ? permissao.cliente.id : null) : null,
+        revendedor: permissao.revendedor ? permissao.revendedor.id : null,
+        permissao: getPermissao()
+      };
+    }
+  }
 
   function navigateIsMulti() {
     navigate(path);
   }
 
   function navigateRevendedores() {
-    setApiConfig({
-      cliente,
-      revendedor,
-      permissao
-    });
+    setApiConfig(getApiConfig());
     navigate('/');
     onRedirect(true);
   }
@@ -89,8 +97,8 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
       color="primary"
       {...(isMulti && portal
         ? { onClick: navigateIsMulti }
-        : isModuloCliente
-        ? { target: '_blank', href: `${host}escallo/${path === '/painel' ? 'atendimento' : 'admin'}` }
+        : path === '/painel'
+        ? { target: '_blank', href: `${host}escallo/atendimento` }
         : { onClick: navigateRevendedores })}
     >
       {children}
@@ -119,6 +127,9 @@ const Portal = (): any => {
     <Paper elevation={0} className={classes.paper}>
       {(permissoes.includes('agente') || permissoes.includes('gestor')) && (
         <Grid justify="center" container spacing={4}>
+          <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
+            Cliente
+          </Typography>
           {permissoes.includes('agente') && (
             <Grid item xs={4}>
               <Card elevation={5} className={classes.root}>
@@ -162,7 +173,7 @@ const Portal = (): any => {
                 <Card elevation={5} className={classes.root}>
                   <CardContent className={classes.center}>
                     <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
-                      Escallo
+                      Gestor
                     </Typography>
                   </CardContent>
                   <CardActions className={classes.center}>
@@ -177,6 +188,10 @@ const Portal = (): any => {
 
       {(permissoes.includes('consultor') || permissoes.includes('revendedor')) && (
         <Grid justify="center" container spacing={4}>
+          <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
+            Revendedor
+          </Typography>
+
           {permissoes.includes('consultor') && (
             <Grid item xs={4}>
               <Card elevation={5} className={classes.root}>
@@ -196,7 +211,7 @@ const Portal = (): any => {
               <Card elevation={5} className={classes.root}>
                 <CardContent className={classes.center}>
                   <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
-                    Revendedor
+                    Gestor
                   </Typography>
                 </CardContent>
                 <CardActions className={classes.center}>
@@ -210,6 +225,9 @@ const Portal = (): any => {
 
       {permissoes.includes('super') && (
         <Grid justify="center" container spacing={4}>
+          <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
+            Super
+          </Typography>
           <Grid item xs={4}>
             <Card elevation={5} className={classes.root}>
               <CardContent className={classes.center}>
