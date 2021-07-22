@@ -21,18 +21,21 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
   function checkIsMultiPermissao() {
     const auxCliente = path === '/painel' ? 'agente' : 'gestor';
 
-    const clientes = user?.data?.permissoes
-      .filter((permissao: any) => permissao.cliente !== null && permissao.permissao === auxCliente && permissao.cliente)
-      .map((permissao: any) => permissao.cliente);
+    const clientes = user?.data?.permissoes.reduce((total: any, current: any) => {
+      if (current.cliente && current.permissao !== auxCliente) {
+        return [...total, current.cliente];
+      }
+      return total;
+    }, []);
 
     const auxRevendedor = path === '/consultor' ? 'consultor' : 'revendedor';
 
-    const revendedores = user?.data?.permissoes
-      .filter(
-        (permissao: any) =>
-          permissao.revendedor !== null && permissao.permissao === auxRevendedor && permissao.revendedor
-      )
-      .map((permissao: any) => permissao.revendedor);
+    const revendedores = user?.data?.permissoes.reduce((total: any, current: any) => {
+      if (current.revendedor && current.permissao !== auxRevendedor) {
+        return [...total, current.revendedor];
+      }
+      return total;
+    }, []);
 
     if (path === '/painel' || path === '/escallo') {
       return clientes.length > 1;
@@ -40,6 +43,7 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
       return revendedores.length > 1;
     }
   }
+
   const isMulti = checkIsMultiPermissao();
   const isModuloCliente = Boolean(path === '/painel' || path === '/escallo');
 
