@@ -10,15 +10,8 @@ const ModuloSelector = ({ redirect }: any): any => {
   const navigate = useNavigate();
   const classes = useStyles();
   const location = useLocation();
-  const { data } = user;
-  const clientes = user?.data?.permissoes.map((permissao: any) => permissao.cliente !== null && permissao.cliente);
-
-  console.log(user?.data?.permissoes);
-
-  const revendedores = user?.data?.permissoes.map(
-    (permissao: any) => permissao.revendedor !== null && permissao.revendedor
-  );
   const { pathname } = location;
+
   useEffect(() => {
     switch (location.pathname) {
       case '/painel':
@@ -41,6 +34,20 @@ const ModuloSelector = ({ redirect }: any): any => {
 
   const isModuloCliente = Boolean(pathname === '/painel' || pathname === '/escallo');
 
+  const auxCliente = pathname === '/painel' ? 'agente' : 'gestor';
+
+  const clientes = user?.data?.permissoes
+    .filter((permissao: any) => permissao.cliente !== null && permissao.permissao === auxCliente && permissao.cliente)
+    .map((permissao: any) => permissao.cliente);
+
+  const auxRevendedor = pathname === '/consultor' ? 'consultor' : 'revendedor';
+
+  const revendedores = user?.data?.permissoes
+    .filter(
+      (permissao: any) => permissao.revendedor !== null && permissao.permissao === auxRevendedor && permissao.revendedor
+    )
+    .map((permissao: any) => permissao.revendedor);
+
   function onClick(id: number): any {
     return () => {
       if (isModuloCliente) {
@@ -51,11 +58,10 @@ const ModuloSelector = ({ redirect }: any): any => {
           window.location.href = `${host}escallo/admin`;
         }
       } else {
-        // const selectedPermissao = user?.data?.permissoes.find(({ revendedor }: any) => revendedor.id === id);
         setApiConfig({
           cliente: null,
           revendedor: id,
-          permissao: pathname === '/consultor' ? 'consultor' : 'revendedor'
+          permissao: auxRevendedor
         });
         navigate('/');
         onRedirect(true);
@@ -65,10 +71,10 @@ const ModuloSelector = ({ redirect }: any): any => {
 
   return (
     <div className={classes.paper}>
-      {(isModuloCliente ? clientes : revendedores).map((cliente: any) => {
+      {(isModuloCliente ? clientes : revendedores).map((selected: any) => {
         return (
-          <Paper className={classes.paper} key={cliente.id} onClick={onClick(cliente.id)}>
-            <Typography variant="subtitle2">{cliente.nome}</Typography>
+          <Paper className={classes.paper} key={selected.id} onClick={onClick(selected.id)}>
+            <Typography variant="subtitle2">{selected.nome}</Typography>
           </Paper>
         );
       })}
