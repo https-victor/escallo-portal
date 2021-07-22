@@ -22,9 +22,9 @@ export const GlobalProvider: any = ({ children, token, onSetToken, apiConfig, se
         dispatch({ type: SET_INDEX, payload: 1 });
         dispatch({ type: SET_TITLE, payload: 'Início' });
         break;
-      case 'administradores':
+      case 'consultores':
         dispatch({ type: SET_INDEX, payload: 2 });
-        dispatch({ type: SET_TITLE, payload: 'Usuários' });
+        dispatch({ type: SET_TITLE, payload: 'Consultores' });
         break;
       case 'revendedores':
         dispatch({ type: SET_INDEX, payload: 3 });

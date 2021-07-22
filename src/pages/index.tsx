@@ -7,11 +7,11 @@ import Portal from './authenticated/Portal/Portal';
 import ModuloSelector from './authenticated/ModuloSelector/ModuloSelector';
 import Relatorio from './authenticated/Relatorio/Relatorio';
 import Relatorios from './authenticated/Relatorios/Relatorios';
-import Administradores from './authenticated/Administradores/Administradores';
 import SignUp from './SignUp/SignUp';
 import Clientes from './authenticated/Clientes/Clientes';
 import Configuracoes from './authenticated/Configuracoes/Configuracoes';
 import Revendedores from './authenticated/Revendedores/Revendedores';
+import Consultores from './authenticated/Consultores/Consultores';
 
 export {
   SignUp,
@@ -22,7 +22,7 @@ export {
   Revendedores,
   Relatorio,
   Relatorios,
-  Administradores,
+  Consultores,
   Profile,
   NotFound,
   Login,
