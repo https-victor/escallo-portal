@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Navigate, useLocation, useNavigate, useRoutes } from 'react-router-dom';
 import { AuthContext } from './Auth/AuthState';
 import {
-  Administradores,
+  Consultores,
   Clientes,
   Configuracoes,
   Dashboard,
@@ -18,11 +18,14 @@ import {
   SignUp
 } from '../pages';
 import Home from '../pages/authenticated/Home/Home';
+import { GlobalContext } from './Global/GlobalState';
 
 export default function MainRoutes(): any {
   const { user, redirected } = useContext(AuthContext);
+  const { apiConfig } = useContext(GlobalContext);
   const { authenticated, loading } = user;
   const location = useLocation();
+  const permissao = apiConfig?.permissao;
   const mainRoutes = {
     path: '/',
     element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,
@@ -30,9 +33,9 @@ export default function MainRoutes(): any {
       ...(redirected
         ? [
             { path: '/', element: <Home /> },
-            { path: 'revendedores', element: <Revendedores /> },
-            { path: 'clientes', element: <Clientes /> },
-            { path: 'administradores', element: <Administradores /> },
+            permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
+            permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
+            permissao === 'revendedor' && { path: 'consultores', element: <Consultores /> },
             { path: 'perfil', element: <Profile /> }
           ]
         : [
@@ -47,7 +50,7 @@ export default function MainRoutes(): any {
             { path: 'perfil', element: <Navigate to="/" /> },
             { path: 'revendedores', element: <Navigate to="/" /> },
             { path: 'clientes', element: <Navigate to="/" /> },
-            { path: 'administradores', element: <Navigate to="/" /> }
+            { path: 'consultores', element: <Navigate to="/" /> }
           ]),
       { path: '404', element: <NotFound /> },
       { path: 'configuracoes', element: <Configuracoes /> },

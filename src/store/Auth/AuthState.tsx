@@ -51,7 +51,7 @@ export type UserType = {
 export const AuthContext = createContext<any>(initialAuthState);
 
 export const AuthProvider: any = ({ children }: any) => {
-  const { token, onSetToken } = useContext(GlobalContext);
+  const { token, onSetToken, setApiConfig } = useContext(GlobalContext);
   const location = useLocation();
 
   const [state, dispatch] = useReducer(AuthReducer, initialAuthState);
@@ -160,6 +160,7 @@ export const AuthProvider: any = ({ children }: any) => {
 
     try {
       onSetToken(null);
+      setApiConfig(null);
       navigate('/');
       dispatch({ type: actions.logoutSuccess });
     } catch (err) {
@@ -213,6 +214,11 @@ export const AuthProvider: any = ({ children }: any) => {
               permissao: 'gestor',
               cliente: { id: 5, nome: 'cliente5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
               revendedor: { id: 5, nome: 'revendedor5' }
+            },
+            {
+              permissao: 'gestor',
+              cliente: { id: 6, nome: 'cliente6', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+              revendedor: { id: 6, nome: 'revendedor6' }
             }
           ],
           chaveExterna: 'chave123',
