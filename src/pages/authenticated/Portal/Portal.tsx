@@ -62,9 +62,9 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
     if (id) {
       if (isModuloCliente) {
         const revendedorId = data?.permissoes.find((permissao: any) => permissao?.cliente?.id === id)?.revendedor?.id;
-        return { cliente: id, revendedor: revendedorId };
+        return { cliente: id, revendedor: revendedorId, permissao: getPermissao() };
       } else {
-        return { cliente: null, revendedor: id };
+        return { cliente: null, revendedor: id, permissao: getPermissao() };
       }
     } else {
       const permissao = data?.permissoes.find((permissao: any) => permissao?.permissao === getPermissao());

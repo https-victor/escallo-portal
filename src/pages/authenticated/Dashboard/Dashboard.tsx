@@ -147,10 +147,11 @@ const Dashboard = (): any => {
           }
           break;
         case 2:
+        case 6:
           if (menuIndex === index) {
             menuDrawer.onSwitch();
           } else {
-            goTo('consultores');
+            goTo('usuarios');
           }
           break;
         case 3:
@@ -165,6 +166,13 @@ const Dashboard = (): any => {
             menuDrawer.onSwitch();
           } else {
             goTo('clientes');
+          }
+          break;
+        case 5:
+          if (menuIndex === index) {
+            menuDrawer.onSwitch();
+          } else {
+            goTo('escallo');
           }
           break;
         default:
@@ -318,14 +326,15 @@ const Dashboard = (): any => {
               </ListItemIcon>
               <ListItemText primary="Início" />
             </ListItem>
-            {permissao === 'revendedor' && (
-              <ListItem button onClick={openMenuOption(2)}>
-                <ListItemIcon>
-                  <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
-                </ListItemIcon>
-                <ListItemText primary="Consultores" />
-              </ListItem>
-            )}
+            {permissao === 'gestor' ||
+              (permissao === 'diretor' && (
+                <ListItem button onClick={openMenuOption(2)}>
+                  <ListItemIcon>
+                    <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
+                  </ListItemIcon>
+                  <ListItemText primary="Usuários" />
+                </ListItem>
+              ))}
             {permissao === 'super' && (
               <ListItem button onClick={openMenuOption(3)}>
                 <ListItemIcon>
@@ -340,6 +349,22 @@ const Dashboard = (): any => {
                   <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
                 </ListItemIcon>
                 <ListItemText primary="Clientes" />
+              </ListItem>
+            )}
+            {permissao === 'gestor' && (
+              <ListItem button onClick={openMenuOption(5)}>
+                <ListItemIcon>
+                  <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+                </ListItemIcon>
+                <ListItemText primary="Escallo" />
+              </ListItem>
+            )}
+            {permissao === 'gestor' && (
+              <ListItem button onClick={openMenuOption(6)}>
+                <ListItemIcon>
+                  <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+                </ListItemIcon>
+                <ListItemText primary="Usuários" />
               </ListItem>
             )}
             {/* <ListItem button onClick={openRelatorios}>

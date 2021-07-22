@@ -26,6 +26,11 @@ export default function MainRoutes(): any {
   const { authenticated, loading } = user;
   const location = useLocation();
   const permissao = apiConfig?.permissao;
+  const { cliente: clienteId, revendedor: revendedorId } = apiConfig || {};
+  console.log(permissao);
+
+  const host = user?.data?.permissoes.find((permissao: any) => permissao.cliente.id === clienteId)?.cliente?.host;
+  console.log(host);
   const mainRoutes = {
     path: '/',
     element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,
@@ -33,6 +38,7 @@ export default function MainRoutes(): any {
       ...(redirected
         ? [
             { path: '/', element: <Home /> },
+            permissao === 'gestor' && { path: 'escallo', element: <Navigate to="https://www.google.com" /> },
             permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
             permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
             permissao === 'diretor' && { path: 'consultores', element: <Consultores /> },
@@ -48,6 +54,7 @@ export default function MainRoutes(): any {
             { path: 'consultor', element: <ModuloSelector /> },
             { path: 'diretor', element: <ModuloSelector /> },
             { path: 'perfil', element: <Navigate to="/" /> },
+            { path: 'escallo', element: <Navigate to="/" /> },
             { path: 'revendedores', element: <Navigate to="/" /> },
             { path: 'clientes', element: <Navigate to="/" /> },
             { path: 'consultores', element: <Navigate to="/" /> }
