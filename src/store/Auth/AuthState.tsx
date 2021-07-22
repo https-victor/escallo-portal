@@ -48,6 +48,44 @@ export type UserType = {
   telefone: string;
 } | null;
 
+const mockupPermissoes = [
+  {
+    permissao: 'super',
+    cliente: { id: 1, nome: 'Cliente 1', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 1, nome: 'Revendedor 1' }
+  },
+  {
+    permissao: 'agente',
+    cliente: { id: 2, nome: 'Cliente 2', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 2, nome: 'Revendedor 2' }
+  },
+  {
+    permissao: 'consultor',
+    cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 3, nome: 'Revendedor 3' }
+  },
+  {
+    permissao: 'consultor',
+    cliente: { id: 3, nome: 'Cliente 3', host: 'http://clinicadofuturo-hmg.vpn.ftec.us/' },
+    revendedor: { id: 6, nome: 'Revendedor 6' }
+  },
+  {
+    permissao: 'revendedor',
+    cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 4, nome: 'Revendedor 4' }
+  },
+  {
+    permissao: 'gestor',
+    cliente: { id: 5, nome: 'Cliente 5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 5, nome: 'Revendedor 5' }
+  },
+  {
+    permissao: 'gestor',
+    cliente: { id: 6, nome: 'Cliente 6', host: 'http://clinicadofuturo-hmg.vpn.ftec.us/' },
+    revendedor: { id: 6, nome: 'Revendedor 6' }
+  }
+];
+
 export const AuthContext = createContext<any>(initialAuthState);
 
 export const AuthProvider: any = ({ children }: any) => {
@@ -161,6 +199,7 @@ export const AuthProvider: any = ({ children }: any) => {
     try {
       onSetToken(null);
       setApiConfig(null);
+      onRedirect(false);
       navigate('/');
       dispatch({ type: actions.logoutSuccess });
     } catch (err) {
@@ -189,38 +228,7 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
-          permissoes: [
-            {
-              permissao: 'super',
-              cliente: { id: 1, nome: 'cliente1', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 1, nome: 'revendedor1' }
-            },
-            {
-              permissao: 'agente',
-              cliente: { id: 2, nome: 'cliente2', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 2, nome: 'revendedor2' }
-            },
-            {
-              permissao: 'consultor',
-              cliente: { id: 3, nome: 'cliente3', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 3, nome: 'revendedor3' }
-            },
-            {
-              permissao: 'revendedor',
-              cliente: { id: 4, nome: 'cliente4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 4, nome: 'revendedor4' }
-            },
-            {
-              permissao: 'gestor',
-              cliente: { id: 5, nome: 'cliente5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 5, nome: 'revendedor5' }
-            },
-            {
-              permissao: 'gestor',
-              cliente: { id: 6, nome: 'cliente6', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 6, nome: 'revendedor6' }
-            }
-          ],
+          permissoes: mockupPermissoes,
           chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',
@@ -262,33 +270,7 @@ export const AuthProvider: any = ({ children }: any) => {
         payload: {
           email: 'mockup@futurotec.com.br',
           id: '12',
-          permissoes: [
-            {
-              permissao: 'super',
-              cliente: { id: 1, nome: 'cliente1', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 1, nome: 'revendedor1' }
-            },
-            {
-              permissao: 'agente',
-              cliente: { id: 2, nome: 'cliente2', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 2, nome: 'revendedor2' }
-            },
-            {
-              permissao: 'consultor',
-              cliente: { id: 3, nome: 'cliente3', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 3, nome: 'revendedor3' }
-            },
-            {
-              permissao: 'revendedor',
-              cliente: { id: 4, nome: 'cliente4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 4, nome: 'revendedor4' }
-            },
-            {
-              permissao: 'gestor',
-              cliente: { id: 5, nome: 'cliente5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
-              revendedor: { id: 5, nome: 'revendedor5' }
-            }
-          ],
+          permissoes: mockupPermissoes,
           chaveExterna: 'chave123',
           nome: 'Mockup',
           status: 'ATIVO',

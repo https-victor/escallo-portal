@@ -39,23 +39,35 @@ import {
 } from '@material-ui/icons';
 import clsx from 'clsx';
 import { useContext, useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router';
+import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useSwitch } from '../../../hooks/generics/useSwitch';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 
 const Dashboard = (): any => {
   const { auth, onRedirect, redirected, user } = useContext(AuthContext);
-  const { title, menuIndex, apiConfig } = useContext(GlobalContext);
+  const { title, menuIndex, apiConfig, setApiConfig } = useContext(GlobalContext);
+  const { data } = user;
+  const { permissoes } = data;
+
   const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
+  const location = useLocation();
+  const { pathname } = location;
 
-  const permissao = apiConfig?.permissao;
+  const { permissao, cliente: clienteId, revendedor: revendedorId } = apiConfig || {};
+
+  const cliente = permissoes.find((permissao: any) => permissao?.cliente?.id === clienteId)?.cliente;
+  const revendedor = permissoes.find((permissao: any) => permissao?.revendedor?.id === revendedorId)?.revendedor;
 
   // const [expandRelatorios, setExpandRelatorios] = useState(false);
 
-  const menuDrawer = useSwitch();
+  const menuDrawer = useSwitch(redirected ? true : false);
+
+  useEffect(() => {
+    menuDrawer.onSwitch(redirected);
+  }, [redirected]);
   // const relatoriosCollapse = useSwitch();
 
   // const handleRelatoriosCollapse = () => {
@@ -184,14 +196,16 @@ const Dashboard = (): any => {
               <MenuIcon />
             </IconButton>
           ) : (
-            <IconButton
-              color="inherit"
-              onClick={() => {
-                navigate('/');
-              }}
-            >
-              <ChevronLeftIcon />
-            </IconButton>
+            pathname !== '/' && (
+              <IconButton
+                color="inherit"
+                onClick={() => {
+                  navigate('/');
+                }}
+              >
+                <ChevronLeftIcon />
+              </IconButton>
+            )
           )}
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             {title}
@@ -225,7 +239,7 @@ const Dashboard = (): any => {
           </Menu>
           <Divider className={classes.divider} orientation="vertical" flexItem />
           <Typography className={classes.toolbarSubtitle} variant="subtitle2">
-            {user.data.nome}
+            {user?.data?.nome}
           </Typography>
           <IconButton onClick={handleProfileMenuClick} color="inherit">
             <AccountCircleIcon />
@@ -250,6 +264,7 @@ const Dashboard = (): any => {
             {redirected && (
               <MenuItem
                 onClick={() => {
+                  setApiConfig(null);
                   setProfileMenu(null);
                   menuDrawer.onSwitch(false);
                   onRedirect(false);
@@ -272,12 +287,24 @@ const Dashboard = (): any => {
         >
           <div className={clsx(classes.toolbarHeader, !menuDrawer.state && classes.toolbarHeaderHidden)}>
             <div className={clsx(classes.toolbarTitle)}>
-              <Typography className={classes.toolbarSubtitle} variant="h6">
-                Cartão de Todos
-              </Typography>
-              <Typography className={classes.toolbarSubtitle} variant="subtitle2">
-                Vale do aço
-              </Typography>
+              {revendedor || cliente ? (
+                <>
+                  {revendedor && (
+                    <Typography className={classes.toolbarSubtitle} variant="h6">
+                      {revendedor.nome}
+                    </Typography>
+                  )}
+                  {cliente && (
+                    <Typography className={classes.toolbarSubtitle} variant="subtitle2">
+                      {cliente.nome}
+                    </Typography>
+                  )}{' '}
+                </>
+              ) : (
+                <Typography className={classes.toolbarSubtitle} variant="h6">
+                  Administrador
+                </Typography>
+              )}
             </div>
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />

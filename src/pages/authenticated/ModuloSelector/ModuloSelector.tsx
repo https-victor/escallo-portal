@@ -1,8 +1,9 @@
-import { Button, makeStyles, Paper, Typography } from '@material-ui/core';
+import { Button, Card, CardActions, CardContent, Grid, makeStyles, Paper, Typography } from '@material-ui/core';
 import { useContext, useEffect } from 'react';
 import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
+import { LinkPortal } from '../Portal/Portal';
 
 const ModuloSelector = ({ redirect }: any): any => {
   const { setMenu, setApiConfig } = useContext(GlobalContext);
@@ -13,7 +14,7 @@ const ModuloSelector = ({ redirect }: any): any => {
   const { pathname } = location;
 
   useEffect(() => {
-    switch (location.pathname) {
+    switch (pathname) {
       case '/painel':
         setMenu('painel');
         break;
@@ -48,46 +49,59 @@ const ModuloSelector = ({ redirect }: any): any => {
     )
     .map((permissao: any) => permissao.revendedor);
 
-  function onClick(id: number): any {
-    return () => {
-      if (isModuloCliente) {
-        const host = clientes.find(({ id: clienteId }: any) => id === clienteId).host;
-        if (pathname === '/painel') {
-          window.location.href = `${host}escallo/atendimento`;
-        } else {
-          window.location.href = `${host}escallo/admin`;
-        }
-      } else {
-        setApiConfig({
-          cliente: null,
-          revendedor: id,
-          permissao: auxRevendedor
-        });
-        navigate('/');
-        onRedirect(true);
-      }
-    };
-  }
-
   return (
-    <div className={classes.paper}>
-      {(isModuloCliente ? clientes : revendedores).map((selected: any) => {
-        return (
-          <Paper className={classes.paper} key={selected.id} onClick={onClick(selected.id)}>
-            <Typography variant="subtitle2">{selected.nome}</Typography>
-          </Paper>
-        );
-      })}
-    </div>
+    <Paper elevation={0} className={classes.paper}>
+      <Grid justify="center" container spacing={4}>
+        {(isModuloCliente ? clientes : revendedores).map((selected: any) => {
+          return (
+            <Grid key={selected.id} item xs={4}>
+              <Card elevation={5} className={classes.root}>
+                <CardContent className={classes.center}>
+                  <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
+                    {selected.nome}
+                  </Typography>
+                </CardContent>
+                <CardActions className={classes.center}>
+                  <LinkPortal portal={false} id={selected.id} path={pathname}>
+                    Acessar
+                  </LinkPortal>
+                </CardActions>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+    </Paper>
+
+    // <div className={classes.paper}>
+    //   {(isModuloCliente ? clientes : revendedores).map((selected: any) => {
+    //     return (
+    //       <Paper className={classes.paper} key={selected.id} onClick={onClick(selected.id)}>
+    //         <Typography variant="subtitle2">{selected.nome}</Typography>
+    //       </Paper>
+    //     );
+    //   })}
+    // </div>
   );
 };
 
 const useStyles = makeStyles((theme: any) => ({
   paper: {
     margin: theme.spacing(3),
-    padding: theme.spacing(3),
-    display: 'flex'
-  }
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  center: { justifyContent: 'center', textAlign: 'center' },
+  button: {
+    minWidth: '35%',
+    marginBottom: theme.spacing(2)
+  },
+  root: {
+    margin: theme.spacing(3)
+  },
+  title: {}
 }));
 
 export default ModuloSelector;
