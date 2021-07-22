@@ -50,20 +50,21 @@ const Dashboard = (): any => {
   const { logoff } = auth;
   const navigate = useNavigate();
   const classes = useStyles();
-  console.log('requisição', apiConfig);
 
-  const [expandRelatorios, setExpandRelatorios] = useState(false);
+  const permissao = apiConfig?.permissao;
+
+  // const [expandRelatorios, setExpandRelatorios] = useState(false);
 
   const menuDrawer = useSwitch();
-  const relatoriosCollapse = useSwitch();
+  // const relatoriosCollapse = useSwitch();
 
-  const handleRelatoriosCollapse = () => {
-    if (relatoriosCollapse.state) {
-      navigate('/relatorios');
-    }
-    menuDrawer.onSwitch(true);
-    relatoriosCollapse.onSwitch();
-  };
+  // const handleRelatoriosCollapse = () => {
+  //   if (relatoriosCollapse.state) {
+  //     navigate('/relatorios');
+  //   }
+  //   menuDrawer.onSwitch(true);
+  //   relatoriosCollapse.onSwitch();
+  // };
   const handleDrawerOpen = () => {
     menuDrawer.onSwitch(true);
   };
@@ -111,13 +112,13 @@ const Dashboard = (): any => {
       setProfileMenu(null);
     };
 
-  const openRelatorio = (relatorio: string, relatorioIndex: any) => () => {
-    if (relatorioIndex === menuIndex) {
-      menuDrawer.onSwitch();
-    } else {
-      navigate(`/relatorio/${relatorio}`);
-    }
-  };
+  // const openRelatorio = (relatorio: string, relatorioIndex: any) => () => {
+  //   if (relatorioIndex === menuIndex) {
+  //     menuDrawer.onSwitch();
+  //   } else {
+  //     navigate(`/relatorio/${relatorio}`);
+  //   }
+  // };
 
   const goTo = (path = '/') => {
     navigate(path);
@@ -137,7 +138,7 @@ const Dashboard = (): any => {
           if (menuIndex === index) {
             menuDrawer.onSwitch();
           } else {
-            goTo('administradores');
+            goTo('consultores');
           }
           break;
         case 3:
@@ -160,13 +161,13 @@ const Dashboard = (): any => {
     };
   }
 
-  const openRelatorios = () => {
-    if (expandRelatorios) {
-      navigate('/relatorios');
-    }
-    menuDrawer.onSwitch(true);
-    setExpandRelatorios((prevState: any) => !prevState);
-  };
+  // const openRelatorios = () => {
+  //   if (expandRelatorios) {
+  //     navigate('/relatorios');
+  //   }
+  //   menuDrawer.onSwitch(true);
+  //   setExpandRelatorios((prevState: any) => !prevState);
+  // };
 
   return (
     <div className={classes.root}>
@@ -290,25 +291,31 @@ const Dashboard = (): any => {
               </ListItemIcon>
               <ListItemText primary="Início" />
             </ListItem>
-            <ListItem button onClick={openMenuOption(2)}>
-              <ListItemIcon>
-                <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
-              </ListItemIcon>
-              <ListItemText primary="Administradores" />
-            </ListItem>
-            <ListItem button onClick={openMenuOption(3)}>
-              <ListItemIcon>
-                <StoreIcon color={menuIndex === 3 ? 'secondary' : undefined} />
-              </ListItemIcon>
-              <ListItemText primary="Revendedores" />
-            </ListItem>
-            <ListItem button onClick={openMenuOption(4)}>
-              <ListItemIcon>
-                <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
-              </ListItemIcon>
-              <ListItemText primary="Clientes" />
-            </ListItem>
-            <ListItem button onClick={openRelatorios}>
+            {permissao === 'revendedor' && (
+              <ListItem button onClick={openMenuOption(2)}>
+                <ListItemIcon>
+                  <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
+                </ListItemIcon>
+                <ListItemText primary="Consultores" />
+              </ListItem>
+            )}
+            {permissao === 'super' && (
+              <ListItem button onClick={openMenuOption(3)}>
+                <ListItemIcon>
+                  <StoreIcon color={menuIndex === 3 ? 'secondary' : undefined} />
+                </ListItemIcon>
+                <ListItemText primary="Revendedores" />
+              </ListItem>
+            )}
+            {permissao === 'consultor' && (
+              <ListItem button onClick={openMenuOption(4)}>
+                <ListItemIcon>
+                  <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+                </ListItemIcon>
+                <ListItemText primary="Clientes" />
+              </ListItem>
+            )}
+            {/* <ListItem button onClick={openRelatorios}>
               <ListItemIcon>
                 <BarChartIcon color={Math.floor(menuIndex) === 5 ? 'secondary' : undefined} />
               </ListItemIcon>
@@ -330,7 +337,7 @@ const Dashboard = (): any => {
                   <ListItemText primary="087" secondary={menuDrawer.state && 'Contatos via chat'} />
                 </ListItem>
               </List>
-            </Collapse>
+            </Collapse> */}
           </List>
         </Drawer>
       )}
