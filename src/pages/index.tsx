@@ -11,7 +11,7 @@ import SignUp from './SignUp/SignUp';
 import Clientes from './authenticated/Clientes/Clientes';
 import Configuracoes from './authenticated/Configuracoes/Configuracoes';
 import Revendedores from './authenticated/Revendedores/Revendedores';
-import Consultores from './authenticated/Consultores/Consultores';
+import Usuarios from './authenticated/Usuarios/Usuarios';
 
 export {
   SignUp,
@@ -22,7 +22,7 @@ export {
   Revendedores,
   Relatorio,
   Relatorios,
-  Consultores,
+  Usuarios,
   Profile,
   NotFound,
   Login,

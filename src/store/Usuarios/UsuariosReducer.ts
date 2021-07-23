@@ -1,25 +1,25 @@
 import { ActionMap, ErrorType } from '../../utils/types';
-import { actions, ConsultorType, EditConsultorType } from './ConsultoresState';
+import { actions, UsuarioType, EditUsuarioType } from './UsuariosState';
 
-export type ConsultoresType = {
-  consultores: ConsultorType[];
+export type UsuariosType = {
+  usuarios: UsuarioType[];
   loading: boolean;
   errors: ErrorType[];
 };
 
-type ConsultoresPayload = {
+type UsuariosPayload = {
   [actions.loading]: undefined;
-  [actions.loadSuccess]: ConsultorType[];
+  [actions.loadSuccess]: UsuarioType[];
   [actions.loadFailed]: ErrorType;
-  [actions.update]: EditConsultorType;
+  [actions.update]: EditUsuarioType;
   [actions.updateFailed]: ErrorType;
-  [actions.create]: ConsultorType;
+  [actions.create]: UsuarioType;
   [actions.createFailed]: ErrorType;
 };
 
-export type ConsultorsActions = ActionMap<ConsultoresPayload>[keyof ActionMap<ConsultoresPayload>];
+export type UsuariosActions = ActionMap<UsuariosPayload>[keyof ActionMap<UsuariosPayload>];
 
-export default (state: ConsultoresType, action: ConsultorsActions): ConsultoresType => {
+export default (state: UsuariosType, action: UsuariosActions): UsuariosType => {
   switch (action.type) {
     case actions.loading:
       return {
@@ -30,12 +30,12 @@ export default (state: ConsultoresType, action: ConsultorsActions): ConsultoresT
       return {
         ...state,
         loading: false,
-        consultores: action.payload
+        usuarios: action.payload
       };
     case actions.loadFailed:
       return {
         ...state,
-        consultores: [],
+        usuarios: [],
         loading: false,
         errors: action.payload
           ? [...state.errors.filter((error: ErrorType) => error.id != action.payload.id), action.payload]
@@ -51,21 +51,21 @@ export default (state: ConsultoresType, action: ConsultorsActions): ConsultoresT
           : [...state.errors]
       };
     case actions.update: {
-      const idx = state.consultores.findIndex((item: ConsultorType) => item.id === action.payload.id);
-      const oldItem = state.consultores.find((item: ConsultorType) => item.id === action.payload.id);
-      const consultoresBef = state.consultores.slice(0, idx);
-      const consultoresAft = state.consultores.slice(idx + 1, state.consultores.length);
+      const idx = state.usuarios.findIndex((item: UsuarioType) => item.id === action.payload.id);
+      const oldItem = state.usuarios.find((item: UsuarioType) => item.id === action.payload.id);
+      const usuariosBef = state.usuarios.slice(0, idx);
+      const usuariosAft = state.usuarios.slice(idx + 1, state.usuarios.length);
       return {
         ...state,
         loading: false,
-        consultores: [...consultoresBef, { ...oldItem, ...action.payload } as ConsultorType, ...consultoresAft]
+        usuarios: [...usuariosBef, { ...oldItem, ...action.payload } as UsuarioType, ...usuariosAft]
       };
     }
     case actions.create: {
       return {
         ...state,
         loading: false,
-        consultores: [...state.consultores, { ...action.payload }]
+        usuarios: [...state.usuarios, { ...action.payload }]
       };
     }
     default:

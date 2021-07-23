@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { Navigate, useLocation, useNavigate, useRoutes } from 'react-router-dom';
+import { Navigate, useLocation, useRoutes } from 'react-router-dom';
 import { AuthContext } from './Auth/AuthState';
 import {
-  Consultores,
+  Usuarios,
   Clientes,
   Configuracoes,
   Dashboard,
@@ -12,8 +12,6 @@ import {
   NotFound,
   Portal,
   Profile,
-  Relatorio,
-  Relatorios,
   Revendedores,
   SignUp
 } from '../pages';
@@ -27,10 +25,8 @@ export default function MainRoutes(): any {
   const location = useLocation();
   const permissao = apiConfig?.permissao;
   const { cliente: clienteId, revendedor: revendedorId } = apiConfig || {};
-  console.log(permissao);
 
   const host = user?.data?.permissoes.find((permissao: any) => permissao.cliente.id === clienteId)?.cliente?.host;
-  console.log(host);
   const mainRoutes = {
     path: '/',
     element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,
@@ -39,10 +35,11 @@ export default function MainRoutes(): any {
         ? [
             { path: '/', element: <Home /> },
             permissao === 'gestor' && { path: 'escallo', element: <Navigate to="https://www.google.com" /> },
-            permissao === 'gestor' && { path: 'usuarios', element: <Consultores /> },
+            permissao === 'gestor' && { path: 'usuarios', element: <Usuarios /> },
             permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
+            permissao === 'super' && { path: 'usuarios', element: <Usuarios /> },
             permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
-            permissao === 'diretor' && { path: 'usuarios', element: <Consultores /> },
+            permissao === 'diretor' && { path: 'usuarios', element: <Usuarios /> },
             { path: 'perfil', element: <Profile /> }
           ]
         : [
@@ -82,6 +79,9 @@ export default function MainRoutes(): any {
           { path: 'gestor', element: <Navigate to="/" /> },
           { path: 'consultor', element: <Navigate to="/" /> },
           { path: 'diretor', element: <Navigate to="/" /> },
+          { path: 'usuarios', element: <Navigate to="/" /> },
+          { path: 'revendedores', element: <Navigate to="/" /> },
+          { path: 'clientes', element: <Navigate to="/" /> },
           { path: 'configuracoes', element: <Navigate to="/" /> },
           { path: 'perfil', element: <Navigate to="/" /> },
           { path: '*', element: <Navigate to="/404" /> },

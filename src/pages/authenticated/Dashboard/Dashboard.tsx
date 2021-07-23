@@ -148,6 +148,7 @@ const Dashboard = (): any => {
           break;
         case 2:
         case 6:
+        case 7:
           if (menuIndex === index) {
             menuDrawer.onSwitch();
           } else {
@@ -247,7 +248,7 @@ const Dashboard = (): any => {
           </Menu>
           <Divider className={classes.divider} orientation="vertical" flexItem />
           <Typography className={classes.toolbarSubtitle} variant="subtitle2">
-            {user?.data?.nome}
+            {user?.data?.nome} - {permissao}
           </Typography>
           <IconButton onClick={handleProfileMenuClick} color="inherit">
             <AccountCircleIcon />
@@ -326,15 +327,6 @@ const Dashboard = (): any => {
               </ListItemIcon>
               <ListItemText primary="Início" />
             </ListItem>
-            {permissao === 'gestor' ||
-              (permissao === 'diretor' && (
-                <ListItem button onClick={openMenuOption(2)}>
-                  <ListItemIcon>
-                    <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
-                  </ListItemIcon>
-                  <ListItemText primary="Usuários" />
-                </ListItem>
-              ))}
             {permissao === 'super' && (
               <ListItem button onClick={openMenuOption(3)}>
                 <ListItemIcon>
@@ -354,15 +346,15 @@ const Dashboard = (): any => {
             {permissao === 'gestor' && (
               <ListItem button onClick={openMenuOption(5)}>
                 <ListItemIcon>
-                  <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+                  <GroupIcon color={menuIndex === 5 ? 'secondary' : undefined} />
                 </ListItemIcon>
                 <ListItemText primary="Escallo" />
               </ListItem>
             )}
-            {permissao === 'gestor' && (
-              <ListItem button onClick={openMenuOption(6)}>
+            {(permissao === 'gestor' || permissao === 'diretor' || permissao === 'super') && (
+              <ListItem button onClick={openMenuOption(2)}>
                 <ListItemIcon>
-                  <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
+                  <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />
                 </ListItemIcon>
                 <ListItemText primary="Usuários" />
               </ListItem>

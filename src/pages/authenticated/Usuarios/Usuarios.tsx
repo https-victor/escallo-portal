@@ -1,5 +1,5 @@
 import { GlobalContext } from '../../../store/Global/GlobalState';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   GridOverlay,
   DataGrid,
@@ -8,17 +8,18 @@ import {
   useGridSlotComponentProps,
   GridEditCellPropsParams
 } from '@material-ui/data-grid';
-import { Button, LinearProgress, makeStyles, Paper, Checkbox } from '@material-ui/core';
+import { Button, LinearProgress, makeStyles, Paper, Checkbox as MUICheckbox, IconButton } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
-import { ConsultoresContext, ConsultorProvider, ConsultorType } from '../../../store/Consultores/ConsultoresState';
+import { UsuariosContext, UsuarioProvider, UsuarioType } from '../../../store/Usuarios/UsuariosState';
+import { Delete as DeleteIcon } from '@material-ui/icons';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, consultores, onUpdateConsultor, consultorForm } = useContext(ConsultoresContext);
+  const { loading, usuarios, onUpdateUsuario, usuarioForm } = useContext(UsuariosContext);
   const { setMenu, apiConfig } = useContext(GlobalContext);
 
   useEffect(() => {
-    setMenu('consultores');
+    setMenu('usuarios');
   }, []);
 
   function CustomLoadingOverlay() {
@@ -46,39 +47,45 @@ const Index = (): any => {
     );
   }
 
-  const changeCheck = (id: number, field: string) => {
+  const onChangeCheck = (id: number, field: string) => {
     return () => {
-      const consultor = consultores.find((element: any) => element.id === id);
-      const { permissao } = consultor;
+      const usuario = usuarios.find((element: any) => element.id === id);
+      const { permissoes } = usuario;
 
-      if (permissao.includes(field)) {
-        const auxPermissoes = permissao.filter((element: any) => element !== field && element);
-        onUpdateConsultor({ id, permissao: auxPermissoes });
+      if (permissoes.includes(field)) {
+        const auxPermissoes = permissoes.filter((element: any) => element !== field && element);
+        onUpdateUsuario({ id, permissoes: auxPermissoes });
       } else {
-        onUpdateConsultor({ id, permissao: [...permissao, field] });
+        onUpdateUsuario({ id, permissoes: [...permissoes, field] });
       }
     };
   };
 
-  const customCheckbox = ({ row, field }: GridCellParams) => {
-    const isValidPermition = row.permissao.includes(field);
+  const Checkbox = ({ row, field }: GridCellParams) => {
+    const isValidPermition = row.permissoes.includes(field);
 
-    return <Checkbox checked={isValidPermition} color="primary" onChange={changeCheck(row.id, field)} />;
+    return <MUICheckbox checked={isValidPermition} color="primary" onChange={onChangeCheck(row.id, field)} />;
   };
 
-  const deleteButton = (params: GridCellParams) => {
+  const Delete = (params: GridCellParams) => {
+    const [state, setState] = useState(false);
     return (
-      <Button variant="contained" color="primary" onClick={() => console.log(consultores)}>
-        Delete
-      </Button>
+      <IconButton
+        color={state ? 'primary' : 'default'}
+        onMouseEnter={() => setState((prevState: any) => !prevState)}
+        onMouseLeave={() => setState((prevState: any) => !prevState)}
+        onClick={() => console.log(usuarios)}
+      >
+        <DeleteIcon />
+      </IconButton>
     );
   };
 
   const handleEditCellChangeCommitted = ({ id, field, props }: GridEditCellPropsParams) => {
     const data = props;
 
-    if (consultores.find((item: ConsultorType) => item.id === id)[field] !== data.value) {
-      onUpdateConsultor({ id: parseFloat(id as string), [field]: data.value });
+    if (usuarios.find((item: UsuarioType) => item.id === id)[field] !== data.value) {
+      onUpdateUsuario({ id: parseFloat(id as string), [field]: data.value });
     }
   };
 
@@ -93,13 +100,13 @@ const Index = (): any => {
       field: 'gestor',
       headerName: 'Gestor',
       flex: 1,
-      renderCell: customCheckbox
+      renderCell: Checkbox
     },
     {
       field: 'diretor',
       headerName: 'Diretor',
       flex: 1,
-      renderCell: customCheckbox
+      renderCell: Checkbox
     },
     {
       field: 'delete',
@@ -107,14 +114,14 @@ const Index = (): any => {
       flex: 1,
       align: 'center',
       headerAlign: 'center',
-      renderCell: deleteButton
+      renderCell: Delete
     }
   ];
   return (
     <Paper className={classes.paper}>
       <div className={classes.container}>
         <DataGrid
-          rows={consultores}
+          rows={usuarios}
           autoHeight
           loading={loading}
           components={{
@@ -131,11 +138,11 @@ const Index = (): any => {
   );
 };
 
-const Consultores = (): any => {
+const Usuarios = (): any => {
   return (
-    <ConsultorProvider>
+    <UsuarioProvider>
       <Index />
-    </ConsultorProvider>
+    </UsuarioProvider>
   );
 };
 
@@ -183,4 +190,4 @@ const useStyles = makeStyles((theme: any) => ({
     }
   }
 }));
-export default Consultores;
+export default Usuarios;
