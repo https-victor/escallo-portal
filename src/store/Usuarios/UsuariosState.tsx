@@ -21,7 +21,7 @@ export enum actions {
   deleteFailed = 'EXCLUDE_FAILED'
 }
 
-type Permissao = 'gestor' | 'diretor' | 'agente' | 'super';
+type Permissao = 'gestor' | 'diretor' | 'agente' | 'super' | 'consultor';
 
 export type UsuarioType = {
   email: string;
@@ -36,7 +36,8 @@ export type EditUsuarioType = {
 };
 
 type FormikValues = {
-  permissoes: Array<Permissao>;
+  first: boolean;
+  second: boolean;
   email: string;
 };
 
@@ -58,12 +59,12 @@ const initialMockupDiretor: UsuarioType[] = [
   {
     email: 'usuario1@teste.com.br',
     id: 1,
-    permissoes: ['gestor', 'diretor']
+    permissoes: ['consultor', 'diretor']
   },
   {
     email: 'usuario2@teste.com.br',
     id: 2,
-    permissoes: ['gestor']
+    permissoes: ['consultor']
   },
   {
     email: 'usuario3@teste.com.br',
@@ -73,7 +74,7 @@ const initialMockupDiretor: UsuarioType[] = [
   {
     email: 'usuario5@teste.com.br',
     id: 5,
-    permissoes: ['gestor', 'diretor']
+    permissoes: ['consultor', 'diretor']
   }
 ];
 
@@ -130,6 +131,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
   const { permissao } = apiConfig;
   const isSuper = Boolean(permissao === 'super');
   const isDiretor = Boolean(permissao === 'diretor');
+  const isGestor = Boolean(permissao === 'gestor');
   const { mockup } = useContext(AuthContext);
 
   const initialMockupState = isSuper ? initialMockupSuper : isDiretor ? initialMockupDiretor : initialMockupGestor;
@@ -173,6 +175,14 @@ export const UsuarioProvider: any = ({ children }: any) => {
 
   async function onCreateUsuario(values: FormikValues) {
     dispatch({ type: actions.loading });
+    const permissoes: Permissao[] = !isSuper
+      ? ([
+          values.first && isDiretor ? 'consultor' : 'agente',
+          values.second && isDiretor ? 'diretor' : 'gestor'
+        ] as Permissao[])
+      : (['super'] as Permissao[]);
+
+    console.log(values.email, permissoes);
     if (mockup) {
       await setTimeout(() => {
         dispatch({
@@ -180,7 +190,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
           payload: {
             email: values.email,
             id: Date.now(),
-            permissoes: values.permissoes
+            permissoes
           }
         });
         usuarioForm.resetForm();
@@ -264,7 +274,8 @@ export const UsuarioProvider: any = ({ children }: any) => {
   });
   const usuarioFormInitialValues: FormikValues = {
     email: '',
-    permissoes: isSuper ? ['super'] : []
+    first: false,
+    second: false
   };
   const usuarioForm = useFormik({
     initialValues: usuarioFormInitialValues,

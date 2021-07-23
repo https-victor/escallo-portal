@@ -8,7 +8,15 @@ import {
   useGridSlotComponentProps,
   GridEditCellPropsParams
 } from '@material-ui/data-grid';
-import { Button, LinearProgress, makeStyles, Paper, Checkbox as MUICheckbox, IconButton } from '@material-ui/core';
+import {
+  Button,
+  LinearProgress,
+  makeStyles,
+  Paper,
+  Checkbox as MUICheckbox,
+  IconButton,
+  TextField
+} from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { UsuariosContext, UsuarioProvider, UsuarioType } from '../../../store/Usuarios/UsuariosState';
 import { Delete as DeleteIcon } from '@material-ui/icons';
@@ -64,8 +72,6 @@ const Index = (): any => {
 
   const Checkbox = ({ row, field }: GridCellParams) => {
     const isValidPermition = row.permissoes.includes(field);
-    console.log(row);
-
     return (
       <MUICheckbox
         checked={isValidPermition}
@@ -92,30 +98,38 @@ const Index = (): any => {
   };
 
   const handleEditCellChangeCommitted = ({ id, field, props }: GridEditCellPropsParams) => {
-    const data = props;
+    if (props) {
+      const data = props;
 
-    if (usuarios.find((item: UsuarioType) => item.id === id)[field] !== data.value) {
-      onUpdateUsuario({ id: parseFloat(id as string), [field]: data.value });
+      if (usuarios.find((item: UsuarioType) => item.id === id)[field] !== data?.value) {
+        onUpdateUsuario({ id: parseFloat(id as string), [field]: data?.value });
+      }
     }
   };
 
-  const getPermissaoColumn = () => {
-    const isDiretor = apiConfig?.permissao === 'diretor';
+  const isDiretor = apiConfig?.permissao === 'diretor';
+  const isGestor = apiConfig?.permissao === 'gestor';
+  const isSuper = apiConfig?.permissao === 'super';
 
-    return [
-      {
-        field: isDiretor ? 'gestor' : 'agente',
-        headerName: isDiretor ? 'Gestor' : 'Agente',
-        flex: 1,
-        renderCell: Checkbox
-      },
-      {
-        field: isDiretor ? 'diretor' : 'gestor',
-        headerName: isDiretor ? 'Diretor' : 'Gestor',
-        flex: 1,
-        renderCell: Checkbox
-      }
-    ];
+  const getPermissaoColumn = () => {
+    if (isSuper) {
+      return [];
+    } else {
+      return [
+        {
+          field: isDiretor ? 'consultor' : 'agente',
+          headerName: isDiretor ? 'Consultor' : 'Agente',
+          flex: 1,
+          renderCell: Checkbox
+        },
+        {
+          field: isDiretor ? 'diretor' : 'gestor',
+          headerName: isDiretor ? 'Diretor' : 'Gestor',
+          flex: 1,
+          renderCell: Checkbox
+        }
+      ];
+    }
   };
 
   const columns: GridColDef[] = [
@@ -152,6 +166,41 @@ const Index = (): any => {
           onEditCellChangeCommitted={handleEditCellChangeCommitted}
           disableSelectionOnClick
         />
+        <form className={classes.form} onSubmit={usuarioForm.handleSubmit}>
+          <div></div>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            name="email"
+            label="E-mail"
+            id="email"
+            value={usuarioForm.values.email}
+            onChange={usuarioForm.handleChange}
+            error={usuarioForm.touched.email && Boolean(usuarioForm.errors.email)}
+            helperText={usuarioForm.touched.email && usuarioForm.errors.email}
+          />
+          {!isSuper && (
+            <>
+              <MUICheckbox
+                checked={usuarioForm.values.first}
+                color="primary"
+                name="first"
+                id="first"
+                onChange={usuarioForm.handleChange}
+              />
+              <MUICheckbox
+                checked={usuarioForm.values.second}
+                color="primary"
+                name="second"
+                id="second"
+                onChange={usuarioForm.handleChange}
+              />
+            </>
+          )}
+          <Button type="submit" className={classes.submit} variant="contained" color="primary">
+            Adicionar
+          </Button>
+        </form>
       </div>
     </Paper>
   );
