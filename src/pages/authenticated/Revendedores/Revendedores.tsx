@@ -125,6 +125,7 @@ const Index = (): any => {
             onChange={revendedorForm.handleChange}
             error={revendedorForm.touched.nome && Boolean(revendedorForm.errors.nome)}
             helperText={revendedorForm.touched.nome && revendedorForm.errors.nome}
+            disabled={loading}
           />
           <TextField
             variant="outlined"
@@ -136,6 +137,7 @@ const Index = (): any => {
             onChange={revendedorForm.handleChange}
             error={revendedorForm.touched.email && Boolean(revendedorForm.errors.email)}
             helperText={revendedorForm.touched.email && revendedorForm.errors.email}
+            disabled={loading}
           />
           <TextField
             variant="outlined"
@@ -147,8 +149,9 @@ const Index = (): any => {
             onChange={revendedorForm.handleChange}
             error={revendedorForm.touched.label && Boolean(revendedorForm.errors.label)}
             helperText={revendedorForm.touched.label && revendedorForm.errors.label}
+            disabled={loading}
           />
-          <Button type="submit" className={classes.submit} variant="contained" color="primary">
+          <Button type="submit" className={classes.submit} variant="contained" color="primary" disabled={loading}>
             Adicionar
           </Button>
         </form>
