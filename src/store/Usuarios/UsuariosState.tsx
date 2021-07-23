@@ -6,7 +6,7 @@ import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 // import { USUARIO_CREATE, USUARIO_EDIT } from '../../graphql/mutations/usuarios';
 import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
-import { AuthContext } from '../Auth/AuthState';
+import { AuthContext, UserType } from '../Auth/AuthState';
 import { GlobalContext } from '../Global/GlobalState';
 
 export enum actions {
@@ -16,7 +16,9 @@ export enum actions {
   update = 'UPDATE',
   updateFailed = 'UPDATE_FAILED',
   create = 'CREATE',
-  createFailed = 'CREATE_FAILED'
+  createFailed = 'CREATE_FAILED',
+  delete = 'EXCLUDE',
+  deleteFailed = 'EXCLUDE_FAILED'
 }
 
 type Permissao = 'gestor' | 'diretor' | 'agente' | 'super';
@@ -41,6 +43,7 @@ type FormikValues = {
 type UsuarioContextType = {
   usuarioForm: FormikProps<FormikValues>;
   onUpdateUsuario: (fields: EditUsuarioType) => void;
+  onDeleteUsuario: (userId: number) => void;
   loading: boolean;
   usuarios: any[];
 };
@@ -51,7 +54,7 @@ const initialUsuarioState: UsuariosType = {
   errors: []
 };
 
-const initialMockupState: UsuarioType[] = [
+const initialMockupDiretor: UsuarioType[] = [
   {
     email: 'usuario1@teste.com.br',
     id: 1,
@@ -74,13 +77,62 @@ const initialMockupState: UsuarioType[] = [
   }
 ];
 
+const initialMockupGestor: UsuarioType[] = [
+  {
+    email: 'usuario1@teste.com.br',
+    id: 1,
+    permissoes: ['agente', 'gestor']
+  },
+  {
+    email: 'usuario2@teste.com.br',
+    id: 2,
+    permissoes: ['agente']
+  },
+  {
+    email: 'usuario3@teste.com.br',
+    id: 3,
+    permissoes: ['gestor']
+  },
+  {
+    email: 'usuario5@teste.com.br',
+    id: 5,
+    permissoes: ['agente', 'gestor']
+  }
+];
+
+const initialMockupSuper: UsuarioType[] = [
+  {
+    email: 'usuario1@teste.com.br',
+    id: 1,
+    permissoes: ['super']
+  },
+  {
+    email: 'usuario2@teste.com.br',
+    id: 2,
+    permissoes: ['super']
+  },
+  {
+    email: 'usuario3@teste.com.br',
+    id: 3,
+    permissoes: ['super']
+  },
+  {
+    email: 'usuario5@teste.com.br',
+    id: 5,
+    permissoes: ['super']
+  }
+];
+
 export const UsuariosContext = createContext({} as UsuarioContextType);
 
 export const UsuarioProvider: any = ({ children }: any) => {
   const { apiConfig } = useContext(GlobalContext);
   const { permissao } = apiConfig;
   const isSuper = Boolean(permissao === 'super');
+  const isDiretor = Boolean(permissao === 'diretor');
   const { mockup } = useContext(AuthContext);
+
+  const initialMockupState = isSuper ? initialMockupSuper : isDiretor ? initialMockupDiretor : initialMockupGestor;
 
   const [state, dispatch] = useReducer(UsuariosReducer, initialUsuarioState);
 
@@ -191,6 +243,21 @@ export const UsuarioProvider: any = ({ children }: any) => {
     // }
   }
 
+  async function onDeleteUsuario(userId: number) {
+    dispatch({ type: actions.loading });
+    if (mockup) {
+      await setTimeout(
+        () => [
+          dispatch({
+            type: actions?.delete,
+            payload: userId
+          })
+        ],
+        800
+      );
+    }
+  }
+
   const usuarioFormValidation = yup.object({
     email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
     permissoes: yup.array().min(1, 'Selecione ao menos uma permissão')
@@ -215,6 +282,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
     <UsuariosContext.Provider
       value={{
         onUpdateUsuario,
+        onDeleteUsuario,
         usuarioForm,
         loading: state.loading,
         usuarios: state.usuarios

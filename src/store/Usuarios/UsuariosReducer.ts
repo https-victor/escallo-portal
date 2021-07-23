@@ -15,6 +15,8 @@ type UsuariosPayload = {
   [actions.updateFailed]: ErrorType;
   [actions.create]: UsuarioType;
   [actions.createFailed]: ErrorType;
+  [actions.delete]: number;
+  [actions.deleteFailed]: ErrorType;
 };
 
 export type UsuariosActions = ActionMap<UsuariosPayload>[keyof ActionMap<UsuariosPayload>];
@@ -68,6 +70,17 @@ export default (state: UsuariosType, action: UsuariosActions): UsuariosType => {
         usuarios: [...state.usuarios, { ...action.payload }]
       };
     }
+    case actions.delete: {
+      const { payload } = action;
+      const filteredUsers = state.usuarios.filter((usuario: any) => usuario.id !== payload);
+
+      return {
+        ...state,
+        loading: false,
+        usuarios: filteredUsers
+      };
+    }
+    case actions.deleteFailed:
     default:
       return state;
   }

@@ -12,10 +12,11 @@ import { Button, LinearProgress, makeStyles, Paper, Checkbox as MUICheckbox, Ico
 import Pagination from '@material-ui/lab/Pagination';
 import { UsuariosContext, UsuarioProvider, UsuarioType } from '../../../store/Usuarios/UsuariosState';
 import { Delete as DeleteIcon } from '@material-ui/icons';
+import { UsuariosType } from '../../../store/Usuarios/UsuariosReducer';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, usuarios, onUpdateUsuario, usuarioForm } = useContext(UsuariosContext);
+  const { loading, usuarios, onUpdateUsuario, usuarioForm, onDeleteUsuario } = useContext(UsuariosContext);
   const { setMenu, apiConfig } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -63,18 +64,27 @@ const Index = (): any => {
 
   const Checkbox = ({ row, field }: GridCellParams) => {
     const isValidPermition = row.permissoes.includes(field);
+    console.log(row);
 
-    return <MUICheckbox checked={isValidPermition} color="primary" onChange={onChangeCheck(row.id, field)} />;
+    return (
+      <MUICheckbox
+        checked={isValidPermition}
+        disabled={loading}
+        color="primary"
+        onChange={onChangeCheck(row.id, field)}
+      />
+    );
   };
 
   const Delete = (params: GridCellParams) => {
     const [state, setState] = useState(false);
+
     return (
       <IconButton
         color={state ? 'primary' : 'default'}
         onMouseEnter={() => setState((prevState: any) => !prevState)}
         onMouseLeave={() => setState((prevState: any) => !prevState)}
-        onClick={() => console.log(usuarios)}
+        onClick={() => onDeleteUsuario(params.row.id)}
       >
         <DeleteIcon />
       </IconButton>
