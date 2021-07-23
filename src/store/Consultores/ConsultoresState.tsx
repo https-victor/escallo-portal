@@ -18,18 +18,20 @@ export enum actions {
   createFailed = 'CREATE_FAILED'
 }
 
+//Alteracao nos status
+
 export type ConsultorType = {
   email: string;
   id: number;
   nome: string;
-  status: 'ATIVO' | 'INATIVO';
+  permissao?: Array<string>;
 };
 
 export type EditConsultorType = {
   email?: string;
   id: number;
   nome?: string;
-  status?: 'ATIVO' | 'INATIVO';
+  permissao?: Array<string>;
 };
 
 export type CreateConsultorType = {
@@ -60,19 +62,25 @@ const initialMockupState: ConsultorType[] = [
     email: 'consultor1@teste.com.br',
     id: 1,
     nome: 'Consultor 1',
-    status: 'ATIVO'
+    permissao: ['gestor', 'diretor']
   },
   {
     email: 'consultor2@teste.com.br',
     id: 2,
     nome: 'Consultor 2',
-    status: 'ATIVO'
+    permissao: ['gestor']
   },
   {
     email: 'consultor3@teste.com.br',
     id: 3,
     nome: 'Consultor 3',
-    status: 'ATIVO'
+    permissao: ['diretor']
+  },
+  {
+    email: 'consultor5@teste.com.br',
+    id: 5,
+    nome: 'Consultor 5',
+    permissao: ['gestor', 'diretor']
   }
 ];
 
@@ -128,7 +136,7 @@ export const ConsultorProvider: any = ({ children }: any) => {
             email: values.email,
             id: Date.now(),
             nome: values.nome,
-            status: 'ATIVO'
+            permissao: []
           }
         });
         consultorForm.resetForm();
