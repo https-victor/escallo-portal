@@ -46,7 +46,7 @@ const Index = (): any => {
       />
     );
   }
-
+  //Talvez precise de alguma verificação de usuario
   const onChangeCheck = (id: number, field: string) => {
     return () => {
       const usuario = usuarios.find((element: any) => element.id === id);
@@ -89,6 +89,25 @@ const Index = (): any => {
     }
   };
 
+  const getPermissaoColumn = () => {
+    const isDiretor = apiConfig?.permissao === 'diretor';
+
+    return [
+      {
+        field: isDiretor ? 'gestor' : 'agente',
+        headerName: isDiretor ? 'Gestor' : 'Agente',
+        flex: 1,
+        renderCell: Checkbox
+      },
+      {
+        field: isDiretor ? 'diretor' : 'gestor',
+        headerName: isDiretor ? 'Diretor' : 'Gestor',
+        flex: 1,
+        renderCell: Checkbox
+      }
+    ];
+  };
+
   const columns: GridColDef[] = [
     {
       field: 'email',
@@ -96,18 +115,7 @@ const Index = (): any => {
       flex: 3,
       editable: !loading
     },
-    {
-      field: 'gestor',
-      headerName: 'Gestor',
-      flex: 1,
-      renderCell: Checkbox
-    },
-    {
-      field: 'diretor',
-      headerName: 'Diretor',
-      flex: 1,
-      renderCell: Checkbox
-    },
+    ...getPermissaoColumn(),
     {
       field: 'delete',
       headerName: 'Delete',
@@ -117,6 +125,7 @@ const Index = (): any => {
       renderCell: Delete
     }
   ];
+
   return (
     <Paper className={classes.paper}>
       <div className={classes.container}>
