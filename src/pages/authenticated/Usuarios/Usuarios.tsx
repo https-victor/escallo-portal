@@ -15,7 +15,8 @@ import {
   Paper,
   Checkbox as MUICheckbox,
   IconButton,
-  TextField
+  TextField,
+  FormControlLabel
 } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { UsuariosContext, UsuarioProvider, UsuarioType } from '../../../store/Usuarios/UsuariosState';
@@ -91,6 +92,7 @@ const Index = (): any => {
         onMouseEnter={() => setState((prevState: any) => !prevState)}
         onMouseLeave={() => setState((prevState: any) => !prevState)}
         onClick={() => onDeleteUsuario(params.row.id)}
+        disabled={loading}
       >
         <DeleteIcon />
       </IconButton>
@@ -111,6 +113,9 @@ const Index = (): any => {
   const isGestor = apiConfig?.permissao === 'gestor';
   const isSuper = apiConfig?.permissao === 'super';
 
+  const firstLabel = isDiretor ? 'Consultor' : 'Agente';
+  const secondLabel = isDiretor ? 'Diretor' : 'Gestor';
+
   const getPermissaoColumn = () => {
     if (isSuper) {
       return [];
@@ -118,13 +123,13 @@ const Index = (): any => {
       return [
         {
           field: isDiretor ? 'consultor' : 'agente',
-          headerName: isDiretor ? 'Consultor' : 'Agente',
+          headerName: firstLabel,
           flex: 1,
           renderCell: Checkbox
         },
         {
           field: isDiretor ? 'diretor' : 'gestor',
-          headerName: isDiretor ? 'Diretor' : 'Gestor',
+          headerName: secondLabel,
           flex: 1,
           renderCell: Checkbox
         }
@@ -174,6 +179,7 @@ const Index = (): any => {
             name="email"
             label="E-mail"
             id="email"
+            disabled={loading}
             value={usuarioForm.values.email}
             onChange={usuarioForm.handleChange}
             error={usuarioForm.touched.email && Boolean(usuarioForm.errors.email)}
@@ -181,19 +187,31 @@ const Index = (): any => {
           />
           {!isSuper && (
             <>
-              <MUICheckbox
-                checked={usuarioForm.values.first}
-                color="primary"
-                name="first"
-                id="first"
-                onChange={usuarioForm.handleChange}
+              <FormControlLabel
+                control={
+                  <MUICheckbox
+                    checked={usuarioForm.values.first}
+                    color="primary"
+                    name="first"
+                    id="first"
+                    onChange={usuarioForm.handleChange}
+                  />
+                }
+                disabled={loading}
+                label={firstLabel}
               />
-              <MUICheckbox
-                checked={usuarioForm.values.second}
-                color="primary"
-                name="second"
-                id="second"
-                onChange={usuarioForm.handleChange}
+              <FormControlLabel
+                control={
+                  <MUICheckbox
+                    checked={usuarioForm.values.second}
+                    color="primary"
+                    name="second"
+                    id="second"
+                    onChange={usuarioForm.handleChange}
+                  />
+                }
+                disabled={loading}
+                label={secondLabel}
               />
             </>
           )}
