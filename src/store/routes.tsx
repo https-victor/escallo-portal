@@ -39,9 +39,10 @@ export default function MainRoutes(): any {
         ? [
             { path: '/', element: <Home /> },
             permissao === 'gestor' && { path: 'escallo', element: <Navigate to="https://www.google.com" /> },
+            permissao === 'gestor' && { path: 'usuarios', element: <Consultores /> },
             permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
             permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
-            permissao === 'diretor' && { path: 'consultores', element: <Consultores /> },
+            permissao === 'diretor' && { path: 'usuarios', element: <Consultores /> },
             { path: 'perfil', element: <Profile /> }
           ]
         : [
@@ -57,7 +58,7 @@ export default function MainRoutes(): any {
             { path: 'escallo', element: <Navigate to="/" /> },
             { path: 'revendedores', element: <Navigate to="/" /> },
             { path: 'clientes', element: <Navigate to="/" /> },
-            { path: 'consultores', element: <Navigate to="/" /> }
+            { path: 'usuarios', element: <Navigate to="/" /> }
           ]),
       { path: '404', element: <NotFound /> },
       { path: 'configuracoes', element: <Configuracoes /> },
