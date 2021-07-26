@@ -4,6 +4,7 @@ import { Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 import { LinkPortal } from '../Portal/Portal';
+import { PERMISSOES } from '../../../utils/vo/auth';
 
 const ModuloSelector = ({ redirect }: any): any => {
   const { setMenu, setApiConfig } = useContext(GlobalContext);
@@ -13,19 +14,21 @@ const ModuloSelector = ({ redirect }: any): any => {
   const location = useLocation();
   const { pathname } = location;
 
+  const { AGENTE, DIRETOR, GESTOR, CONSULTOR } = PERMISSOES;
+
   useEffect(() => {
     switch (pathname) {
       case '/agente':
-        setMenu('agente');
+        setMenu(AGENTE);
         break;
       case '/gestor':
-        setMenu('gestor');
+        setMenu(GESTOR);
         break;
       case '/consultor':
-        setMenu('consultor');
+        setMenu(CONSULTOR);
         break;
       case '/diretor':
-        setMenu('diretor');
+        setMenu(DIRETOR);
         break;
       default:
         setMenu('portal');
@@ -35,13 +38,13 @@ const ModuloSelector = ({ redirect }: any): any => {
 
   const isModuloCliente = Boolean(pathname === '/agente' || pathname === '/gestor');
 
-  const auxCliente = pathname === '/agente' ? 'agente' : 'gestor';
+  const auxCliente = pathname === '/agente' ? AGENTE : GESTOR;
 
   const clientes = user?.data?.permissoes
     .filter((permissao: any) => permissao.cliente !== null && permissao.permissao === auxCliente && permissao.cliente)
     .map((permissao: any) => permissao.cliente);
 
-  const auxRevendedor = pathname === '/consultor' ? 'consultor' : 'diretor';
+  const auxRevendedor = pathname === '/consultor' ? CONSULTOR : DIRETOR;
 
   const revendedores = user?.data?.permissoes
     .filter(

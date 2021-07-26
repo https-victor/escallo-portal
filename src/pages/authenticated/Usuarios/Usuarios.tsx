@@ -25,11 +25,13 @@ import { UsuariosType } from '../../../store/Usuarios/UsuariosReducer';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { UsuariosForm } from './UsuariosForm';
+import { PERMISSOES } from '../../../utils/vo/auth';
 
 const Index = (): any => {
   const classes = useStyles();
   const { loading, usuarios, onUpdateUsuario, onCreateUsuario, onDeleteUsuario } = useContext(UsuariosContext);
   const { setMenu, apiConfig } = useContext(GlobalContext);
+  const { DIRETOR, GESTOR, SUPER } = PERMISSOES;
 
   useEffect(() => {
     setMenu('usuarios');
@@ -112,9 +114,9 @@ const Index = (): any => {
     }
   };
 
-  const isDiretor = apiConfig?.permissao === 'diretor';
-  const isGestor = apiConfig?.permissao === 'gestor';
-  const isSuper = apiConfig?.permissao === 'super';
+  const isDiretor = apiConfig?.permissao === DIRETOR;
+  const isGestor = apiConfig?.permissao === GESTOR;
+  const isSuper = apiConfig?.permissao === SUPER;
 
   const firstLabel = isDiretor ? 'Consultor' : 'Agente';
   const secondLabel = isDiretor ? 'Diretor' : 'Gestor';
@@ -131,7 +133,7 @@ const Index = (): any => {
           renderCell: Checkbox
         },
         {
-          field: isDiretor ? 'diretor' : 'gestor',
+          field: isDiretor ? DIRETOR : GESTOR,
           headerName: secondLabel,
           flex: 1,
           renderCell: Checkbox

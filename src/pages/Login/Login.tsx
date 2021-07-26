@@ -21,7 +21,7 @@ const loginFormValidation = yup.object({
 });
 
 const emailFormInitialValues = {
-  email: 'mockup@futurotec.com.br'
+  email: 'super@escallo.com.br'
 };
 
 const loginFormInitialValues = {
@@ -127,7 +127,7 @@ const Login = (): any => {
               return (
                 <Alert onClose={onCloseError} key={id} severity={severity}>
                   <AlertTitle>{title}</AlertTitle>
-                  {error.message}
+                  {error?.message}
                 </Alert>
               );
             })}

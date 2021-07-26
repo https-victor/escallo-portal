@@ -6,6 +6,7 @@ import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { USER_ADD, USER_AUTH } from '../../graphql/mutations/user';
 import { CHECK_EMAIL, CHECK_TOKEN } from '../../graphql/queries/login';
+import { PERMISSOES } from '../../utils/vo/auth';
 
 export enum actions {
   appLoading = 'APP_LOADING',
@@ -48,44 +49,46 @@ export type UserType = {
   telefone: string;
 } | null;
 
+const { AGENTE, DIRETOR, GESTOR, CONSULTOR, SUPER } = PERMISSOES;
+
 const mockupPermissoes = [
   {
-    permissao: 'super',
+    permissao: SUPER,
     cliente: { id: 1, nome: 'Cliente 1', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 1, nome: 'Revendedor 1' }
   },
   {
-    permissao: 'agente',
+    permissao: AGENTE,
     cliente: { id: 2, nome: 'Cliente 2', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 2, nome: 'Revendedor 2' }
   },
   {
-    permissao: 'consultor',
+    permissao: CONSULTOR,
     cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 3, nome: 'Revendedor 3' }
   },
   {
-    permissao: 'consultor',
+    permissao: CONSULTOR,
     cliente: { id: 3, nome: 'Cliente 3', host: 'http://clinicadofuturo-hmg.vpn.ftec.us/' },
     revendedor: { id: 6, nome: 'Revendedor 6' }
   },
   {
-    permissao: 'diretor',
+    permissao: DIRETOR,
     cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 4, nome: 'Revendedor 4' }
   },
   {
-    permissao: 'diretor',
+    permissao: DIRETOR,
     cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 6, nome: 'Revendedor 6' }
   },
   {
-    permissao: 'gestor',
+    permissao: GESTOR,
     cliente: { id: 5, nome: 'Cliente 5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 5, nome: 'Revendedor 5' }
   },
   {
-    permissao: 'gestor',
+    permissao: GESTOR,
     cliente: { id: 6, nome: 'Cliente 6', host: 'http://clinicadofuturo-hmg.vpn.ftec.us/' },
     revendedor: { id: 6, nome: 'Revendedor 6' }
   }
@@ -141,6 +144,7 @@ export const AuthProvider: any = ({ children }: any) => {
     navigate('/');
     dispatch({ type: actions.resetLoginEmail });
   }
+
   async function checkEmail(email: any) {
     dispatch({ type: actions.checkEmailLoading });
     if (email === 'mockup@futurotec.com.br') {
@@ -188,7 +192,7 @@ export const AuthProvider: any = ({ children }: any) => {
       // get user by token
       const user = await checkToken();
       if (user?.data?.meusDados) {
-        dispatch({ type: actions.userSuccess, payload: user.data.meusDados });
+        dispatch({ type: actions.userSuccess, payload: user?.data?.meusDados });
       } else {
         dispatch({ type: actions.logoutSuccess });
       }
@@ -248,6 +252,7 @@ export const AuthProvider: any = ({ children }: any) => {
             senha: credentials.password
           }
         });
+
         navigate(pathname);
         dispatch({ type: actions.loginSuccess, payload: user?.data?.autenticarUsuario });
       } catch (err) {

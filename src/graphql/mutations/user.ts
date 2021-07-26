@@ -4,11 +4,26 @@ export const USER_AUTH = graphql`
     autenticarUsuario(email: $email, senha: $senha) {
       id
       nome
-      isSuper
       chaveExterna
       status
       telefone
       email
+      permissoes {
+        permissao
+        cliente {
+          id
+          nome
+          host
+          status
+        }
+        revendedor {
+          id
+          nome
+          label
+          token
+          status
+        }
+      }
     }
   }
 `;
@@ -18,7 +33,6 @@ export const USER_ADD = graphql`
     registrarUsuario(usuario: $usuario) {
       id
       nome
-      isSuper
       chaveExterna
       status
       telefone

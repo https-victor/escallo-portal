@@ -12,6 +12,22 @@ export const CHECK_TOKEN = graphql`
       telefone
       id
       status
+      permissoes {
+        permissao
+        cliente {
+          id
+          nome
+          host
+          status
+        }
+        revendedor {
+          id
+          nome
+          label
+          token
+          status
+        }
+      }
     }
   }
 `;

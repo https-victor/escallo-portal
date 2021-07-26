@@ -23,10 +23,11 @@ export default function MainRoutes(): any {
   const { apiConfig } = useContext(GlobalContext);
   const { authenticated, loading } = user;
   const location = useLocation();
-  const permissao = apiConfig?.permissao;
+  const permissao: string = apiConfig?.permissao?.toLowerCase();
   const { cliente: clienteId, revendedor: revendedorId } = apiConfig || {};
 
-  const host = user?.data?.permissoes.find((permissao: any) => permissao.cliente.id === clienteId)?.cliente?.host;
+  const host = user?.data?.permissoes?.find((permissao: any) => permissao?.cliente?.id === clienteId)?.cliente?.host;
+
   const mainRoutes = {
     path: '/',
     element: loading ? <>Carregando</> : authenticated ? <Dashboard /> : <LandingPage />,

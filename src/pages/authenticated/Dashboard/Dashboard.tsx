@@ -43,12 +43,13 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useSwitch } from '../../../hooks/generics/useSwitch';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
-
+import { PERMISSOES } from '../../../utils/vo/auth';
 const Dashboard = (): any => {
   const { auth, onRedirect, redirected, user } = useContext(AuthContext);
   const { title, menuIndex, apiConfig, setApiConfig } = useContext(GlobalContext);
   const { data } = user;
   const { permissoes } = data;
+  const { AGENTE, DIRETOR, GESTOR, CONSULTOR, SUPER } = PERMISSOES;
 
   const { logoff } = auth;
   const navigate = useNavigate();
@@ -58,8 +59,8 @@ const Dashboard = (): any => {
 
   const { permissao, cliente: clienteId, revendedor: revendedorId } = apiConfig || {};
 
-  const cliente = permissoes.find((permissao: any) => permissao?.cliente?.id === clienteId)?.cliente;
-  const revendedor = permissoes.find((permissao: any) => permissao?.revendedor?.id === revendedorId)?.revendedor;
+  const cliente = permissoes?.find((permissao: any) => permissao?.cliente?.id === clienteId)?.cliente;
+  const revendedor = permissoes?.find((permissao: any) => permissao?.revendedor?.id === revendedorId)?.revendedor;
 
   // const [expandRelatorios, setExpandRelatorios] = useState(false);
 
@@ -327,7 +328,7 @@ const Dashboard = (): any => {
               </ListItemIcon>
               <ListItemText primary="Início" />
             </ListItem>
-            {permissao === 'super' && (
+            {permissao === SUPER && (
               <ListItem button onClick={openMenuOption(3)}>
                 <ListItemIcon>
                   <StoreIcon color={menuIndex === 3 ? 'secondary' : undefined} />
@@ -335,7 +336,7 @@ const Dashboard = (): any => {
                 <ListItemText primary="Revendedores" />
               </ListItem>
             )}
-            {(permissao === 'consultor' || permissao === 'diretor') && (
+            {(permissao === CONSULTOR || permissao === DIRETOR) && (
               <ListItem button onClick={openMenuOption(4)}>
                 <ListItemIcon>
                   <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />
@@ -343,7 +344,7 @@ const Dashboard = (): any => {
                 <ListItemText primary="Clientes" />
               </ListItem>
             )}
-            {permissao === 'gestor' && (
+            {permissao === GESTOR && (
               <ListItem button onClick={openMenuOption(5)}>
                 <ListItemIcon>
                   <GroupIcon color={menuIndex === 5 ? 'secondary' : undefined} />
@@ -351,7 +352,7 @@ const Dashboard = (): any => {
                 <ListItemText primary="Escallo" />
               </ListItem>
             )}
-            {(permissao === 'gestor' || permissao === 'diretor' || permissao === 'super') && (
+            {(permissao === GESTOR || permissao === DIRETOR || permissao === SUPER) && (
               <ListItem button onClick={openMenuOption(2)}>
                 <ListItemIcon>
                   <SecurityIcon color={menuIndex === 2 ? 'secondary' : undefined} />

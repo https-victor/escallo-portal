@@ -3,12 +3,17 @@ import { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams, Outlet, Navigate } from 'react-router-dom';
 import { AuthContext } from '../../../store/Auth/AuthState';
 import { GlobalContext } from '../../../store/Global/GlobalState';
+import { PERMISSOES } from '../../../utils/vo/auth';
+
+const { AGENTE, DIRETOR, GESTOR, CONSULTOR, SUPER } = PERMISSOES;
+
 export const LinkPortal = ({ path, id, portal = true, children }: any) => {
   const { setApiConfig } = useContext(GlobalContext);
   const { user, onRedirect, mockup } = useContext(AuthContext);
   const navigate = useNavigate();
   const { data } = user;
   const classes = useStyles();
+
   const dados = data?.permissoes.reduce(
     (total: any, current: any) => {
       const clientes = current.cliente ? [...total.clientes, current.cliente] : total.clientes;
@@ -46,15 +51,15 @@ export const LinkPortal = ({ path, id, portal = true, children }: any) => {
   function getPermissao() {
     switch (path) {
       case '/agente':
-        return 'agente';
+        return AGENTE;
       case '/gestor':
-        return 'gestor';
+        return GESTOR;
       case '/consultor':
-        return 'consultor';
+        return CONSULTOR;
       case '/diretor':
-        return 'diretor';
+        return DIRETOR;
       default:
-        return 'agente';
+        return AGENTE;
     }
   }
 
@@ -123,13 +128,13 @@ const Portal = (): any => {
 
   return (
     <Paper elevation={0} className={classes.paper}>
-      {(permissoes.includes('agente') || permissoes.includes('gestor')) && (
+      {(permissoes.includes(AGENTE) || permissoes.includes(GESTOR)) && (
         <Paper elevation={3} className={classes.paper}>
           <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
             Cliente
           </Typography>
           <Grid justify="center" container spacing={4}>
-            {permissoes.includes('agente') && (
+            {permissoes.includes(AGENTE) && (
               <Grid item xs={3} className={classes.gridItem}>
                 <Card elevation={5} className={classes.root}>
                   <CardContent className={classes.center}>
@@ -146,7 +151,7 @@ const Portal = (): any => {
                 </Card>
               </Grid>
             )}
-            {permissoes.includes('gestor') && (
+            {permissoes.includes(GESTOR) && (
               <>
                 <Grid item xs={3} className={classes.gridItem}>
                   <Card elevation={5} className={classes.root}>
@@ -186,13 +191,13 @@ const Portal = (): any => {
         </Paper>
       )}
 
-      {(permissoes.includes('consultor') || permissoes.includes('diretor')) && (
+      {(permissoes.includes(CONSULTOR) || permissoes.includes(DIRETOR)) && (
         <Paper elevation={3} className={classes.paper}>
           <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
             Revendedor
           </Typography>
           <Grid justify="center" container spacing={4}>
-            {permissoes.includes('consultor') && (
+            {permissoes.includes(CONSULTOR) && (
               <Grid item xs={3} className={classes.gridItem}>
                 <Card elevation={5} className={classes.root}>
                   <CardContent className={classes.center}>
@@ -206,7 +211,7 @@ const Portal = (): any => {
                 </Card>
               </Grid>
             )}
-            {permissoes.includes('diretor') && (
+            {permissoes.includes(DIRETOR) && (
               <Grid item xs={3} className={classes.gridItem}>
                 <Card elevation={5} className={classes.root}>
                   <CardContent className={classes.center}>
@@ -224,7 +229,7 @@ const Portal = (): any => {
         </Paper>
       )}
 
-      {permissoes.includes('super') && (
+      {permissoes.includes(SUPER) && (
         <Paper elevation={3} className={classes.paper}>
           <Typography className={classes.title} color="textSecondary" component="h2" gutterBottom>
             Super
@@ -246,7 +251,7 @@ const Portal = (): any => {
                       setApiConfig({
                         cliente: null,
                         revendedor: null,
-                        permissao: 'super'
+                        permissao: SUPER
                       });
                       navigate('/');
                       onRedirect(true);

@@ -45,7 +45,6 @@ export const App = (): any => {
   });
   const authMiddleware = new ApolloLink((operation: any, forward: any): any => {
     // add the authorization to the headers
-    console.log(apiConfig);
     if (globalToken) {
       operation.setContext(({ headers = {} }: any) => ({
         headers: {
