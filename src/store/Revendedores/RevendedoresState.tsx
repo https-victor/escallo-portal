@@ -5,7 +5,7 @@ import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { REVENDEDOR_LIST, REVENDEDOR_LIST_STATUS } from '../../graphql/queries/revendedores';
 import { REVENDEDOR_CREATE, REVENDEDOR_EDIT } from '../../graphql/mutations/revendedores';
 import { FormikProps, useFormik } from 'formik';
-import * as yup from 'yup';
+
 import { AuthContext } from '../Auth/AuthState';
 
 export enum actions {
@@ -36,22 +36,14 @@ export type EditRevendedorType = {
   status?: 'ATIVO' | 'INATIVO';
 };
 
-export type CreateRevendedorType = {
+export type RevendedoresFormValues = {
   email: string;
   label: string;
   nome: string;
 };
-
-type FormikValues = {
-  nome: string;
-  email: string;
-  label: string;
-};
-
 type RevendedorContextType = {
-  revendedorForm: FormikProps<FormikValues>;
-  onUpdateRevendedor: (fields: EditRevendedorType) => void;
-  onCreateRevendedor: (fields: CreateRevendedorType) => void;
+  onUpdateRevendedor: (values: EditRevendedorType) => void;
+  onCreateRevendedor: (values: RevendedoresFormValues, form: FormikProps<RevendedoresFormValues>) => void;
   loading: boolean;
   revendedores: any[];
 };
@@ -127,29 +119,29 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onCreateRevendedor(fields: CreateRevendedorType) {
+  async function onCreateRevendedor(values: RevendedoresFormValues, form: FormikProps<RevendedoresFormValues>) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.create,
           payload: {
-            email: fields.email,
+            email: values.email,
             id: Date.now(),
-            label: fields.label,
-            nome: fields.nome,
+            label: values.label,
+            nome: values.nome,
             status: 'ATIVO'
           }
         });
-        revendedorForm.resetForm();
+        form.resetForm();
       }, 1500);
     } else {
       try {
         const createdRevendedor = await createRevendedor({
-          variables: { revendedor: { ...fields, status: 'ATIVO' } }
+          variables: { revendedor: { ...values, status: 'ATIVO' } }
         });
         dispatch({ type: actions.create, payload: createdRevendedor.data.criarRevendedor });
-        revendedorForm.resetForm();
+        form.resetForm();
       } catch (err) {
         dispatch({
           type: actions.createFailed,
@@ -166,21 +158,21 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onUpdateRevendedor(fields: EditRevendedorType) {
+  async function onUpdateRevendedor(values: EditRevendedorType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.update,
           payload: {
-            ...fields
+            ...values
           }
         });
       }, 800);
     } else {
       try {
         const updatedRevendedor = await updateRevendedor({
-          variables: { revendedor: { ...fields } }
+          variables: { revendedor: { ...values } }
         });
         dispatch({ type: actions.update, payload: updatedRevendedor.data.atualizarRevendedor });
       } catch (err) {
@@ -199,24 +191,6 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     }
   }
 
-  const revendedorFormValidation = yup.object({
-    nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
-    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
-    label: yup.string().required('Digite um label')
-  });
-  const revendedorFormInitialValues = {
-    nome: '',
-    email: '',
-    label: ''
-  };
-  const revendedorForm = useFormik({
-    initialValues: revendedorFormInitialValues,
-    validationSchema: revendedorFormValidation,
-    onSubmit: (values) => {
-      onCreateRevendedor(values);
-    }
-  });
-
   useEffect(() => {
     loadRevendedores();
   }, []);
@@ -224,7 +198,6 @@ export const RevendedoresProvider: any = ({ children }: any) => {
   return (
     <RevendedoresContext.Provider
       value={{
-        revendedorForm,
         onUpdateRevendedor,
         onCreateRevendedor,
         loading: state.loading,

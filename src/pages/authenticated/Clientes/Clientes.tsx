@@ -4,10 +4,11 @@ import { GridOverlay, DataGrid, GridColDef, GridCellParams, useGridSlotComponent
 import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { GlobalContext } from '../../../store/Global/GlobalState';
+import { ClientesForm } from './ClientesForm';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, clientes, onUpdateCliente, clienteForm } = useContext(ClientesContext);
+  const { loading, clientes, onUpdateCliente, onCreateCliente } = useContext(ClientesContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
@@ -95,34 +96,7 @@ const Index = (): any => {
           checkboxSelection
           disableSelectionOnClick
         />
-        <form className={classes.form} onSubmit={clienteForm.handleSubmit}>
-          <div></div>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="nome"
-            label="Nome"
-            id="nome"
-            value={clienteForm.values.nome}
-            onChange={clienteForm.handleChange}
-            error={clienteForm.touched.nome && Boolean(clienteForm.errors.nome)}
-            helperText={clienteForm.touched.nome && clienteForm.errors.nome}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="email"
-            label="E-mail"
-            id="email"
-            value={clienteForm.values.email}
-            onChange={clienteForm.handleChange}
-            error={clienteForm.touched.email && Boolean(clienteForm.errors.email)}
-            helperText={clienteForm.touched.email && clienteForm.errors.email}
-          />
-          <Button type="submit" className={classes.submit} variant="contained" color="primary">
-            Adicionar
-          </Button>
-        </form>
+        <ClientesForm onSubmit={onCreateCliente} />
       </div>
     </Paper>
   );

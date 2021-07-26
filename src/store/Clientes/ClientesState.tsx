@@ -32,19 +32,15 @@ export type EditClienteType = {
   status?: 'ATIVO' | 'INATIVO';
 };
 
-export type CreateClienteType = {
-  email: string;
-  nome: string;
-};
-
-type FormikValues = {
+export type ClientesFormValues = {
   nome: string;
   email: string;
+  status: 'ATIVO' | 'INATIVO';
 };
 
 type ClienteContextType = {
-  clienteForm: FormikProps<FormikValues>;
-  onUpdateCliente: (fields: EditClienteType) => void;
+  onUpdateCliente: (values: EditClienteType) => void;
+  onCreateCliente: (values: ClientesFormValues, form: FormikProps<ClientesFormValues>) => void;
   loading: boolean;
   clientes: any[];
 };
@@ -117,7 +113,7 @@ export const ClientesProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onCreateCliente(values: CreateClienteType) {
+  async function onCreateCliente(values: ClientesFormValues, form: FormikProps<ClientesFormValues>) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
@@ -130,7 +126,7 @@ export const ClientesProvider: any = ({ children }: any) => {
             status: 'ATIVO'
           }
         });
-        clienteForm.resetForm();
+        form.resetForm();
       }, 2000);
     } else {
       try {
@@ -138,7 +134,7 @@ export const ClientesProvider: any = ({ children }: any) => {
           variables: { cliente: { ...values, status: 'ATIVO' } }
         });
         dispatch({ type: actions.create, payload: createdCliente.data.criarCliente });
-        clienteForm.resetForm();
+        form.resetForm();
       } catch (err) {
         dispatch({
           type: actions.createFailed,
@@ -155,21 +151,21 @@ export const ClientesProvider: any = ({ children }: any) => {
     }
   }
 
-  async function onUpdateCliente(fields: EditClienteType) {
+  async function onUpdateCliente(values: EditClienteType) {
     dispatch({ type: actions.loading });
     if (mockup) {
       await setTimeout(() => {
         dispatch({
           type: actions.update,
           payload: {
-            ...fields
+            ...values
           }
         });
       }, 800);
     } else {
       try {
         const updatedCliente = await updateCliente({
-          variables: { cliente: fields }
+          variables: { cliente: values }
         });
         dispatch({ type: actions.update, payload: updatedCliente.data.atualizarCliente });
       } catch (err) {
@@ -188,22 +184,6 @@ export const ClientesProvider: any = ({ children }: any) => {
     }
   }
 
-  const clienteFormValidation = yup.object({
-    nome: yup.string().required('Digite um nome').min(5, 'O nome deve conter mais de 5 caracteres'),
-    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail')
-  });
-  const clienteFormInitialValues = {
-    nome: '',
-    email: ''
-  };
-  const clienteForm = useFormik({
-    initialValues: clienteFormInitialValues,
-    validationSchema: clienteFormValidation,
-    onSubmit: (values: CreateClienteType) => {
-      onCreateCliente(values);
-    }
-  });
-
   useEffect(() => {
     loadClientes();
   }, []);
@@ -212,7 +192,7 @@ export const ClientesProvider: any = ({ children }: any) => {
     <ClientesContext.Provider
       value={{
         onUpdateCliente,
-        clienteForm,
+        onCreateCliente,
         loading: state.loading,
         clientes: state.clientes
       }}

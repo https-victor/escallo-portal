@@ -75,6 +75,11 @@ const mockupPermissoes = [
     revendedor: { id: 4, nome: 'Revendedor 4' }
   },
   {
+    permissao: 'diretor',
+    cliente: { id: 4, nome: 'Cliente 4', host: 'http://clinicadofuturo.vpn.ftec.us/' },
+    revendedor: { id: 6, nome: 'Revendedor 6' }
+  },
+  {
     permissao: 'gestor',
     cliente: { id: 5, nome: 'Cliente 5', host: 'http://clinicadofuturo.vpn.ftec.us/' },
     revendedor: { id: 5, nome: 'Revendedor 5' }

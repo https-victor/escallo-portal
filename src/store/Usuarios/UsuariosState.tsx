@@ -35,14 +35,14 @@ export type EditUsuarioType = {
   permissoes?: Array<Permissao>;
 };
 
-type FormikValues = {
+export type UsuariosFormValues = {
   first: boolean;
   second: boolean;
   email: string;
 };
 
 type UsuarioContextType = {
-  usuarioForm: FormikProps<FormikValues>;
+  onCreateUsuario: (values: UsuariosFormValues, form: FormikProps<UsuariosFormValues>) => void;
   onUpdateUsuario: (fields: EditUsuarioType) => void;
   onDeleteUsuario: (userId: number) => void;
   loading: boolean;
@@ -173,7 +173,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
     // }
   }
 
-  async function onCreateUsuario(values: FormikValues) {
+  async function onCreateUsuario(values: UsuariosFormValues, form: FormikProps<UsuariosFormValues>) {
     dispatch({ type: actions.loading });
     const permissoes: Permissao[] = !isSuper
       ? ([
@@ -193,7 +193,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
             permissoes
           }
         });
-        usuarioForm.resetForm();
+        form.resetForm();
       }, 2000);
     }
     // else {
@@ -202,7 +202,7 @@ export const UsuarioProvider: any = ({ children }: any) => {
     //   //     variables: { usuario: { ...values, status: 'ATIVO' } }
     //   //   });
     //   //   dispatch({ type: actions.create, payload: createdUsuario.data.criarUsuario });
-    //   //   usuarioForm.resetForm();
+    //   //   usuariosForm.resetForm();
     //   // } catch (err) {
     //   //   dispatch({
     //   //     type: actions.createFailed,
@@ -268,23 +268,6 @@ export const UsuarioProvider: any = ({ children }: any) => {
     }
   }
 
-  const usuarioFormValidation = yup.object({
-    email: yup.string().email('Digite um e-mail válido').required('Digite um e-mail'),
-    permissoes: yup.array().min(1, 'Selecione ao menos uma permissão')
-  });
-  const usuarioFormInitialValues: FormikValues = {
-    email: '',
-    first: false,
-    second: false
-  };
-  const usuarioForm = useFormik({
-    initialValues: usuarioFormInitialValues,
-    validationSchema: usuarioFormValidation,
-    onSubmit: (values: FormikValues) => {
-      onCreateUsuario(values);
-    }
-  });
-
   useEffect(() => {
     loadUsuario();
   }, []);
@@ -293,8 +276,8 @@ export const UsuarioProvider: any = ({ children }: any) => {
     <UsuariosContext.Provider
       value={{
         onUpdateUsuario,
+        onCreateUsuario,
         onDeleteUsuario,
-        usuarioForm,
         loading: state.loading,
         usuarios: state.usuarios
       }}

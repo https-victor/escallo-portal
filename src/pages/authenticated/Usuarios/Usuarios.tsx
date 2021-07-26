@@ -22,10 +22,13 @@ import Pagination from '@material-ui/lab/Pagination';
 import { UsuariosContext, UsuarioProvider, UsuarioType } from '../../../store/Usuarios/UsuariosState';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 import { UsuariosType } from '../../../store/Usuarios/UsuariosReducer';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
+import { UsuariosForm } from './UsuariosForm';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, usuarios, onUpdateUsuario, usuarioForm, onDeleteUsuario } = useContext(UsuariosContext);
+  const { loading, usuarios, onUpdateUsuario, onCreateUsuario, onDeleteUsuario } = useContext(UsuariosContext);
   const { setMenu, apiConfig } = useContext(GlobalContext);
 
   useEffect(() => {
@@ -171,54 +174,7 @@ const Index = (): any => {
           onEditCellChangeCommitted={handleEditCellChangeCommitted}
           disableSelectionOnClick
         />
-        <form className={classes.form} onSubmit={usuarioForm.handleSubmit}>
-          <div></div>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="email"
-            label="E-mail"
-            id="email"
-            disabled={loading}
-            value={usuarioForm.values.email}
-            onChange={usuarioForm.handleChange}
-            error={usuarioForm.touched.email && Boolean(usuarioForm.errors.email)}
-            helperText={usuarioForm.touched.email && usuarioForm.errors.email}
-          />
-          {!isSuper && (
-            <>
-              <FormControlLabel
-                control={
-                  <MUICheckbox
-                    checked={usuarioForm.values.first}
-                    color="primary"
-                    name="first"
-                    id="first"
-                    onChange={usuarioForm.handleChange}
-                  />
-                }
-                disabled={loading}
-                label={firstLabel}
-              />
-              <FormControlLabel
-                control={
-                  <MUICheckbox
-                    checked={usuarioForm.values.second}
-                    color="primary"
-                    name="second"
-                    id="second"
-                    onChange={usuarioForm.handleChange}
-                  />
-                }
-                disabled={loading}
-                label={secondLabel}
-              />
-            </>
-          )}
-          <Button type="submit" className={classes.submit} variant="contained" color="primary">
-            Adicionar
-          </Button>
-        </form>
+        <UsuariosForm onSubmit={onCreateUsuario} />
       </div>
     </Paper>
   );

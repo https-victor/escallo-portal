@@ -335,7 +335,7 @@ const Dashboard = (): any => {
                 <ListItemText primary="Revendedores" />
               </ListItem>
             )}
-            {permissao === 'consultor' && (
+            {(permissao === 'consultor' || permissao === 'diretor') && (
               <ListItem button onClick={openMenuOption(4)}>
                 <ListItemIcon>
                   <GroupIcon color={menuIndex === 4 ? 'secondary' : undefined} />

@@ -15,10 +15,11 @@ import {
 import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@material-ui/core';
 import Pagination from '@material-ui/lab/Pagination';
 import { GlobalContext } from '../../../store/Global/GlobalState';
+import { RevendedoresForm } from './RevendedoresForm';
 
 const Index = (): any => {
   const classes = useStyles();
-  const { loading, revendedores, onUpdateRevendedor, revendedorForm } = useContext(RevendedoresContext);
+  const { loading, revendedores, onUpdateRevendedor, onCreateRevendedor } = useContext(RevendedoresContext);
 
   const { setMenu } = useContext(GlobalContext);
   useEffect(() => {
@@ -113,48 +114,7 @@ const Index = (): any => {
           checkboxSelection
           disableSelectionOnClick
         />
-        <form className={classes.form} onSubmit={revendedorForm.handleSubmit}>
-          <div></div>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="nome"
-            label="Nome"
-            id="nome"
-            value={revendedorForm.values.nome}
-            onChange={revendedorForm.handleChange}
-            error={revendedorForm.touched.nome && Boolean(revendedorForm.errors.nome)}
-            helperText={revendedorForm.touched.nome && revendedorForm.errors.nome}
-            disabled={loading}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="email"
-            label="E-mail"
-            id="email"
-            value={revendedorForm.values.email}
-            onChange={revendedorForm.handleChange}
-            error={revendedorForm.touched.email && Boolean(revendedorForm.errors.email)}
-            helperText={revendedorForm.touched.email && revendedorForm.errors.email}
-            disabled={loading}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            name="label"
-            label="Label"
-            id="label"
-            value={revendedorForm.values.label}
-            onChange={revendedorForm.handleChange}
-            error={revendedorForm.touched.label && Boolean(revendedorForm.errors.label)}
-            helperText={revendedorForm.touched.label && revendedorForm.errors.label}
-            disabled={loading}
-          />
-          <Button type="submit" className={classes.submit} variant="contained" color="primary" disabled={loading}>
-            Adicionar
-          </Button>
-        </form>
+        <RevendedoresForm onSubmit={onCreateRevendedor} />
       </div>
     </Paper>
   );
@@ -183,9 +143,7 @@ const useStyles = makeStyles((theme: any) => ({
     display: 'flex',
     marginBottom: theme.spacing(1)
   },
-  submit: {
-    margin: theme.spacing(3, 0, 2)
-  },
+
   addRevendedor: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
@@ -194,20 +152,6 @@ const useStyles = makeStyles((theme: any) => ({
   },
   container: {
     flexGrow: 1
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center',
-    '& .MuiTextField-root': {
-      flexGrow: 1,
-      marginLeft: 24,
-      marginRight: 24
-    },
-    '& :nth-child(2)': {
-      marginLeft: 0
-    }
   }
 }));
 

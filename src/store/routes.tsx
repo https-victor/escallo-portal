@@ -38,7 +38,7 @@ export default function MainRoutes(): any {
             permissao === 'gestor' && { path: 'usuarios', element: <Usuarios /> },
             permissao === 'super' && { path: 'revendedores', element: <Revendedores /> },
             permissao === 'super' && { path: 'usuarios', element: <Usuarios /> },
-            permissao === 'consultor' && { path: 'clientes', element: <Clientes /> },
+            (permissao === 'consultor' || permissao === 'diretor') && { path: 'clientes', element: <Clientes /> },
             permissao === 'diretor' && { path: 'usuarios', element: <Usuarios /> },
             { path: 'perfil', element: <Profile /> }
           ]
