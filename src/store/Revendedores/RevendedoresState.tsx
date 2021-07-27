@@ -3,7 +3,7 @@ import RevendedoresReducer, { RevendedoresType } from './RevendedoresReducer';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { REVENDEDOR_LIST, REVENDEDOR_LIST_STATUS } from '../../graphql/queries/revendedores';
-import { REVENDEDOR_CREATE, REVENDEDOR_EDIT } from '../../graphql/mutations/revendedores';
+import { REVENDEDOR_CREATE, REVENDEDOR_EDIT, REVENDEDOR_SALVAR_EMAIL } from '../../graphql/mutations/revendedores';
 import { FormikProps, useFormik } from 'formik';
 
 import { AuthContext } from '../Auth/AuthState';
@@ -87,6 +87,8 @@ export const RevendedoresProvider: any = ({ children }: any) => {
 
   const [updateRevendedor] = useMutation(REVENDEDOR_EDIT);
   const [createRevendedor] = useMutation(REVENDEDOR_CREATE);
+  const [emailRevendedor] = useMutation(REVENDEDOR_SALVAR_EMAIL);
+
   const queryRevendedores = useImperativeQuery(REVENDEDOR_LIST);
   const queryRevendedoresByStatus = useImperativeQuery(REVENDEDOR_LIST_STATUS);
 
@@ -138,9 +140,19 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     } else {
       try {
         const createdRevendedor = await createRevendedor({
-          variables: { revendedor: { ...values, status: 'ATIVO' } }
+          variables: { revendedor: { nome: values.nome, label: values.label, status: 'ATIVO', token: 'teste' } }
         });
+
+        const { id } = createdRevendedor?.data.criarRevendedor;
+
+        await emailRevendedor({
+          variables: {
+            email: { revendedorId: parseFloat(id), valor: values.email, isDiretor: true, isConsultor: false }
+          }
+        });
+
         dispatch({ type: actions.create, payload: createdRevendedor.data.criarRevendedor });
+
         form.resetForm();
       } catch (err) {
         dispatch({
