@@ -64,6 +64,8 @@ const Index = (): any => {
   const handleEditCellChangeCommitted = ({ id, field, props }: GridEditCellPropsParams) => {
     const data = props;
 
+    console.log(props);
+
     if (revendedores.find((item: RevendedorType) => item.id === id)[field] !== data.value) {
       onUpdateRevendedor({ id: parseFloat(id as string), [field]: data.value });
     }
@@ -73,12 +75,6 @@ const Index = (): any => {
     {
       field: 'nome',
       headerName: 'Nome',
-      flex: 3,
-      editable: !loading
-    },
-    {
-      field: 'email',
-      headerName: 'E-mail',
       flex: 3,
       editable: !loading
     },
