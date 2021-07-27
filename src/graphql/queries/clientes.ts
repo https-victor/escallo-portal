@@ -5,7 +5,6 @@ export const CLIENTE_LIST_STATUS = graphql`
       id
       status
       nome
-      email
     }
   }
 `;
@@ -16,7 +15,6 @@ export const CLIENTE_LIST = graphql`
       id
       status
       nome
-      email
     }
   }
 `;

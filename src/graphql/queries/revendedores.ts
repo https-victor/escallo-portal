@@ -6,7 +6,6 @@ export const REVENDEDOR_LIST_STATUS = graphql`
       status
       nome
       label
-      email
     }
   }
 `;
@@ -18,7 +17,6 @@ export const REVENDEDOR_LIST = graphql`
       status
       nome
       label
-      email
     }
   }
 `;

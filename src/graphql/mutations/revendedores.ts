@@ -6,7 +6,6 @@ export const REVENDEDOR_EDIT = graphql`
       status
       nome
       label
-      email
     }
   }
 `;
@@ -18,7 +17,13 @@ export const REVENDEDOR_CREATE = graphql`
       status
       nome
       label
-      email
+      token
     }
+  }
+`;
+
+export const REVENDEDOR_SALVAR_EMAIL = graphql`
+  mutation SalvarEmailRevendedor($email: EmailRevendedorDTO!) {
+    salvarEmailRevendedor(email: $email)
   }
 `;

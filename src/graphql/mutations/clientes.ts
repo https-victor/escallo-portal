@@ -5,7 +5,6 @@ export const CLIENTE_EDIT = graphql`
       id
       status
       nome
-      email
     }
   }
 `;
@@ -16,7 +15,18 @@ export const CLIENTE_CREATE = graphql`
       id
       status
       nome
-      email
+    }
+  }
+`;
+
+export const CLIENTE_SALVAR_EMAIL = graphql`
+  mutation SalvarEmailCliente($email: EmailRevendedorDTO!) {
+    salvarEmailCliente(email: $email) {
+      cliente {
+        id
+        nome
+        status
+      }
     }
   }
 `;
