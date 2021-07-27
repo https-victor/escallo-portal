@@ -3,10 +3,11 @@ import ClientesReducer, { ClientesType } from './ClientesReducer';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
 import { CLIENTE_LIST, CLIENTE_LIST_STATUS } from '../../graphql/queries/clientes';
-import { CLIENTE_CREATE, CLIENTE_EDIT } from '../../graphql/mutations/clientes';
+import { CLIENTE_CREATE, CLIENTE_EDIT, CLIENTE_SALVAR_EMAIL } from '../../graphql/mutations/clientes';
 import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext } from '../Auth/AuthState';
+import { GlobalContext } from '../Global/GlobalState';
 
 export enum actions {
   loading = 'LOADING',
@@ -76,11 +77,14 @@ export const ClientesContext = createContext({} as ClienteContextType);
 
 export const ClientesProvider: any = ({ children }: any) => {
   const { mockup } = useContext(AuthContext);
+  const { apiConfig } = useContext(GlobalContext);
 
   const [state, dispatch] = useReducer(ClientesReducer, initialClientesState);
 
   const [updateCliente] = useMutation(CLIENTE_EDIT);
   const [createCliente] = useMutation(CLIENTE_CREATE);
+  const [salvarEmail] = useMutation(CLIENTE_SALVAR_EMAIL);
+
   const queryClientes = useImperativeQuery(CLIENTE_LIST);
   const queryClientesByStatus = useImperativeQuery(CLIENTE_LIST_STATUS);
 
@@ -131,9 +135,31 @@ export const ClientesProvider: any = ({ children }: any) => {
     } else {
       try {
         const createdCliente = await createCliente({
-          variables: { cliente: { ...values, status: 'ATIVO' } }
+          variables: {
+            cliente: {
+              nome: values.nome,
+              host: 'testes',
+              status: 'ATIVO',
+              qtdeAgentesVoz: 1,
+              qtdeAgentesChat: 1,
+              revendedorId: parseFloat(apiConfig.revendedor)
+            }
+          }
         });
-        dispatch({ type: actions.create, payload: createdCliente.data.criarCliente });
+
+        const { id } = createdCliente?.data?.criarCliente;
+        await salvarEmail({
+          variables: {
+            email: {
+              clienteId: parseFloat(id),
+              valor: values.email,
+              isGestor: true,
+              isAgente: false
+            }
+          }
+        });
+
+        dispatch({ type: actions.create, payload: { ...createdCliente.data.criarCliente, email: values.email } });
         form.resetForm();
       } catch (err) {
         dispatch({
