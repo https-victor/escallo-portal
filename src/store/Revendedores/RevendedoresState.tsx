@@ -140,7 +140,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
     } else {
       try {
         const createdRevendedor = await createRevendedor({
-          variables: { revendedor: { nome: values.nome, label: values.label, status: 'ATIVO', token: 'teste' } }
+          variables: { revendedor: { nome: values.nome, label: values.label, status: 'ATIVO', token: 'Tokenstring' } }
         });
 
         const { id } = createdRevendedor?.data.criarRevendedor;
@@ -186,6 +186,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
         const updatedRevendedor = await updateRevendedor({
           variables: { revendedor: { ...values } }
         });
+
         dispatch({ type: actions.update, payload: updatedRevendedor.data.atualizarRevendedor });
       } catch (err) {
         dispatch({

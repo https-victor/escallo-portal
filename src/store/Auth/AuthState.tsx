@@ -4,7 +4,7 @@ import { GlobalContext } from '../Global/GlobalState';
 import { useLocation, useNavigate } from 'react-router';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
-import { USER_ADD, USER_AUTH } from '../../graphql/mutations/user';
+import { USER_ADD, USER_AUTH } from '../../graphql/mutations/usuarios';
 import { CHECK_EMAIL, CHECK_TOKEN } from '../../graphql/queries/login';
 import { PERMISSOES } from '../../utils/vo/auth';
 
@@ -192,6 +192,8 @@ export const AuthProvider: any = ({ children }: any) => {
       // get user by token
       const user = await checkToken();
       if (user?.data?.meusDados) {
+        console.log(user?.data?.meusDados);
+
         dispatch({ type: actions.userSuccess, payload: user?.data?.meusDados });
       } else {
         dispatch({ type: actions.logoutSuccess });

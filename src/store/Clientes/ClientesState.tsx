@@ -138,7 +138,7 @@ export const ClientesProvider: any = ({ children }: any) => {
           variables: {
             cliente: {
               nome: values.nome,
-              host: 'testes',
+              host: 'Hoststring',
               status: 'ATIVO',
               qtdeAgentesVoz: 1,
               qtdeAgentesChat: 1,
