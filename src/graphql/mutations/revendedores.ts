@@ -24,6 +24,11 @@ export const REVENDEDOR_CREATE = graphql`
 
 export const REVENDEDOR_SALVAR_EMAIL = graphql`
   mutation SalvarEmailRevendedor($email: EmailRevendedorDTO!) {
-    salvarEmailRevendedor(email: $email)
+    salvarEmailRevendedor(email: $email) {
+      id
+      nome
+      label
+      status
+    }
   }
 `;

@@ -21,6 +21,10 @@ export const CLIENTE_CREATE = graphql`
 
 export const CLIENTE_SALVAR_EMAIL = graphql`
   mutation SalvarEmailCliente($email: EmailClienteDTO!) {
-    salvarEmailCliente(email: $email)
+    salvarEmailCliente(email: $email) {
+      id
+      nome
+      status
+    }
   }
 `;
