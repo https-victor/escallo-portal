@@ -1,4 +1,5 @@
 import { useContext, useEffect } from 'react';
+import { ToggleDrawer } from '../../../components';
 import {
   RevendedoresContext,
   RevendedoresProvider,
@@ -110,7 +111,9 @@ const Index = (): any => {
           checkboxSelection
           disableSelectionOnClick
         />
-        <RevendedoresForm onSubmit={onCreateRevendedor} />
+        <ToggleDrawer>
+          <RevendedoresForm onSubmit={onCreateRevendedor} />
+        </ToggleDrawer>
       </div>
     </Paper>
   );

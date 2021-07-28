@@ -147,7 +147,7 @@ export const RevendedoresProvider: any = ({ children }: any) => {
 
         await emailRevendedor({
           variables: {
-            email: { revendedorId: parseFloat(id), valor: values.email, isDiretor: true, isConsultor: false }
+            email: { idRevendedor: parseFloat(id), valor: values.email, isDiretor: true, isConsultor: false }
           }
         });
 

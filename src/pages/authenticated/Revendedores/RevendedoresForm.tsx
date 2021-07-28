@@ -2,6 +2,7 @@ import { RevendedoresType } from '../../../store/Revendedores/RevendedoresReduce
 import { FormikProps, useFormik } from 'formik';
 import { Button, makeStyles, TextField } from '@material-ui/core';
 import { RevendedoresFormValues } from '../../../store/Revendedores/RevendedoresState';
+import { TextArea } from '../../../components';
 import * as yup from 'yup';
 
 type RevendedoresValuesType = {
@@ -29,15 +30,13 @@ export const RevendedoresForm = ({ onSubmit, loading }: RevendedoresValuesType):
   });
 
   function onFormSubmit(values: RevendedoresFormValues) {
-    onSubmit(values, form);
+    // onSubmit(values, form);
+    form.resetForm();
   }
 
   return (
-    <form className={classes.form} onSubmit={form.handleSubmit}>
-      <div></div>
-      <TextField
-        variant="outlined"
-        margin="normal"
+    <form className={classes.form} onSubmit={() => onFormSubmit(form.values)}>
+      <TextArea
         name="nome"
         label="Nome"
         id="nome"
@@ -47,9 +46,7 @@ export const RevendedoresForm = ({ onSubmit, loading }: RevendedoresValuesType):
         helperText={form.touched.nome && form.errors.nome}
         disabled={loading}
       />
-      <TextField
-        variant="outlined"
-        margin="normal"
+      <TextArea
         name="email"
         label="E-mail"
         id="email"
@@ -59,9 +56,7 @@ export const RevendedoresForm = ({ onSubmit, loading }: RevendedoresValuesType):
         helperText={form.touched.email && form.errors.email}
         disabled={loading}
       />
-      <TextField
-        variant="outlined"
-        margin="normal"
+      <TextArea
         name="label"
         label="Label"
         id="label"
@@ -71,9 +66,20 @@ export const RevendedoresForm = ({ onSubmit, loading }: RevendedoresValuesType):
         helperText={form.touched.label && form.errors.label}
         disabled={loading}
       />
-      <Button type="submit" className={classes.submit} variant="contained" color="primary" disabled={loading}>
-        Adicionar
-      </Button>
+      <div className={classes.buttonContainer}>
+        <Button type="submit" className={classes.submit} variant="contained" color="primary" disabled={loading}>
+          Adicionar
+        </Button>
+        <Button
+          className={classes.submit}
+          variant="contained"
+          color="primary"
+          disabled={loading}
+          onClick={() => console.log(form)}
+        >
+          Cancelar
+        </Button>
+      </div>
     </form>
   );
 };
@@ -86,14 +92,15 @@ const useStyles = makeStyles((theme: any) => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
     '& .MuiTextField-root': {
       flexGrow: 1,
       marginLeft: 24,
       marginRight: 24
-    },
-    '& :nth-child(2)': {
-      marginLeft: 0
     }
+  },
+  buttonContainer: {
+    display: 'flex'
   }
 }));
