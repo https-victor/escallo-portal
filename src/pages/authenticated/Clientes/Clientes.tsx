@@ -5,6 +5,7 @@ import { Button, LinearProgress, makeStyles, Paper, Switch, TextField } from '@m
 import Pagination from '@material-ui/lab/Pagination';
 import { GlobalContext } from '../../../store/Global/GlobalState';
 import { ClientesForm } from './ClientesForm';
+import { ToggleDrawer } from '../../../components';
 
 const Index = (): any => {
   const classes = useStyles();
@@ -96,7 +97,9 @@ const Index = (): any => {
           checkboxSelection
           disableSelectionOnClick
         />
-        <ClientesForm onSubmit={onCreateCliente} />
+        <ToggleDrawer>
+          <ClientesForm onSubmit={onCreateCliente} />
+        </ToggleDrawer>
       </div>
     </Paper>
   );

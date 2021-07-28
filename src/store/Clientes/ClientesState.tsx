@@ -36,6 +36,8 @@ export type EditClienteType = {
 export type ClientesFormValues = {
   nome: string;
   email: string;
+  qtAgentesVoz: number;
+  qtAgentesChat: number;
   status: 'ATIVO' | 'INATIVO';
 };
 
@@ -151,7 +153,7 @@ export const ClientesProvider: any = ({ children }: any) => {
         await salvarEmail({
           variables: {
             email: {
-              clienteId: parseFloat(id),
+              idCliente: parseFloat(id),
               valor: values.email,
               isGestor: true,
               isAgente: false
