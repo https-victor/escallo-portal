@@ -37,9 +37,12 @@ export type EditUsuarioType = {
 };
 
 export type UsuariosFormValues = {
+  email: string;
+  nome: string;
+  telefone: string;
+  status: string;
   first: boolean;
   second: boolean;
-  email: string;
 };
 
 type UsuarioContextType = {

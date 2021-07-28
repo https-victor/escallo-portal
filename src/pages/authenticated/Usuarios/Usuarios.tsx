@@ -26,6 +26,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { UsuariosForm } from './UsuariosForm';
 import { PERMISSOES } from '../../../utils/vo/auth';
+import ToggleDrawer from '../../../components/ToggleDrawer';
 
 const Index = (): any => {
   const classes = useStyles();
@@ -176,7 +177,6 @@ const Index = (): any => {
           onEditCellChangeCommitted={handleEditCellChangeCommitted}
           disableSelectionOnClick
         />
-        <UsuariosForm onSubmit={onCreateUsuario} />
       </div>
     </Paper>
   );
