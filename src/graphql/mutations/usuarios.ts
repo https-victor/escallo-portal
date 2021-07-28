@@ -40,3 +40,12 @@ export const USER_ADD = graphql`
     }
   }
 `;
+
+export const USER_UPDATE = graphql`
+  mutation atualizarUsuario($usuario: AtualizarUsuarioDTO!) {
+    atualizarUsuario(usuario: $usuario) {
+      id
+      email
+    }
+  }
+`;

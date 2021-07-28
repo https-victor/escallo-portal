@@ -2,12 +2,13 @@ import { createContext, useReducer, useEffect, useContext, useState } from 'reac
 import UsuariosReducer, { UsuariosType } from './UsuariosReducer';
 import { useMutation } from '@apollo/client';
 import useImperativeQuery from '../../hooks/providers/useImperativeQuery';
-// import { USUARIO_LIST, USUARIO_LIST_STATUS } from '../../graphql/queries/usuarios';
-// import { USUARIO_CREATE, USUARIO_EDIT } from '../../graphql/mutations/usuarios';
+import { USER_LIST, USER_LIST_STATUS } from '../../graphql/queries/usuarios';
+import { USER_ADD, USER_AUTH, USER_UPDATE } from '../../graphql/mutations/usuarios';
 import { FormikProps, useFormik } from 'formik';
 import * as yup from 'yup';
 import { AuthContext, UserType } from '../Auth/AuthState';
 import { GlobalContext } from '../Global/GlobalState';
+import { PERMISSOES } from '../../utils/vo/auth';
 
 export enum actions {
   loading = 'LOADING',
@@ -129,19 +130,22 @@ export const UsuariosContext = createContext({} as UsuarioContextType);
 export const UsuarioProvider: any = ({ children }: any) => {
   const { apiConfig } = useContext(GlobalContext);
   const { permissao } = apiConfig;
-  const isSuper = Boolean(permissao === 'super');
-  const isDiretor = Boolean(permissao === 'diretor');
-  const isGestor = Boolean(permissao === 'gestor');
-  const { mockup } = useContext(AuthContext);
+  const { AGENTE, DIRETOR, GESTOR, CONSULTOR, SUPER } = PERMISSOES;
+
+  const isSuper = Boolean(permissao === SUPER);
+  const isDiretor = Boolean(permissao === DIRETOR);
+
+  const { mockup, auth } = useContext(AuthContext);
 
   const initialMockupState = isSuper ? initialMockupSuper : isDiretor ? initialMockupDiretor : initialMockupGestor;
 
   const [state, dispatch] = useReducer(UsuariosReducer, initialUsuarioState);
 
-  // const [updateUsuario] = useMutation(USUARIO_EDIT);
-  // const [createUsuario] = useMutation(USUARIO_CREATE);
-  // const queryUsuario = useImperativeQuery(USUARIO_LIST);
-  // const queryUsuarioByStatus = useImperativeQuery(USUARIO_LIST_STATUS);
+  const [createUser] = useMutation(USER_ADD);
+  const [updateUser] = useMutation(USER_UPDATE);
+
+  const queryUsuario = useImperativeQuery(USER_LIST);
+  const queryUsuarioByStatus = useImperativeQuery(USER_LIST_STATUS);
 
   async function loadUsuario(status = '') {
     dispatch({ type: actions.loading });
@@ -152,38 +156,36 @@ export const UsuarioProvider: any = ({ children }: any) => {
           payload: initialMockupState
         });
       }, 1500);
+    } else {
+      try {
+        const usuarios = status ? await queryUsuarioByStatus(status) : await queryUsuario();
+
+        dispatch({ type: actions.loadSuccess, payload: usuarios?.data?.usuarios });
+      } catch (err) {
+        console.log(err);
+        dispatch({
+          type: actions.loadFailed,
+          payload: {
+            id: Date.now(),
+            context: 'load_usuarios_error',
+            severity: 'error',
+            title: 'Falha na requisição',
+            message: err
+          }
+        });
+      }
     }
-    // else {
-    //   try {
-    //     const usuarios = status ? await queryUsuarioByStatus(status) : await queryUsuario();
-    //     dispatch({ type: actions.loadSuccess, payload: usuarios?.data?.usuarios });
-    //   } catch (err) {
-    //     console.log(err);
-    //     dispatch({
-    //       type: actions.loadFailed,
-    //       payload: {
-    //         id: Date.now(),
-    //         context: 'load_usuarios_error',
-    //         severity: 'error',
-    //         title: 'Falha na requisição',
-    //         message: err
-    //       }
-    //     });
-    //   }
-    // }
   }
 
   async function onCreateUsuario(values: UsuariosFormValues, form: FormikProps<UsuariosFormValues>) {
     dispatch({ type: actions.loading });
-    const permissoes: Permissao[] = !isSuper
-      ? ([
-          values.first && isDiretor ? 'consultor' : 'agente',
-          values.second && isDiretor ? 'diretor' : 'gestor'
-        ] as Permissao[])
-      : (['super'] as Permissao[]);
 
-    console.log(values.email, permissoes);
+    const permissoes: Permissao[] = !isSuper
+      ? ([values.first && isDiretor ? CONSULTOR : AGENTE, values.second && isDiretor ? DIRETOR : GESTOR] as Permissao[])
+      : ([SUPER] as Permissao[]);
+
     if (mockup) {
+      console.log(values);
       await setTimeout(() => {
         dispatch({
           type: actions.create,
@@ -197,25 +199,27 @@ export const UsuarioProvider: any = ({ children }: any) => {
       }, 2000);
     }
     // else {
-    //   // try {
-    //   //   const createdUsuario = await createUsuario({
-    //   //     variables: { usuario: { ...values, status: 'ATIVO' } }
-    //   //   });
-    //   //   dispatch({ type: actions.create, payload: createdUsuario.data.criarUsuario });
-    //   //   usuariosForm.resetForm();
-    //   // } catch (err) {
-    //   //   dispatch({
-    //   //     type: actions.createFailed,
-    //   //     payload: {
-    //   //       id: Date.now(),
-    //   //       context: 'usuario_create_error',
-    //   //       severity: 'error',
-    //   //       title: 'Falha no cadastro do usuario',
-    //   //       message: err
-    //   //     }
-    //   //   });
-    //   //   console.log(err);
-    //   // }
+    //   try {
+
+    //     const createdUser = await createUser({
+    //       variables: {usuario: {}}
+    //     })
+
+    //     dispatch({ type: actions.create, payload: });
+    //     form.resetForm();
+    //   } catch (err) {
+    //     dispatch({
+    //       type: actions.createFailed,
+    //       payload: {
+    //         id: Date.now(),
+    //         context: 'usuario_create_error',
+    //         severity: 'error',
+    //         title: 'Falha no cadastro do usuario',
+    //         message: err
+    //       }
+    //     });
+    //     console.log(err);
+    //   }
     // }
   }
 
@@ -230,27 +234,27 @@ export const UsuarioProvider: any = ({ children }: any) => {
           }
         });
       }, 800);
+    } else {
+      try {
+        const updatedUser = await updateUser({
+          variables: { usuario: fields }
+        });
+
+        dispatch({ type: actions.update, payload: updatedUser.data.atualizarUsuario });
+      } catch (err) {
+        dispatch({
+          type: actions.updateFailed,
+          payload: {
+            id: Date.now(),
+            context: 'usuario_update_error',
+            severity: 'error',
+            title: 'Falha na atualização do usuario',
+            message: err
+          }
+        });
+        console.log(err);
+      }
     }
-    //  else {
-    //   // try {
-    //   //   const updatedUsuario = await updateUsuario({
-    //   //     variables: { usuario: fields }
-    //   //   });
-    //   //   dispatch({ type: actions.update, payload: updatedUsuario.data.atualizarUsuario });
-    //   // } catch (err) {
-    //   //   dispatch({
-    //   //     type: actions.updateFailed,
-    //   //     payload: {
-    //   //       id: Date.now(),
-    //   //       context: 'usuario_update_error',
-    //   //       severity: 'error',
-    //   //       title: 'Falha na atualização do usuario',
-    //   //       message: err
-    //   //     }
-    //   //   });
-    //   //   console.log(err);
-    //   // }
-    // }
   }
 
   async function onDeleteUsuario(userId: number) {

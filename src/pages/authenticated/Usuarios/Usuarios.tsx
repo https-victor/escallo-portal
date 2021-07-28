@@ -77,7 +77,7 @@ const Index = (): any => {
   };
 
   const Checkbox = ({ row, field }: GridCellParams) => {
-    const isValidPermition = row.permissoes.includes(field);
+    const isValidPermition = row?.permissoes?.includes(field);
     return (
       <MUICheckbox
         checked={isValidPermition}
